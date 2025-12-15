@@ -1,27 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+﻿using System.Windows;
 
-namespace SmartServePOS.Presentation
+namespace SmartServePOS.Views
 {
-    /// <summary>
-    /// Interaction logic for POSView.xaml
-    /// </summary>
-    public partial class POSView : Window
-    {
-        public POSView()
-        {
-            InitializeComponent();
-        }
-    }
+	public partial class POSView : Window
+	{
+		public POSView()
+		{
+			InitializeComponent();
+		}
+
+		// Called by other parts of the app (for example after login) to load pages or user controls into the main area.
+		public void ShowContent(UIElement content)
+		{
+			ContentRegion.Content = content;
+		}
+	}
 }

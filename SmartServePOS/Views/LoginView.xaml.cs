@@ -48,7 +48,7 @@ namespace SmartServePOS.Views
 			this.Close();
 
 			// Open POS window
-			var mainWindow = App.Services.GetRequiredService<MainWindow>();
+			var mainWindow = App.Services.GetRequiredService<POSView>();
 			mainWindow.Show();
 		}
 	}
