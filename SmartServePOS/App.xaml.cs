@@ -38,9 +38,16 @@ namespace SmartServePOS
 			services.AddSingleton<MainViewModel>();
 			Services = services.BuildServiceProvider();
 
-			// Start Window
+			// Resolve main window (do not show yet) and register it as the application's main window.
+			var mainWindow = Services.GetRequiredService<MainWindow>();
+			this.MainWindow = mainWindow;
+
+			// Resolve login view. Do not set Owner to mainWindow because mainWindow has not been shown yet
+			// and setting Owner to an unseen window throws InvalidOperationException.
 			var loginView = Services.GetRequiredService<LoginView>();
-			loginView.Show();
+
+			// Show login as modal dialog. LoginView will Close() itself on success and then show the MainWindow.
+			loginView.ShowDialog();
 		}
 	}
 }

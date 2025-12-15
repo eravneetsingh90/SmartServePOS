@@ -55,96 +55,102 @@
 			</Grid>
 		</Border>
 
-		<!-- 🟦 BODY -->
-		<Grid Grid.Row="1" Margin="20">
-			<Grid.RowDefinitions>
-				<RowDefinition Height="Auto"/>
-				<RowDefinition Height="*"/>
-			</Grid.RowDefinitions>
+		<!-- 🟦 BODY (content region: pages will be loaded inside this ContentControl) -->
+		<ContentControl Grid.Row="1"
+						x:Name="ContentRegion"
+						Margin="20">
 
-			<!-- Header Row -->
+			<!-- Default / fallback content (keeps previous layout as the initial page) -->
 			<Grid>
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition/>
-					<ColumnDefinition Width="Auto"/>
-				</Grid.ColumnDefinitions>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="*"/>
+				</Grid.RowDefinitions>
 
-				<TextBlock Text="Table View"
+				<!-- Header Row -->
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition/>
+						<ColumnDefinition Width="Auto"/>
+					</Grid.ColumnDefinitions>
+
+					<TextBlock Text="Table View"
                            FontSize="18"
                            FontWeight="SemiBold"/>
 
-				<StackPanel Grid.Column="1"
+					<StackPanel Grid.Column="1"
                             Orientation="Horizontal"
                             >
-					<Button Content="Delivery"
-                            Padding="12,6"
-                            Background="#C62828"
-                            Foreground="White"
-                            BorderThickness="0"/>
+						<Button Content="Delivery"
+                                Padding="12,6"
+                                Background="#C62828"
+                                Foreground="White"
+                                BorderThickness="0"/>
 
-					<Button Content="Pick Up"
-                            Padding="12,6"/>
+						<Button Content="Pick Up"
+                                Padding="12,6"/>
 
-					<Button Content="Add Table"
-                            Padding="12,6"/>
-				</StackPanel>
-			</Grid>
+						<Button Content="Add Table"
+                                Padding="12,6"/>
+					</StackPanel>
+				</Grid>
 
-			<!-- Table Grid -->
-			<UniformGrid Grid.Row="1"
+				<!-- Table Grid -->
+				<UniformGrid Grid.Row="1"
                          Columns="6"
                          Margin="0,20,0,0">
 
-				<!-- Table Card Template -->
-				<Border BorderBrush="#BDBDBD"
+					<!-- Table Card Template -->
+					<Border BorderBrush="#BDBDBD"
                         BorderThickness="1"
                         CornerRadius="6"
                         Margin="10"
                         Height="120">
-					<TextBlock Text="Table 1"
-                               FontSize="18"
-                               FontWeight="Bold"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center"/>
-				</Border>
+						<TextBlock Text="Table 1"
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+					</Border>
 
-				<Border BorderBrush="#BDBDBD"
+					<Border BorderBrush="#BDBDBD"
                         BorderThickness="1"
                         CornerRadius="6"
                         Margin="10"
                         Height="120">
-					<TextBlock Text="Table 2"
-                               FontSize="18"
-                               FontWeight="Bold"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center"/>
-				</Border>
+						<TextBlock Text="Table 2"
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+					</Border>
 
-				<Border BorderBrush="#BDBDBD"
+					<Border BorderBrush="#BDBDBD"
                         BorderThickness="1"
                         CornerRadius="6"
                         Margin="10"
                         Height="120">
-					<TextBlock Text="Table 3"
-                               FontSize="18"
-                               FontWeight="Bold"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center"/>
-				</Border>
+						<TextBlock Text="Table 3"
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+					</Border>
 
-				<Border BorderBrush="#BDBDBD"
+					<Border BorderBrush="#BDBDBD"
                 BorderThickness="1"
                 CornerRadius="6"
                 Margin="10"
                 Height="120">       
-					<TextBlock Text="Table 4"
-                               FontSize="18"
-                               FontWeight="Bold"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center"/>
-				</Border>
+						<TextBlock Text="Table 4"
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+					</Border>
 
-			</UniformGrid>
-		</Grid>
+				</UniformGrid>
+			</Grid>
+		</ContentControl>
 	</Grid>
 </Window>
