@@ -9,7 +9,8 @@
         WindowStartupLocation="CenterScreen"
         SizeToContent="Manual"
         ResizeMode="NoResize"
-        Background="#F5F6F8">
+        Background="#F5F6F8"
+		Icon="/Assets/Icons/SmartServe.ico">
 
 	<Grid>
 		<Grid.RowDefinitions>
@@ -48,9 +49,9 @@
 				<StackPanel Grid.Column="3"
                             Orientation="Horizontal"
                             VerticalAlignment="Center">
-					<TextBlock Text="Call for Support 07969 223344"
+					<!--<TextBlock Text="Call for Support 07969 223344"
                                Foreground="White"
-                               FontSize="12"/>
+                               FontSize="12"/>-->
 				</StackPanel>
 			</Grid>
 		</Border>
@@ -90,8 +91,8 @@
 						<Button Content="Pick Up"
                                 Padding="12,6"/>
 
-						<Button Content="Add Table"
-                                Padding="12,6"/>
+						<!--<Button Content="Add Table"
+                                Padding="12,6"/>-->
 					</StackPanel>
 				</Grid>
 
@@ -105,45 +106,9 @@
                         BorderThickness="1"
                         CornerRadius="6"
                         Margin="10"
-                        Height="120">
+                        Height="100">
 						<TextBlock Text="Table 1"
-                                   FontSize="18"
-                                   FontWeight="Bold"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"/>
-					</Border>
-
-					<Border BorderBrush="#BDBDBD"
-                        BorderThickness="1"
-                        CornerRadius="6"
-                        Margin="10"
-                        Height="120">
-						<TextBlock Text="Table 2"
-                                   FontSize="18"
-                                   FontWeight="Bold"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"/>
-					</Border>
-
-					<Border BorderBrush="#BDBDBD"
-                        BorderThickness="1"
-                        CornerRadius="6"
-                        Margin="10"
-                        Height="120">
-						<TextBlock Text="Table 3"
-                                   FontSize="18"
-                                   FontWeight="Bold"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"/>
-					</Border>
-
-					<Border BorderBrush="#BDBDBD"
-                BorderThickness="1"
-                CornerRadius="6"
-                Margin="10"
-                Height="120">       
-						<TextBlock Text="Table 4"
-                                   FontSize="18"
+                                   FontSize="14"
                                    FontWeight="Bold"
                                    HorizontalAlignment="Center"
                                    VerticalAlignment="Center"/>
