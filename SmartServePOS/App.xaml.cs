@@ -34,7 +34,8 @@ namespace SmartServePOS
 			// WPF Views & ViewModels
 			services.AddSingleton<LoginView>();
 			services.AddSingleton<LoginViewModel>();
-
+			services.AddSingleton<MainWindow>();
+			services.AddSingleton<MainViewModel>();
 			Services = services.BuildServiceProvider();
 
 			// Start Window
