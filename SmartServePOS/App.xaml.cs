@@ -34,20 +34,21 @@ namespace SmartServePOS
 			// WPF Views & ViewModels
 			services.AddSingleton<LoginView>();
 			services.AddSingleton<LoginViewModel>();
-			services.AddSingleton<POSView>();
+			services.AddSingleton<POSViewModel>();
 			services.AddSingleton<MainWindow>();
 			services.AddSingleton<MainViewModel>();
+
+			// Register navigable pages / user controls
+			services.AddTransient<POSView>();
+
 			Services = services.BuildServiceProvider();
 
 			// Resolve main window (do not show yet) and register it as the application's main window.
 			var mainWindow = Services.GetRequiredService<MainWindow>();
 			this.MainWindow = mainWindow;
 
-			// Resolve login view. Do not set Owner to mainWindow because mainWindow has not been shown yet
-			// and setting Owner to an unseen window throws InvalidOperationException.
+			// Resolve login view and show it modally. LoginView will close itself on success and show the MainWindow.
 			var loginView = Services.GetRequiredService<LoginView>();
-
-			// Show login as modal dialog. LoginView will Close() itself on success and then show the MainWindow.
 			loginView.ShowDialog();
 		}
 	}

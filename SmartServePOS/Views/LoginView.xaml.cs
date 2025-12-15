@@ -47,9 +47,13 @@ namespace SmartServePOS.Views
 			// Close login window
 			this.Close();
 
-			// Open POS window
-			var mainWindow = App.Services.GetRequiredService<POSView>();
+			// Show main window and navigate to POS page inside it
+			var mainWindow = App.Services.GetRequiredService<MainWindow>();
 			mainWindow.Show();
+
+			var posPage = App.Services.GetRequiredService<POSView>();
+			// POSView is a Window, not a Page, so just navigate directly
+			mainWindow.Navigate(posPage);
 		}
 	}
 }

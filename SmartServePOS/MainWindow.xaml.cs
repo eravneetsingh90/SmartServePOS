@@ -23,5 +23,17 @@ namespace SmartServePOS
 		{
 			InitializeComponent();
 		}
+
+		// Navigate to a Page instance resolved from DI
+		public void Navigate(Page page)
+		{
+			MainFrame.Navigate(page);
+		}
+
+		// Convenience to navigate by type (DI resolution done by caller)
+		public void Navigate(object content)
+		{
+			MainFrame.Navigate(content);
+		}
 	}
 }

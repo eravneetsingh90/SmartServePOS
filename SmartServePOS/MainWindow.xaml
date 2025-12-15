@@ -1,12 +1,103 @@
 ﻿<Window x:Class="SmartServePOS.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:SmartServePOS"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+        Title="SmartServe POS"
+        Height="700"
+        Width="1200"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanResize"
+        Background="#F5F5F5"
+        Icon="Assets/Icons/SmartServe.ico">
+
+	<!-- ================= RESOURCES ================= -->
+	<Window.Resources>
+
+		<!-- Converter: Empty Text → Visibility -->
+		<BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
+
+		<!-- Watermark TextBox Style -->
+		<Style x:Key="WatermarkTextBox" TargetType="TextBox">
+			<Setter Property="BorderBrush" Value="#CCC"/>
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="Padding" Value="8,0"/>
+			<Setter Property="VerticalContentAlignment" Value="Center"/>
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="TextBox">
+						<Grid>
+							<ScrollViewer x:Name="PART_ContentHost"/>
+
+							<TextBlock Text="{TemplateBinding Tag}"
+                                       Foreground="#999"
+                                       Margin="8,0"
+                                       VerticalAlignment="Center"
+                                       IsHitTestVisible="False">
+							</TextBlock>
+						</Grid>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
+	</Window.Resources>
+
+	<!-- ================= LAYOUT ================= -->
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="50"/>
+			<!-- HEADER -->
+			<RowDefinition Height="*"/>
+			<!-- CONTENT -->
+		</Grid.RowDefinitions>
+
+		<!-- ================= HEADER ================= -->
+		<Border Grid.Row="0"
+                Background="White"
+                BorderBrush="#E0E0E0"
+                BorderThickness="0,0,0,1">
+
+			<DockPanel Margin="8,0">
+
+				<!-- LEFT: MENU + TITLE -->
+				<StackPanel Orientation="Horizontal"
+                            DockPanel.Dock="Left"
+                            VerticalAlignment="Center">
+
+					<Button Content="☰"
+                            Width="36"
+                            Height="36"
+                            FontSize="18"
+                            Background="Transparent"
+                            BorderThickness="0"/>
+
+					<TextBlock Text="SmartServe POS"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Margin="8,0,0,0"
+                               VerticalAlignment="Center"/>
+				</StackPanel>
+
+				<!-- CENTER: ACTIONS -->
+				<StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+							Margin="20,0,0,0">
+
+					<Button Content="New Order"
+                            Background="#C62828"
+                            Foreground="White"
+                            Padding="14,6"
+                            Margin="0,0,8,0"
+							/>
+
+					</StackPanel>
+			</DockPanel>
+		</Border>
+
+		<!-- ================= MAIN CONTENT ================= -->
+		<Frame Grid.Row="1"
+               x:Name="MainFrame"
+               NavigationUIVisibility="Hidden"
+               Background="#F5F5F5"/>
+	</Grid>
 </Window>
