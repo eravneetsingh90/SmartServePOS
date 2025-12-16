@@ -61,26 +61,79 @@
 				<ColumnDefinition Width="420"/>
 			</Grid.ColumnDefinitions>
 
-			<!-- ===== CATEGORIES ===== -->
-			<Border Background="#4B4B4B" CornerRadius="4">
+			<!-- ===== CATEGORIES (Pure XAML, POS Style) ===== -->
+			<Border Background="#3F3F3F"
+        CornerRadius="6"
+        Padding="8">
+
 				<ListBox ItemsSource="{Binding Categories}"
-                         SelectedItem="{Binding SelectedCategory}"
-                         BorderThickness="0"
-                         Background="Transparent">
-					<ListBox.ItemTemplate>
-						<DataTemplate>
-							<Border Margin="6"
-                                    Padding="14"
-                                    Background="#616161"
-                                    CornerRadius="4">
-								<TextBlock Text="{Binding Name}"
-                                           Foreground="White"
-                                           FontSize="15"/>
-							</Border>
-						</DataTemplate>
-					</ListBox.ItemTemplate>
-				</ListBox>
+         SelectedItem="{Binding SelectedCategory}"
+         BorderThickness="0"
+         Background="Transparent"
+         ScrollViewer.VerticalScrollBarVisibility="Auto">
+
+    <!-- ITEM CONTAINER STYLE -->
+    <ListBox.ItemContainerStyle>
+        <Style TargetType="ListBoxItem">
+            <Setter Property="Margin" Value="0,6"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Grid>
+                            <Grid Height="54">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="6"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <!-- Left Accent Bar -->
+                                <Border x:Name="AccentBar"
+                                        Grid.Column="0"
+                                        Background="Transparent"
+                                        CornerRadius="4,0,0,4"/>
+                                <!-- Category Button -->
+                                <Border x:Name="CategoryCard"
+                                        Grid.Column="1"
+                                        Margin="4,0,0,0"
+                                        Background="#5A5A5A"
+                                        CornerRadius="6"
+                                        Padding="14,10">
+                                    <ContentPresenter VerticalAlignment="Center"/>
+                                </Border>
+                            </Grid>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="AccentBar" Property="Background" Value="#C62828"/>
+                                <Setter TargetName="CategoryCard" Property="Background" Value="#4A4A4A"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="CategoryCard" Property="Background" Value="#666666"/>
+                                <Setter Property="Cursor" Value="Hand"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </ListBox.ItemContainerStyle>
+
+    <!-- ITEM TEMPLATE -->
+    <ListBox.ItemTemplate>
+        <DataTemplate>
+            <TextBlock Text="{Binding Name}"
+                       FontSize="16"
+                       FontWeight="SemiBold"
+                       Foreground="White"
+                       VerticalAlignment="Center"/>
+        </DataTemplate>
+    </ListBox.ItemTemplate>
+</ListBox>
 			</Border>
+
 
 			<!-- ===== ITEMS GRID ===== -->
 			<ScrollViewer Grid.Column="1">
