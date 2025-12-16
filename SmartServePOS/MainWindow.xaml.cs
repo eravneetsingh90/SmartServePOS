@@ -40,7 +40,7 @@ namespace SmartServePOS
 		private void NewOrderButton_Click(object sender, RoutedEventArgs e)
 		{
 			// Navigate the main frame to the POSView
-			MainFrame.Navigate(new POSView());
+			MainFrame.Navigate(new TableView());
 		}
 	}
 }

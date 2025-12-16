@@ -11,14 +11,14 @@ using System.Windows.Input;
 
 namespace SmartServePOS.ViewModels
 {
-	public class POSViewModel : INotifyPropertyChanged
+	public class TableViewModel : INotifyPropertyChanged
 	{
 		public ObservableCollection<TableItem> Tables { get; } = new();
 
 		// Simple command placeholder - replace with your navigation/logic
 		public ICommand OpenTableCommand { get; }
 
-		public POSViewModel()
+		public TableViewModel()
 		{
 			// Sample data - produce a grid of tables for demo
 			for (int i = 1; i <= 24; i++)

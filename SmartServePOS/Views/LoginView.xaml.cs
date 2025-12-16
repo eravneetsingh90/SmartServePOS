@@ -51,7 +51,7 @@ namespace SmartServePOS.Views
 			var mainWindow = App.Services.GetRequiredService<MainWindow>();
 			mainWindow.Show();
 
-			var posPage = App.Services.GetRequiredService<POSView>();
+			var posPage = App.Services.GetRequiredService<TableView>();
 			// POSView is a Window, not a Page, so just navigate directly
 			mainWindow.Navigate(posPage);
 		}

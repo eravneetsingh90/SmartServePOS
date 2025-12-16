@@ -4,16 +4,16 @@ using SmartServePOS.ViewModels;
 
 namespace SmartServePOS.Views
 {
-	public partial class POSView : Page
+	public partial class TableView : Page
 	{
-		public POSView()
+		public TableView()
 		{
 			InitializeComponent();
 
 			// Don't overwrite an externally-provided DataContext (DI) - only set a default for design/runtime.
 			if (DataContext == null)
 			{
-				DataContext = new POSViewModel();
+				DataContext = new TableViewModel();
 			}
 		}
 
