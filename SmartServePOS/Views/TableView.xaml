@@ -44,13 +44,32 @@
                             Height="100"
                             BorderBrush="#BDBDBD"
                             BorderThickness="1"
-                            HorizontalContentAlignment="Center"
-                            VerticalContentAlignment="Center"
-                            ToolTip="{Binding Name}">
-                            <StackPanel>
-                                <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center"/>
-                                <TextBlock Text="{Binding Status}" FontSize="12" Foreground="Gray" HorizontalAlignment="Center" Margin="0,6,0,0"/>
-                            </StackPanel>
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch"
+                            ToolTip="{Binding DisplayName}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="6" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <!-- colored indicator strip -->
+                                <Rectangle Fill="{Binding ColorHex}" Grid.Column="0" />
+								
+								<StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="8,6">
+									<TextBlock Text="{Binding DisplayName}" FontSize="16" FontWeight="Bold" />
+
+									<TextBlock Text="{Binding Amount}" FontSize="12" Foreground="Gray" Margin="0,6,0,0" />
+                                    <!--<TextBlock Text="{Binding StatusName}" FontSize="12" Foreground="Gray" Margin="0,6,0,0" />-->
+                                </StackPanel>
+
+                                <!-- status badge -->
+                                <!--<Border Grid.Column="2" Background="{Binding ColorHex}" CornerRadius="12" Padding="8,4" Margin="8" VerticalAlignment="Top" HorizontalAlignment="Right">
+                                    <TextBlock Text="{Binding Status}" Foreground="White" FontSize="11" />
+                                </Border>-->
+
+                            </Grid>
                         </Button>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

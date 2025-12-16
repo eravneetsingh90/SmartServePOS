@@ -1,4 +1,7 @@
-﻿using SmartServePOS.Command;
+﻿using SmartServe.Domain.Models;
+using SmartServe.Domain.Stores;
+using SmartServePOS.Command;
+using SmartServePOS.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,23 +16,51 @@ namespace SmartServePOS.ViewModels
 {
 	public class TableViewModel : INotifyPropertyChanged
 	{
-		public ObservableCollection<TableItem> Tables { get; } = new();
+		public ObservableCollection<GetTableViewDto> Tables { get; } = new();
 
 		// Simple command placeholder - replace with your navigation/logic
 		public ICommand OpenTableCommand { get; }
 
-		public TableViewModel()
-		{
-			// Sample data - produce a grid of tables for demo
-			for (int i = 1; i <= 24; i++)
-			{
-				Tables.Add(new TableItem { Name = $"Table {i}", IsOccupied = (i % 3 == 0) });
-			}
+		private readonly RestaurantTableStore _tableStore;
 
-			OpenTableCommand = new RelayCommand<TableItem>(t =>
+		public TableViewModel(RestaurantTableStore tableStore)
+		{
+			_tableStore = tableStore ?? throw new ArgumentNullException(nameof(tableStore));
+
+			OpenTableCommand = new RelayCommand<GetTableViewDto>(t =>
 			{
 				// TODO: open table details / navigate
 			});
+
+			// start loading tables asynchronously (fire-and-forget)
+			_ = InitializeAsync();
+		}
+
+		private async Task InitializeAsync()
+		{
+			try
+			{
+				var dtos = await _tableStore.GetTablesForViewAsync();
+				Tables.Clear();
+				foreach (var d in dtos)
+				{
+					Tables.Add(new GetTableViewDto
+					{
+						TableId = d.TableId,
+						DisplayName = d.DisplayName ?? string.Empty,
+						OrderId = d.OrderId,
+						StatusName = d.StatusName,
+						ColorHex = d.ColorHex,
+						Amount = d.Amount,
+						//IsOccupied = d.OrderId != null
+					});
+				}
+				Notify(nameof(Tables));
+			}
+			catch (Exception)
+			{
+				// swallow or log as appropriate; leave sample fallback if desired.
+			}
 		}
 
 		public event PropertyChangedEventHandler? PropertyChanged;
@@ -37,10 +68,4 @@ namespace SmartServePOS.ViewModels
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 	}
 
-	public class TableItem
-	{
-		public string Name { get; set; } = string.Empty;
-		public bool IsOccupied { get; set; }
-		public string Status => IsOccupied ? "Occupied" : "Available";
-	}
 }
