@@ -3,59 +3,58 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-	  xmlns:viewmodels="clr-namespace:SmartServePOS.ViewModels" 
-	  d:DataContext="{d:DesignInstance Type=viewmodels:POSViewModel}"
-	  mc:Ignorable="d" 
+      xmlns:viewmodels="clr-namespace:SmartServePOS.ViewModels" 
+      d:DataContext="{d:DesignInstance Type=viewmodels:POSViewModel}"
+      mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800">
 
-	<DockPanel LastChildFill="True" Margin="12">
-		<!-- Header -->
-		<Grid DockPanel.Dock="Top" Margin="0,0,0,12">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition/>
-				<ColumnDefinition Width="Auto"/>
-			</Grid.ColumnDefinitions>
+    <DockPanel LastChildFill="True" Margin="12">
+        <!-- Header -->
+        <Grid DockPanel.Dock="Top" Margin="0,0,0,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
 
-			<TextBlock Text="Table View" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center"/>
+            <TextBlock Text="Table View" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center"/>
 
-			<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-				<ToggleButton Content="Delivery" Padding="12,6" Background="#C62828" Foreground="White" BorderThickness="0"/>
-				<ToggleButton Content="Pick Up" Padding="12,6"/>
-			</StackPanel>
-		</Grid>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <ToggleButton Content="Delivery" Padding="12,6" Background="#C62828" Foreground="White" BorderThickness="0"/>
+                <ToggleButton Content="Pick Up" Padding="12,6"/>
+            </StackPanel>
+        </Grid>
 
-		<!-- Body: responsive, scrollable grid of table tiles -->
-		<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-			<ItemsControl ItemsSource="{Binding Tables}">
-				<ItemsControl.ItemsPanel>
-					<ItemsPanelTemplate>
-						<WrapPanel Orientation="Horizontal" ItemWidth="160" ItemHeight="120" />
-					</ItemsPanelTemplate>
-				</ItemsControl.ItemsPanel>
+        <!-- Body: responsive, scrollable grid of table tiles -->
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding Tables}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal" ItemWidth="160" ItemHeight="120" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
 
-				<ItemsControl.ItemTemplate>
-					<DataTemplate>
-						<Button Command="{Binding DataContext.OpenTableCommand, RelativeSource={RelativeSource AncestorType=Page}}"
-								CommandParameter="{Binding}"
-								Background="White"
-								Margin="8"
-								Width="150"
-								Height="100"
-								BorderBrush="#BDBDBD"
-								BorderThickness="1"
-								HorizontalContentAlignment="Center"
-								VerticalContentAlignment="Center"
-								ToolTip="{Binding Name}">
-							<StackPanel>
-								<TextBlock Text="{Binding Name}" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center"/>
-								<TextBlock Text="{Binding Status}" FontSize="12" Foreground="Gray" HorizontalAlignment="Center" Margin="0,6,0,0"/>
-							</StackPanel>
-						</Button>
-					</DataTemplate>
-				</ItemsControl.ItemTemplate>
-			</ItemsControl>
-		</ScrollViewer>
-
-		<ContentControl x:Name="ContentRegion" />
-	</DockPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button 
+                            Click="TableButton_Click"
+                            CommandParameter="{Binding}"
+                            Background="White"
+                            Margin="8"
+                            Width="150"
+                            Height="100"
+                            BorderBrush="#BDBDBD"
+                            BorderThickness="1"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            ToolTip="{Binding Name}">
+                            <StackPanel>
+                                <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                <TextBlock Text="{Binding Status}" FontSize="12" Foreground="Gray" HorizontalAlignment="Center" Margin="0,6,0,0"/>
+                            </StackPanel>
+                        </Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </DockPanel>
 </Page>

@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using SmartServePOS.Views;
 
 namespace SmartServePOS
 {
@@ -34,6 +35,12 @@ namespace SmartServePOS
 		public void Navigate(object content)
 		{
 			MainFrame.Navigate(content);
+		}
+
+		private void NewOrderButton_Click(object sender, RoutedEventArgs e)
+		{
+			// Navigate the main frame to the POSView
+			MainFrame.Navigate(new POSView());
 		}
 	}
 }

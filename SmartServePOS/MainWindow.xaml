@@ -83,7 +83,9 @@
                             VerticalAlignment="Center"
 							Margin="20,0,0,0">
 
-					<Button Content="New Order"
+					<Button x:Name="NewOrderButton"
+                            Content="New Order"
+                            Click="NewOrderButton_Click"
                             Background="#C62828"
                             Foreground="White"
                             Padding="14,6"

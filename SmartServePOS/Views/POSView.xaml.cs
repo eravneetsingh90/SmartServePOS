@@ -17,10 +17,20 @@ namespace SmartServePOS.Views
 			}
 		}
 
-		// Called by other parts of the app (for example after login) to load pages or user controls into the main area.
-		public void ShowContent(UIElement content)
+		private void TableButton_Click(object sender, RoutedEventArgs e)
 		{
-			ContentRegion.Content = content;
+			if (sender is Button btn && btn.CommandParameter is TableItem table)
+			{
+				//Create billing view and pass the selected table via its DataContext or constructor.
+				var billingView = new BillingView();
+				billingView.DataContext = new BillingViewModel();
+				//If BillingViewModel had a SelectedTable property, you could set it here.
+				// Navigate using the MainWindow's frame so it replaces the current page.
+				if (Application.Current.MainWindow is MainWindow mw)
+				{
+					mw.MainFrame.Navigate(billingView);
+				}
+			}
 		}
 	}
 }
