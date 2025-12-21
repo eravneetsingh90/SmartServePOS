@@ -28,9 +28,19 @@ namespace SmartServePOS.Views
 		{
 			if (sender is Button btn && btn.CommandParameter is GetTableViewDto table)
 			{
-				//Create billing view and pass the selected table via its DataContext or constructor.
+				// Resolve BillingViewModel with required dependencies from DI container
+				BillingViewModel billingViewModel = null;
+				if (App.Services is not null)
+				{
+					billingViewModel = App.Services.GetService<BillingViewModel>();
+				}
+				else
+				{
+					throw new InvalidOperationException("BillingViewModel dependencies must be provided via DI.");
+				}
+
 				var billingView = new BillingView();
-				billingView.DataContext = new BillingViewModel();
+				billingView.DataContext = billingViewModel;
 				//If BillingViewModel had a SelectedTable property, you could set it here.
 				// Navigate using the MainWindow's frame so it replaces the current page.
 				if (Application.Current.MainWindow is MainWindow mw)

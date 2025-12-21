@@ -4,174 +4,239 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:viewmodels="clr-namespace:SmartServePOS.ViewModels"
-      d:DataContext="{d:DesignInstance Type=viewmodels:BillingViewModel}"
       mc:Ignorable="d"
-      Background="#F1F1F1">
+      Background="#ECECEC">
+
 
 	<Grid>
 		<Grid.RowDefinitions>
-			<RowDefinition Height="52"/>
+			<RowDefinition Height="48"/>
 			<RowDefinition Height="*"/>
-			
 		</Grid.RowDefinitions>
 
-		<!-- ================= TOP SEARCH ================= -->
+		<!-- ================= TOP BAR ================= -->
 		<Grid Grid.Row="0" Margin="6">
 			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="*"/>
-				<ColumnDefinition Width="360"/>
+				<ColumnDefinition/>
+				<ColumnDefinition Width="320"/>
 			</Grid.ColumnDefinitions>
 
-			<TextBox Height="38"
-                     Padding="10"
+			<TextBox Height="36"
+                     Padding="8"
                      FontSize="14"
                      BorderBrush="#CCCCCC"/>
-			<!--PlaceholderText="Search item"/>-->
 
-			<!-- Order Type -->
-			<Grid Grid.Column="1">
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition/>
-					<ColumnDefinition/>
-					<ColumnDefinition/>
-				</Grid.ColumnDefinitions>
-
-				<Button Content="Dine In"
+			<StackPanel Grid.Column="1"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right">
+				<Button Content="Dine In" Width="90"
                         Background="#C62828"
                         Foreground="White"
-                        FontWeight="Bold"/>
-
-				<Button Grid.Column="1"
-                        Content="Delivery"
-                        Background="#3E3E3E"
-                        Foreground="White"/>
-
-				<Button Grid.Column="2"
-                        Content="Pick Up"
-                        Background="#3E3E3E"
-                        Foreground="White"/>
-			</Grid>
+                        Margin="4"/>
+				<Button Content="Delivery" Width="90"
+                        Background="#555"
+                        Foreground="White"
+                        Margin="4"/>
+				<Button Content="Pick Up" Width="90"
+                        Background="#555"
+                        Foreground="White"
+                        Margin="4"/>
+			</StackPanel>
 		</Grid>
 
 		<!-- ================= MAIN ================= -->
 		<Grid Grid.Row="1" Margin="6">
 			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="180"/>
+				<!-- Categories -->
+				<ColumnDefinition Width="340"/>
+				<!-- Products -->
 				<ColumnDefinition Width="220"/>
+				<!-- Variants -->
 				<ColumnDefinition Width="*"/>
-				<ColumnDefinition Width="420"/>
+				<!-- Bill -->
 			</Grid.ColumnDefinitions>
 
-			<!-- ===== CATEGORIES (Pure XAML, POS Style) ===== -->
-			<Border Background="#3F3F3F"
+			<!-- ================= CATEGORIES ================= -->
+
+			<Border Grid.Column="0"
+        Background="#262626"
         CornerRadius="6"
-        Padding="8">
+        Padding="6">
 
 				<ListBox ItemsSource="{Binding Categories}"
-         SelectedItem="{Binding SelectedCategory}"
-         BorderThickness="0"
-         Background="Transparent"
-         ScrollViewer.VerticalScrollBarVisibility="Auto">
+             SelectedItem="{Binding SelectedCategory}"
+             BorderThickness="0"
+             Background="Transparent"
+             ScrollViewer.VerticalScrollBarVisibility="Auto">
 
-    <!-- ITEM CONTAINER STYLE -->
-    <ListBox.ItemContainerStyle>
-        <Style TargetType="ListBoxItem">
-            <Setter Property="Margin" Value="0,6"/>
-            <Setter Property="Padding" Value="0"/>
-            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ListBoxItem">
-                        <Grid>
-                            <Grid Height="54">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="6"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <!-- Left Accent Bar -->
-                                <Border x:Name="AccentBar"
-                                        Grid.Column="0"
-                                        Background="Transparent"
-                                        CornerRadius="4,0,0,4"/>
-                                <!-- Category Button -->
-                                <Border x:Name="CategoryCard"
-                                        Grid.Column="1"
-                                        Margin="4,0,0,0"
-                                        Background="#5A5A5A"
-                                        CornerRadius="6"
-                                        Padding="14,10">
-                                    <ContentPresenter VerticalAlignment="Center"/>
-                                </Border>
-                            </Grid>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="AccentBar" Property="Background" Value="#C62828"/>
-                                <Setter TargetName="CategoryCard" Property="Background" Value="#4A4A4A"/>
-                            </Trigger>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="CategoryCard" Property="Background" Value="#666666"/>
-                                <Setter Property="Cursor" Value="Hand"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </ListBox.ItemContainerStyle>
+					<!-- Remove default selection visuals -->
+					<ListBox.ItemContainerStyle>
+						<Style TargetType="ListBoxItem">
+							<Setter Property="Padding" Value="0"/>
+							<Setter Property="Margin" Value="2"/>
+							<Setter Property="Background" Value="Transparent"/>
+							<Setter Property="BorderThickness" Value="0"/>
+							<Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+						</Style>
+					</ListBox.ItemContainerStyle>
 
-    <!-- ITEM TEMPLATE -->
-    <ListBox.ItemTemplate>
-        <DataTemplate>
-            <TextBlock Text="{Binding Name}"
-                       FontSize="16"
-                       FontWeight="SemiBold"
-                       Foreground="White"
-                       VerticalAlignment="Center"/>
-        </DataTemplate>
-    </ListBox.ItemTemplate>
-</ListBox>
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+							<Border x:Name="Root"
+                        Height="46"
+                        Background="#333333"
+                        CornerRadius="6">
+
+								<Grid>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="6"/>
+										<ColumnDefinition Width="*"/>
+									</Grid.ColumnDefinitions>
+
+									<!-- Accent Bar -->
+									<Border x:Name="Accent"
+                                Grid.Column="0"
+                                Background="#C62828"
+                                CornerRadius="6,0,0,6"
+                                Visibility="Collapsed"/>
+
+									<!-- Text -->
+									<TextBlock Grid.Column="1"
+                                   Text="{Binding Name}"
+                                   FontSize="15"
+                                   FontWeight="SemiBold"
+                                   Foreground="White"
+                                   VerticalAlignment="Center"
+                                   Margin="12,0"/>
+								</Grid>
+							</Border>
+
+							<!-- STATES -->
+							<DataTemplate.Triggers>
+
+								<!-- Selected -->
+								<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}"
+                                 Value="True">
+									<Setter TargetName="Root" Property="Background" Value="#3E3E3E"/>
+									<Setter TargetName="Accent" Property="Visibility" Value="Visible"/>
+								</DataTrigger>
+
+								<!-- Hover -->
+								<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsMouseOver}"
+                                 Value="True">
+									<Setter TargetName="Root" Property="Background" Value="#444444"/>
+								</DataTrigger>
+
+							</DataTemplate.Triggers>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
+				</ListBox>
 			</Border>
 
+			<!-- ================= PRODUCTS ================= -->
+			<Border Grid.Column="1"
+                    Background="#F2F2F2"
+                    CornerRadius="6"
+                    Padding="6">
 
-			<!-- ===== ITEMS GRID ===== -->
-			<ScrollViewer Grid.Column="1">
-				<ItemsControl ItemsSource="{Binding Products}">
-					<ItemsControl.ItemsPanel>
+				<ListBox ItemsSource="{Binding Products}"
+         SelectedItem="{Binding SelectedProduct}"
+         BorderThickness="0"
+         Background="Transparent">
+
+					<ListBox.ItemsPanel>
 						<ItemsPanelTemplate>
-							<WrapPanel ItemWidth="190" ItemHeight="95"/>
+							<WrapPanel ItemWidth="160" ItemHeight="56"/>
 						</ItemsPanelTemplate>
-					</ItemsControl.ItemsPanel>
+					</ListBox.ItemsPanel>
 
-					<ItemsControl.ItemTemplate>
+					<ListBox.ItemTemplate>
 						<DataTemplate>
-							<Border Margin="6"
-                                    Padding="10"
-                                    Background="White"
-                                    BorderBrush="#E0E0E0"
-                                    BorderThickness="1"
-                                    CornerRadius="4">
-								<StackPanel>
-									<TextBlock Text="{Binding Name}"
-                                               FontWeight="SemiBold"
-                                               TextWrapping="Wrap"/>
-									<TextBlock Text="{Binding Price, StringFormat=₹{0}}"
-                                               Margin="0,8,0,0"
-                                               FontWeight="Bold"
-                                               Foreground="#2E7D32"/>
-								</StackPanel>
-							</Border>
-						</DataTemplate>
-					</ItemsControl.ItemTemplate>
-				</ItemsControl>
-			</ScrollViewer>
+							<Border x:Name="Root"
+                    Background="White"
+                    BorderBrush="#DADADA"
+                    BorderThickness="1"
+                    CornerRadius="6"
+                    Margin="6"
+                    Padding="8">
 
-			<!-- ===== BILL PANEL ===== -->
+								<TextBlock Text="{Binding Name}"
+                           FontSize="14"
+                           FontWeight="SemiBold"
+                           TextAlignment="Center"
+                           VerticalAlignment="Center"/>
+							</Border>
+
+							<DataTemplate.Triggers>
+								<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}"
+                             Value="True">
+									<Setter TargetName="Root" Property="Background" Value="#FFF3E0"/>
+									<Setter TargetName="Root" Property="BorderBrush" Value="#C62828"/>
+									<Setter TargetName="Root" Property="BorderThickness" Value="2"/>
+								</DataTrigger>
+							</DataTemplate.Triggers>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
+				</ListBox>
+
+			</Border>
+
+			<!-- ================= VARIANT PANEL ================= -->
 			<Border Grid.Column="2"
+                    Background="#FAFAFA"
+                    CornerRadius="6"
+                    Padding="6">
+
+				<StackPanel>
+
+					<TextBlock Text="{Binding SelectedProduct.Name}"
+                               FontSize="16"
+                               FontWeight="Bold"
+                               Margin="6"/>
+
+					<ItemsControl ItemsSource="{Binding Variants}">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<WrapPanel ItemWidth="130" ItemHeight="58"/>
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+
+						<ItemsControl.ItemTemplate>
+							<DataTemplate>
+								<Button Command="{Binding DataContext.AddVariantCommand,
+                                                          RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                        CommandParameter="{Binding}"
+                                        Margin="4"
+                                        Padding="4"
+                                        Background="White"
+                                        BorderBrush="#C62828"
+                                        BorderThickness="1">
+
+									<StackPanel>
+										<TextBlock Text="{Binding VariantName}"
+                                                   FontSize="12"
+                                                   FontWeight="SemiBold"
+                                                   HorizontalAlignment="Center"/>
+
+										<TextBlock Text="{Binding Price, StringFormat=₹{0}}"
+                                                   FontSize="13"
+                                                   FontWeight="Bold"
+                                                   Foreground="#2E7D32"
+                                                   HorizontalAlignment="Center"/>
+									</StackPanel>
+								</Button>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+				</StackPanel>
+			</Border>
+
+			<!-- ================= BILL PANEL ================= -->
+			<Border Grid.Column="3"
                     Background="White"
                     CornerRadius="6"
-                    Padding="10">
+                    Padding="8">
 
 				<Grid>
 					<Grid.RowDefinitions>
@@ -181,108 +246,201 @@
 					</Grid.RowDefinitions>
 
 					<!-- Header -->
-					<Grid>
+					<Grid Margin="0,0,0,0">
 						<Grid.ColumnDefinitions>
-							<ColumnDefinition/>
-							<ColumnDefinition Width="60"/>
-							<ColumnDefinition Width="80"/>
+							<ColumnDefinition Width="20"/>
+							<!-- Remove -->
+							<ColumnDefinition Width="180"/>
+							<!-- Item -->
+							<ColumnDefinition Width="110"/>
+							<!-- Qty -->
+							<ColumnDefinition Width="90"/>
+							<!-- Price -->
 						</Grid.ColumnDefinitions>
 
-						<TextBlock Text="ITEMS" FontWeight="Bold"/>
-						<TextBlock Grid.Column="1" Text="QTY"
-                                   FontWeight="Bold"
-                                   HorizontalAlignment="Center"/>
-						<TextBlock Grid.Column="2" Text="PRICE"
-                                   FontWeight="Bold"
-                                   HorizontalAlignment="Right"/>
+						<!-- Empty header for remove column -->
+						<TextBlock Grid.Column="0"/>
+
+						<!-- ITEM -->
+						<TextBlock Grid.Column="1"
+               Text="ITEMS"
+               FontWeight="Bold"
+               FontSize="12"
+               Foreground="#555"/>
+
+						<!-- QTY -->
+						<TextBlock Grid.Column="2"
+               Text="QTY."
+               FontWeight="Bold"
+               FontSize="12"
+               Foreground="#555"
+               HorizontalAlignment="Center"/>
+
+						<!-- PRICE -->
+						<TextBlock Grid.Column="3"
+               Text="PRICE"
+               FontWeight="Bold"
+               FontSize="12"
+               Foreground="#555"
+               HorizontalAlignment="Right"/>
 					</Grid>
+
 
 					<!-- Bill Items -->
 					<ListView Grid.Row="1"
-                              ItemsSource="{Binding BillItems}"
-                              BorderThickness="0"
-                              Margin="0,6,0,0">
+          ItemsSource="{Binding BillItems}"
+          BorderThickness="0"
+          Background="Transparent"
+          Margin="0,6,0,0">
+
 						<ListView.ItemTemplate>
 							<DataTemplate>
-								<Grid Margin="0,6">
-									<Grid.ColumnDefinitions>
-										<ColumnDefinition/>
-										<ColumnDefinition Width="60"/>
-										<ColumnDefinition Width="80"/>
-									</Grid.ColumnDefinitions>
+								<Border BorderBrush="#E0E0E0"
+                    BorderThickness="0,0,0,1"
+                    Padding="0">
 
-									<TextBlock Text="{Binding ItemName}"/>
+									<Grid>
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="20"/>
+											<!-- Remove -->
+											<ColumnDefinition Width="180"/>
+											<!-- Item -->
+											<ColumnDefinition Width="110"/>
+											<!-- Qty -->
+											<ColumnDefinition Width="90"/>
+											<!-- Price -->
+										</Grid.ColumnDefinitions>
 
-									<TextBlock Grid.Column="1"
-                                               Text="{Binding Quantity}"
-                                               HorizontalAlignment="Center"/>
+										<!-- ❌ REMOVE -->
+										<Button Grid.Column="0"
+                            Content="✕"
+                            Width="24"
+                            Height="24"
+                            FontSize="14"
+                            Foreground="Red"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            VerticalAlignment="Top"
+                            Command="{Binding DataContext.RemoveItemCommand,
+                                              RelativeSource={RelativeSource AncestorType=ListView}}"
+                            CommandParameter="{Binding}"/>
 
-									<TextBlock Grid.Column="2"
-                                               Text="{Binding TotalPrice}"
-                                               HorizontalAlignment="Right"/>
-								</Grid>
+										<!-- ITEM NAME -->
+										<StackPanel Grid.Column="1"
+                                Margin="4,0">
+											<TextBlock Text="{Binding ItemName}"
+                                   FontSize="13"
+                                   FontWeight="SemiBold"
+                                   TextWrapping="Wrap"/>
+
+											<TextBlock Text="{Binding PriceSnapshot, StringFormat=₹{0} each}"
+                                   FontSize="11"
+                                   Foreground="#888"/>
+										</StackPanel>
+
+										<!-- QTY CONTROL -->
+										<Border Grid.Column="2"
+                            BorderBrush="#DDD"
+                            BorderThickness="1"
+                            CornerRadius="4"
+                            Padding="2"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center">
+
+											<StackPanel Orientation="Horizontal">
+
+												<Button Content="−"
+                                    Width="26"
+                                    Height="26"
+                                    FontSize="16"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Command="{Binding DataContext.DecreaseQtyCommand,
+                                                      RelativeSource={RelativeSource AncestorType=ListView}}"
+                                    CommandParameter="{Binding}"/>
+
+												<TextBlock Text="{Binding Quantity}"
+                                       Width="26"
+                                       FontWeight="Bold"
+                                       TextAlignment="Center"
+                                       VerticalAlignment="Center"/>
+
+												<Button Content="+"
+                                    Width="26"
+                                    Height="26"
+                                    FontSize="16"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Command="{Binding DataContext.IncreaseQtyCommand,
+                                                      RelativeSource={RelativeSource AncestorType=ListView}}"
+                                    CommandParameter="{Binding}"/>
+												
+		
+											</StackPanel>
+										</Border>
+
+										<!-- PRICE -->
+										<StackPanel Grid.Column="3"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center">
+
+											<TextBlock Text="{Binding TotalPrice, StringFormat=₹{0}}"
+                                   FontSize="14"
+                                   FontWeight="Bold"
+                                   TextAlignment="Right"/>
+
+											<TextBlock Text="{Binding PriceSnapshot, StringFormat=₹{0}}"
+                                   FontSize="11"
+                                   Foreground="#888"
+                                   TextAlignment="Right"/>
+										</StackPanel>
+
+									</Grid>
+								</Border>
 							</DataTemplate>
 						</ListView.ItemTemplate>
 					</ListView>
 
+					<!-- Footer -->
 					<Border Grid.Row="2"
-        Background="#2E2E2E"
-        Padding="12">
+                            Background="#2E2E2E"
+                            Padding="10">
 
 						<Grid>
 							<Grid.ColumnDefinitions>
 								<ColumnDefinition/>
-								<ColumnDefinition Width="260"/>
+								<ColumnDefinition Width="180"/>
 							</Grid.ColumnDefinitions>
 
-							<StackPanel>
-								<StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-									<RadioButton Content="Cash" Foreground="White" IsChecked="True" Margin="8,0"/>
-									<RadioButton Content="Card" Foreground="White" Margin="8,0"/>
-									<RadioButton Content="UPI" Foreground="White" Margin="8,0"/>
-									<RadioButton Content="Due" Foreground="White" Margin="8,0"/>
-								</StackPanel>
-
-								<StackPanel Orientation="Horizontal">
-									<Button Content="Save"
-                        Width="100"
-                        Margin="4"
-                        Background="#C62828"
-                        Foreground="White"/>
-
-									<Button Content="Save &amp; Print"
-                        Width="140"
-                        Margin="4"
-                        Background="#C62828"
-                        Foreground="White"/>
-
-									<Button Content="KOT"
-                        Width="90"
-                        Margin="4"
-                        Background="#444"
-                        Foreground="White"/>
-								</StackPanel>
+							<StackPanel Orientation="Horizontal">
+								<Button Content="Save"
+                                        Width="90"
+                                        Margin="4"
+                                        Background="#C62828"
+                                        Foreground="White"/>
+								<Button Content="Print"
+                                        Width="90"
+                                        Margin="4"
+                                        Background="#444"
+                                        Foreground="White"/>
 							</StackPanel>
 
-							<!-- TOTAL -->
 							<StackPanel Grid.Column="1"
-                    VerticalAlignment="Bottom"
-                    HorizontalAlignment="Right">
+                                        HorizontalAlignment="Right">
 								<TextBlock Text="TOTAL"
-                       Foreground="White"
-                       FontSize="14"
-                       HorizontalAlignment="Right"/>
-								<TextBlock Text="{Binding GrandTotal}"
-                       Foreground="Yellow"
-                       FontSize="34"
-                       FontWeight="Bold"
-                       HorizontalAlignment="Right"/>
+                                           Foreground="White"
+                                           FontSize="12"
+                                           HorizontalAlignment="Right"/>
+								<TextBlock Text="{Binding GrandTotal, StringFormat=₹{0}}"
+                                           Foreground="Yellow"
+                                           FontSize="30"
+                                           FontWeight="Bold"
+                                           HorizontalAlignment="Right"/>
 							</StackPanel>
 						</Grid>
 					</Border>
 				</Grid>
 			</Border>
 		</Grid>
-
 	</Grid>
 </Page>

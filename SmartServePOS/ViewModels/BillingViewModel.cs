@@ -1,7 +1,6 @@
 ﻿using SmartServePOS.Command;
 using SmartServePOS.Models;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Windows.Input;
 
 namespace SmartServePOS.ViewModels
@@ -9,18 +8,25 @@ namespace SmartServePOS.ViewModels
 	public class BillingViewModel : BaseViewModel
 	{
 		// =============================
-		// Collections
+		// STATE
 		// =============================
+		private int _currentOrderId = 1; // hardcoded for now
 
+		public ICommand IncreaseQtyCommand { get; }
+		public ICommand DecreaseQtyCommand { get; }
+		public ICommand RemoveItemCommand { get; }
+
+		// =============================
+		// COLLECTIONS (BOUND TO UI)
+		// =============================
 		public ObservableCollection<CategoryModelDto> Categories { get; }
-		public ObservableCollection<ProductModelDto> AllProducts { get; }
 		public ObservableCollection<ProductModelDto> Products { get; }
+		public ObservableCollection<ProductVariantModelDto> Variants { get; }
 		public ObservableCollection<BillItemModelDto> BillItems { get; }
 
 		// =============================
-		// Selected Category
+		// SELECTED CATEGORY
 		// =============================
-
 		private CategoryModelDto _selectedCategory;
 		public CategoryModelDto SelectedCategory
 		{
@@ -29,116 +35,137 @@ namespace SmartServePOS.ViewModels
 			{
 				_selectedCategory = value;
 				OnPropertyChanged(nameof(SelectedCategory));
-				FilterProducts();
+				LoadProducts(); // hardcoded
 			}
 		}
 
 		// =============================
-		// Total
+		// SELECTED PRODUCT
 		// =============================
-
-		public decimal GrandTotal => BillItems.Sum(x => x.TotalPrice);
-
-		// =============================
-		// Commands
-		// =============================
-
-		public ICommand AddProductCommand { get; }
-
-		// =============================
-		// Constructor
-		// =============================
-
-		public BillingViewModel()
+		private ProductModelDto _selectedProduct;
+		public ProductModelDto SelectedProduct
 		{
-			Categories = new ObservableCollection<CategoryModelDto>();
-			AllProducts = new ObservableCollection<ProductModelDto>();
-			Products = new ObservableCollection<ProductModelDto>();
-			BillItems = new ObservableCollection<BillItemModelDto>();
-
-			AddProductCommand = new RelayCommand<ProductModelDto>(AddProductToBill);
-
-			LoadDummyData();
+			get => _selectedProduct;
+			set
+			{
+				_selectedProduct = value;
+				OnPropertyChanged(nameof(SelectedProduct));
+				LoadVariants(); // hardcoded
+			}
 		}
 
 		// =============================
-		// Dummy Data (DB-ACCURATE)
+		// TOTAL
 		// =============================
+		public decimal GrandTotal => BillItems.Sum(x => x.TotalPrice);
 
-		private void LoadDummyData()
+		// =============================
+		// COMMANDS
+		// =============================
+		public ICommand AddVariantCommand { get; }
+
+		// =============================
+		// CONSTRUCTOR
+		// =============================
+		public BillingViewModel()
 		{
-			// ---- categories ----
-			Categories.Add(new CategoryModelDto { CategoryId = 1, Name = "Scoops" });
-			Categories.Add(new CategoryModelDto { CategoryId = 2, Name = "Waffles" });
-			Categories.Add(new CategoryModelDto { CategoryId = 3, Name = "Ice Cream Cake" });
+			IncreaseQtyCommand = new RelayCommand<BillItemModelDto>(IncreaseQty);
+			DecreaseQtyCommand = new RelayCommand<BillItemModelDto>(DecreaseQty);
+			RemoveItemCommand = new RelayCommand<BillItemModelDto>(RemoveItem);
 
-			// ---- products ----
-			AllProducts.Add(new ProductModelDto
-			{
-				ProductId = 101,
-				Name = "Single Scoop Vanilla",
-				CategoryId = 1,
-				ServingTypeId = 1,   // SCOOP
-				FlavorId = 1,
-				BrandId = null,
-				Price = 80
-			});
+			Categories = new ObservableCollection<CategoryModelDto>();
+			Products = new ObservableCollection<ProductModelDto>();
+			Variants = new ObservableCollection<ProductVariantModelDto>();
+			BillItems = new ObservableCollection<BillItemModelDto>();
 
-			AllProducts.Add(new ProductModelDto
-			{
-				ProductId = 102,
-				Name = "Double Scoop Chocolate",
-				CategoryId = 1,
-				ServingTypeId = 2,   // DOUBLE SCOOP
-				FlavorId = 2,
-				BrandId = null,
-				Price = 150
-			});
+			AddVariantCommand = new RelayCommand<ProductVariantModelDto>(AddVariantToBill);
 
-			AllProducts.Add(new ProductModelDto
-			{
-				ProductId = 201,
-				Name = "Belgian Chocolate Waffle",
-				CategoryId = 2,
-				ServingTypeId = 3,   // WAFFLE
-				BrandId = null,
-				Price = 220
-			});
+			LoadCategories();
+		}
 
-			AllProducts.Add(new ProductModelDto
-			{
-				ProductId = 301,
-				Name = "Black Forest Ice Cream Cake",
-				CategoryId = 3,
-				ServingTypeId = 4,   // CAKE
-				BrandId = 1,
-				Price = 750
-			});
+		// =============================
+		// LOAD CATEGORIES (HARDCODED)
+		// =============================
+		private void LoadCategories()
+		{
+			Categories.Clear();
+
+			Categories.Add(new CategoryModelDto { CategoryId = 1, Name = "Ice Cream Scoops" });
+			Categories.Add(new CategoryModelDto { CategoryId = 2, Name = "Burger" });
 
 			SelectedCategory = Categories.First();
 		}
 
 		// =============================
-		// Logic
+		// LOAD PRODUCTS (HARDCODED)
 		// =============================
-
-		private void FilterProducts()
+		private void LoadProducts()
 		{
 			Products.Clear();
+			Variants.Clear();
 
-			if (SelectedCategory == null)
-				return;
-
-			foreach (var product in AllProducts
-						 .Where(p => p.CategoryId == SelectedCategory.CategoryId))
+			if (SelectedCategory.Name == "Ice Cream Scoops")
 			{
-				Products.Add(product);
+				Products.Add(new ProductModelDto { ProductId = 1, Name = "Vanilla" });
+				Products.Add(new ProductModelDto { ProductId = 2, Name = "Chocolate" });
+			}
+			else if (SelectedCategory.Name == "Burger")
+			{
+				Products.Add(new ProductModelDto { ProductId = 10, Name = "Veg Burger" });
+				Products.Add(new ProductModelDto { ProductId = 11, Name = "Non-Veg Burger" });
+			}
+
+			SelectedProduct = Products.FirstOrDefault();
+		}
+
+		// =============================
+		// LOAD VARIANTS (HARDCODED)
+		// =============================
+		private void LoadVariants()
+		{
+			Variants.Clear();
+			if (SelectedProduct != null)
+			{
+				if (SelectedProduct.Name == "Vanilla")
+				{
+					Variants.Add(new ProductVariantModelDto
+					{
+						VariantId = 101,
+						ProductId = 1,
+						VariantName = "Single Scoop",
+						Price = 40,
+						TracksStock = false
+					});
+
+					Variants.Add(new ProductVariantModelDto
+					{
+						VariantId = 102,
+						ProductId = 1,
+						VariantName = "Double Scoop",
+						Price = 70,
+						TracksStock = false
+					});
+				}
+				else if (SelectedProduct.Name == "Veg Burger")
+				{
+					Variants.Add(new ProductVariantModelDto
+					{
+						VariantId = 201,
+						ProductId = 10,
+						VariantName = "Aloo Tikki Burger",
+						Price = 50,
+						TracksStock = false
+					});
+				}
 			}
 		}
 
-		private void AddProductToBill(ProductModelDto product)
+		// =============================
+		// ADD VARIANT TO BILL
+		// =============================
+		private void AddVariantToBill(ProductVariantModelDto variant)
 		{
-			var existing = BillItems.FirstOrDefault(x => x.ProductId == product.ProductId);
+			var existing = BillItems.FirstOrDefault(x => x.VariantId == variant.VariantId);
 
 			if (existing != null)
 			{
@@ -148,15 +175,48 @@ namespace SmartServePOS.ViewModels
 			{
 				BillItems.Add(new BillItemModelDto
 				{
-					ProductId = product.ProductId,
-					ItemName = product.Name,
+					VariantId = variant.VariantId,
+					ItemName = $"{SelectedProduct.Name} - {variant.VariantName}",
 					Quantity = 1,
-					PriceSnapshot = product.Price
+					PriceSnapshot = variant.Price
 				});
 			}
 
 			OnPropertyChanged(nameof(GrandTotal));
 		}
-	}
+		private void IncreaseQty(BillItemModelDto item)
+		{
+			if (item == null) return;
 
+			item.Quantity++;
+			OnPropertyChanged(nameof(GrandTotal));
+		}
+
+		private void DecreaseQty(BillItemModelDto item)
+		{
+			if (item == null) return;
+
+			if (item.Quantity > 1)
+			{
+				item.Quantity--;
+			}
+			else
+			{
+				BillItems.Remove(item);
+			}
+
+			OnPropertyChanged(nameof(GrandTotal));
+		}
+
+		private void RemoveItem(BillItemModelDto item)
+		{
+			if (item == null) return;
+
+			BillItems.Remove(item);
+			OnPropertyChanged(nameof(GrandTotal));
+		}
+
+	}
 }
+
+

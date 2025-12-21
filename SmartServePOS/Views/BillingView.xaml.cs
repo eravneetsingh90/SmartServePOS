@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartServePOS.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,10 @@ namespace SmartServePOS.Views
 		public BillingView()
 		{
 			InitializeComponent();
+			Loaded += (s, e) =>
+			{
+				DataContext = new BillingViewModel();
+			};
 		}
 	}
 }

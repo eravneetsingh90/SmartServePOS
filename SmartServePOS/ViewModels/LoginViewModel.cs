@@ -1,8 +1,7 @@
 ﻿using SmartServe.Domain.Services;
-using SmartServe.EFCore.Entities;
+using SmartServe.EFCore.Models;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 
 namespace SmartServePOS.ViewModels
 {
