@@ -32,7 +32,8 @@
                                VerticalAlignment="Center"/>
 
 					<StackPanel Orientation="Horizontal"
-                                DockPanel.Dock="Right">
+                                DockPanel.Dock="Right"
+								Margin="10,0,0,0">
 
 						<Button Content="+ Add Category"
                                 Padding="12,6"
@@ -109,6 +110,25 @@
 								<Style TargetType="TextBox">
 									<Setter Property="Padding" Value="8"/>
 									<Setter Property="BorderBrush" Value="#C62828"/>
+								</Style>
+							</DataGridTextColumn.EditingElementStyle>
+						</DataGridTextColumn>
+
+						<DataGridTextColumn Header="Order"
+											Width="80"
+											Binding="{Binding DisplayOrder,
+											Mode=TwoWay,
+										    UpdateSourceTrigger=PropertyChanged}">
+							<DataGridTextColumn.ElementStyle>
+								<Style TargetType="TextBlock">
+									<Setter Property="HorizontalAlignment" Value="Center"/>
+									<Setter Property="VerticalAlignment" Value="Center"/>
+								</Style>
+							</DataGridTextColumn.ElementStyle>
+
+							<DataGridTextColumn.EditingElementStyle>
+								<Style TargetType="TextBox">
+									<Setter Property="HorizontalContentAlignment" Value="Center"/>
 								</Style>
 							</DataGridTextColumn.EditingElementStyle>
 						</DataGridTextColumn>

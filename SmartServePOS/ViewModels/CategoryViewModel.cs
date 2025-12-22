@@ -34,18 +34,23 @@ namespace SmartServePOS.ViewModels
 			Categories.Clear();
 
 			var data = await _categoryStore.GetAllAsync(asNoTracking: false);
-			foreach (var c in data)
+			foreach (var c in data.OrderBy(x => x.DisplayOrder))
 				Categories.Add(c);
 		}
 
 		// ================= ADD =================
 		private void AddCategory()
 		{
-			Categories.Add(new Category
-			{
-				Name = "New Category",
-				IsActive = true
-			});
+			int nextOrder = Categories.Any()
+			? Categories.Max(c => c.DisplayOrder) + 1
+			: 1;
+
+				Categories.Add(new Category
+				{
+					Name = "New Category",
+					IsActive = true,
+					DisplayOrder = nextOrder
+				});	
 		}
 
 		// ================= SAVE =================
