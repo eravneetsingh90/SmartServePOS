@@ -51,6 +51,24 @@ namespace SmartServePOS.ViewModels
 		// ================= SAVE =================
 		private async Task SaveAsync()
 		{
+			var duplicateNames = Categories
+			.Where(c => !string.IsNullOrWhiteSpace(c.Name))
+			.GroupBy(c => c.Name.Trim().ToLower())
+			.Where(g => g.Count() > 1)
+			.Select(g => g.Key)
+			.ToList();
+			
+			if (duplicateNames.Any())
+			{
+				MessageBox.Show(
+					"Duplicate category names are not allowed.\n\n" +
+					"Please ensure all category names are unique.",
+					"Duplicate Categories",
+					MessageBoxButton.OK,
+					MessageBoxImage.Warning);
+
+				return; // ❌ Stop save
+			}
 			foreach (var category in Categories)
 			{
 				if (category.CategoryId == 0)
