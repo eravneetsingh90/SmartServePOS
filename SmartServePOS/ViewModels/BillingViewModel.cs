@@ -1,4 +1,6 @@
-﻿using SmartServePOS.Command;
+﻿using SmartServe.Domain.Services;
+using SmartServePOS.Command;
+using SmartServePOS.Helper;
 using SmartServePOS.Models;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
@@ -7,26 +9,19 @@ namespace SmartServePOS.ViewModels
 {
 	public class BillingViewModel : BaseViewModel
 	{
-		// =============================
-		// STATE
-		// =============================
+		private string _searchText;
+		private bool _isSearchActive;
+		private readonly IPrintService _printService;
 		private int _currentOrderId = 1; // hardcoded for now
-
+		private readonly ICatalogService _catalogService;
 		public ICommand IncreaseQtyCommand { get; }
 		public ICommand DecreaseQtyCommand { get; }
 		public ICommand RemoveItemCommand { get; }
-
-		// =============================
-		// COLLECTIONS (BOUND TO UI)
-		// =============================
 		public ObservableCollection<CategoryModelDto> Categories { get; }
 		public ObservableCollection<ProductModelDto> Products { get; }
 		public ObservableCollection<ProductVariantModelDto> Variants { get; }
 		public ObservableCollection<BillItemModelDto> BillItems { get; }
 
-		// =============================
-		// SELECTED CATEGORY
-		// =============================
 		private CategoryModelDto _selectedCategory;
 		public CategoryModelDto SelectedCategory
 		{
@@ -35,13 +30,10 @@ namespace SmartServePOS.ViewModels
 			{
 				_selectedCategory = value;
 				OnPropertyChanged(nameof(SelectedCategory));
-				LoadProducts(); // hardcoded
+				LoadProducts();
 			}
 		}
 
-		// =============================
-		// SELECTED PRODUCT
-		// =============================
 		private ProductModelDto _selectedProduct;
 		public ProductModelDto SelectedProduct
 		{
@@ -50,25 +42,47 @@ namespace SmartServePOS.ViewModels
 			{
 				_selectedProduct = value;
 				OnPropertyChanged(nameof(SelectedProduct));
-				LoadVariants(); // hardcoded
+				LoadVariants();
+			}
+		}
+
+		public decimal GrandTotal => BillItems.Sum(x => x.TotalPrice);
+
+		public ICommand PrintCommand { get; }
+		public ICommand AddVariantCommand { get; }
+
+		public string SearchText
+		{
+			get => _searchText;
+			set
+			{
+				if (_searchText == value) return;
+
+				_searchText = value;
+				OnPropertyChanged(nameof(SearchText));
+
+				PerformSearch();
+			}
+		}
+
+		public bool IsSearchActive
+		{
+			get => _isSearchActive;
+			private set
+			{
+				_isSearchActive = value;
+				OnPropertyChanged(nameof(IsSearchActive));
 			}
 		}
 
 		// =============================
-		// TOTAL
-		// =============================
-		public decimal GrandTotal => BillItems.Sum(x => x.TotalPrice);
-
-		// =============================
-		// COMMANDS
-		// =============================
-		public ICommand AddVariantCommand { get; }
-
-		// =============================
 		// CONSTRUCTOR
 		// =============================
-		public BillingViewModel()
+		public BillingViewModel(ICatalogService catalogService, IPrintService printService)
 		{
+			_catalogService = catalogService;
+			_printService = printService;
+			
 			IncreaseQtyCommand = new RelayCommand<BillItemModelDto>(IncreaseQty);
 			DecreaseQtyCommand = new RelayCommand<BillItemModelDto>(DecreaseQty);
 			RemoveItemCommand = new RelayCommand<BillItemModelDto>(RemoveItem);
@@ -79,90 +93,70 @@ namespace SmartServePOS.ViewModels
 			BillItems = new ObservableCollection<BillItemModelDto>();
 
 			AddVariantCommand = new RelayCommand<ProductVariantModelDto>(AddVariantToBill);
-
+			PrintCommand = new RelayCommand<BillPrintModel>(PrintBill);
 			LoadCategories();
 		}
 
-		// =============================
-		// LOAD CATEGORIES (HARDCODED)
-		// =============================
 		private void LoadCategories()
 		{
 			Categories.Clear();
 
-			Categories.Add(new CategoryModelDto { CategoryId = 1, Name = "Ice Cream Scoops" });
-			Categories.Add(new CategoryModelDto { CategoryId = 2, Name = "Burger" });
+			foreach (var category in _catalogService.GetCategories())
+			{
+				Categories.Add(new CategoryModelDto
+				{
+					CategoryId = category.CategoryId,
+					Name = category.Name
+				});
+			}
 
-			SelectedCategory = Categories.First();
+			SelectedCategory = Categories.FirstOrDefault();
 		}
 
-		// =============================
-		// LOAD PRODUCTS (HARDCODED)
-		// =============================
 		private void LoadProducts()
 		{
 			Products.Clear();
 			Variants.Clear();
 
-			if (SelectedCategory.Name == "Ice Cream Scoops")
+			if (SelectedCategory == null)
+				return;
+
+			var products = _catalogService.GetProductsByCategory(SelectedCategory.CategoryId);
+
+			foreach (var product in products)
 			{
-				Products.Add(new ProductModelDto { ProductId = 1, Name = "Vanilla" });
-				Products.Add(new ProductModelDto { ProductId = 2, Name = "Chocolate" });
-			}
-			else if (SelectedCategory.Name == "Burger")
-			{
-				Products.Add(new ProductModelDto { ProductId = 10, Name = "Veg Burger" });
-				Products.Add(new ProductModelDto { ProductId = 11, Name = "Non-Veg Burger" });
+				Products.Add(new ProductModelDto
+				{
+					CategoryId = product.CategoryId ?? 0,
+					ProductId = product.ProductId,
+					Name = product.Name
+				});
 			}
 
 			SelectedProduct = Products.FirstOrDefault();
 		}
 
-		// =============================
-		// LOAD VARIANTS (HARDCODED)
-		// =============================
 		private void LoadVariants()
 		{
 			Variants.Clear();
-			if (SelectedProduct != null)
-			{
-				if (SelectedProduct.Name == "Vanilla")
-				{
-					Variants.Add(new ProductVariantModelDto
-					{
-						VariantId = 101,
-						ProductId = 1,
-						VariantName = "Single Scoop",
-						Price = 40,
-						TracksStock = false
-					});
 
-					Variants.Add(new ProductVariantModelDto
-					{
-						VariantId = 102,
-						ProductId = 1,
-						VariantName = "Double Scoop",
-						Price = 70,
-						TracksStock = false
-					});
-				}
-				else if (SelectedProduct.Name == "Veg Burger")
+			if (SelectedProduct == null)
+				return;
+
+			var variants = _catalogService.GetVariantsByProduct(SelectedProduct.ProductId);
+
+			foreach (var variant in variants)
+			{
+				Variants.Add(new ProductVariantModelDto
 				{
-					Variants.Add(new ProductVariantModelDto
-					{
-						VariantId = 201,
-						ProductId = 10,
-						VariantName = "Aloo Tikki Burger",
-						Price = 50,
-						TracksStock = false
-					});
-				}
+					ProductId = variant.ProductId,
+					VariantId = variant.VariantId,
+					Price = variant.Price,
+					VariantName = variant.VariantName
+				});
 			}
 		}
 
-		// =============================
-		// ADD VARIANT TO BILL
-		// =============================
 		private void AddVariantToBill(ProductVariantModelDto variant)
 		{
 			var existing = BillItems.FirstOrDefault(x => x.VariantId == variant.VariantId);
@@ -215,6 +209,78 @@ namespace SmartServePOS.ViewModels
 			BillItems.Remove(item);
 			OnPropertyChanged(nameof(GrandTotal));
 		}
+
+		private void PerformSearch()
+		{
+			Variants.Clear();
+
+			if (string.IsNullOrWhiteSpace(SearchText))
+			{
+				IsSearchActive = false;
+
+				// restore normal flow
+				if (SelectedProduct != null)
+					LoadVariants();
+
+				return;
+			}
+
+			IsSearchActive = true;
+
+			var results = _catalogService.Search(SearchText);
+
+			foreach (var item in results)
+			{
+				Variants.Add(new ProductVariantModelDto
+				{
+					VariantId = item.VariantId,
+					ProductId = item.ProductId,
+					VariantName = $"{item.ProductName} - {item.VariantName}",
+					Price = item.Price
+				});
+			}
+		}
+
+		private BillPrintModel BuildBillPrintModel()
+		{
+			return new BillPrintModel
+			{
+				ShopName = "Scoop Ice Cream Cafe",
+				Address = "Sco 8, Basement, Fortune City Center\nSec. 123, Mohali-140301",
+
+				//BillNo = _currentOrder.OrderNumber,
+				//TableName = _currentOrder.TableName ?? "N/A",
+				//Cashier = _currentUser?.Name ?? "biller",
+
+				PrintedAt = DateTime.Now,
+
+				Items = BillItems.Select(x => new BillPrintItem
+				{
+					Name = x.ItemName,
+					Quantity = x.Quantity,
+					UnitPrice = x.PriceSnapshot
+				}).ToList(),
+
+				SubTotal = BillItems.Sum(x => x.Quantity * x.PriceSnapshot),
+				//Discount = AppliedDiscountAmount,          // 0 if none
+				//DiscountLabel = AppliedDiscountLabel,       // "10%" or ""
+				GrandTotal = GrandTotal
+			};
+		}
+		private void PrintBill(BillPrintModel bill)
+		{
+			if (!BillItems.Any())
+				return;
+
+			bill = BuildBillPrintModel();
+
+			// Phase 1: preview first
+			_printService.PrintBill(bill, showPreview: true);
+
+			// Phase 2 (later):
+			// _printService.PrintBill(bill, showPreview: false);
+		}
+
 
 	}
 }

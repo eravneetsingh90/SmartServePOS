@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SmartServe.Domain.Dependencies;
+using SmartServe.Domain.Services;
 using SmartServe.EFCore.Dependencies;
+using SmartServePOS.Helper;
 using SmartServePOS.ViewModels;
 using SmartServePOS.Views;
 using System.Windows;
@@ -13,7 +15,7 @@ namespace SmartServePOS
 		public static IServiceProvider Services { get; private set; } = null!;
 		public static IConfiguration Configuration { get; private set; } = null!;
 
-		protected override void OnStartup(StartupEventArgs e)
+		protected override async void OnStartup(StartupEventArgs e)
 		{
 			base.OnStartup(e);
 
@@ -38,7 +40,12 @@ namespace SmartServePOS
 			services.AddSingleton<TableViewModel>();
 			services.AddSingleton<MainWindow>();
 			services.AddSingleton<MainViewModel>();
-			
+			services.AddSingleton<BillingView>();
+			services.AddSingleton<BillingViewModel>();
+
+			//
+			services.AddScoped<IPrintService, PrintService>();
+
 			Services = services.BuildServiceProvider();
 
 			// Resolve main window (do not show yet) and register it as the application's main window.
@@ -48,6 +55,12 @@ namespace SmartServePOS
 			// Resolve login view and show it modally. LoginView will close itself on success and show the MainWindow.
 			var loginView = Services.GetRequiredService<LoginView>();
 			loginView.ShowDialog();
+
+			Services = services.BuildServiceProvider();
+
+			//Load catalog ONCE
+			var catalog = Services.GetRequiredService<ICatalogService>();
+			await catalog.LoadAsync();
 		}
 	}
 }
