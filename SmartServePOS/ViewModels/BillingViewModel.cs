@@ -150,9 +150,9 @@ namespace SmartServePOS.ViewModels
 				Variants.Add(new ProductVariantModelDto
 				{
 					ProductId = variant.ProductId,
-					VariantId = variant.VariantId,
+					VariantId = variant.ProductVariantId,
 					Price = variant.Price,
-					VariantName = variant.VariantName
+					VariantName = variant.Name
 				});
 			}
 		}

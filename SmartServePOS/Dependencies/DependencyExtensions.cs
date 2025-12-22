@@ -25,6 +25,8 @@ namespace SmartServePOS.Dependencies
 			services.AddSingleton<CategoryViewModel>();
 			services.AddSingleton<ProductView>();
 			services.AddSingleton<ProductViewModel>();
+			services.AddSingleton<ProductVariantView>();
+			services.AddSingleton<ProductVariantViewModel>();
 
 			services.AddScoped<IPrintService, PrintService>();
 

@@ -22,7 +22,7 @@ namespace SmartServePOS.Views
 
 		private void OpenVariants_Click(object sender, MouseButtonEventArgs e)
 		{
-			NavigationService?.Navigate(new VariantView());
+			NavigationService?.Navigate(new ProductVariantView());
 		}
 	}
 }

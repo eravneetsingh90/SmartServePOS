@@ -1,0 +1,113 @@
+﻿<Page x:Class="SmartServePOS.Views.ProductVariantView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:viewmodels="clr-namespace:SmartServePOS.ViewModels"
+	  d:DataContext="{d:DesignInstance Type=viewmodels:ProductVariantViewModel}"
+      mc:Ignorable="d"
+      Background="#F5F5F5">
+
+	<Grid Margin="16">
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="220"/>
+			<ColumnDefinition Width="280"/>
+			<ColumnDefinition Width="*"/>
+		</Grid.ColumnDefinitions>
+
+		<!-- ================= CATEGORIES ================= -->
+		<Border Grid.Column="0" Padding="12" CornerRadius="8" Background="White">
+			<StackPanel>
+				<TextBlock Text="Categories" FontWeight="Bold" Margin="0,0,0,8"/>
+				<ListBox ItemsSource="{Binding Categories}"
+                     SelectedItem="{Binding SelectedCategory}">
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding Name}" Padding="10"/>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
+				</ListBox>
+			</StackPanel>
+		</Border>
+
+		<!-- ================= PRODUCTS ================= -->
+		<Border Grid.Column="1" Padding="12" CornerRadius="8"
+            Background="White" Margin="12,0">
+			<StackPanel>
+				<TextBlock Text="Products" FontWeight="Bold" Margin="0,0,0,8"/>
+				<ListBox ItemsSource="{Binding Products}"
+                     SelectedItem="{Binding SelectedProduct}">
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding Name}" Padding="10"/>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
+				</ListBox>
+			</StackPanel>
+		</Border>
+
+		<!-- ================= VARIANTS ================= -->
+		<Border Grid.Column="2" Padding="16" CornerRadius="8"
+            Background="White">
+
+			<StackPanel>
+				<DockPanel Margin="0,0,0,12">
+					<TextBlock Text="{Binding SelectedProduct.Name}"
+                           FontSize="18"
+                           FontWeight="Bold"
+                           DockPanel.Dock="Left"/>
+
+					<StackPanel Orientation="Horizontal"
+                            DockPanel.Dock="Right">
+						<Button Content="+ Add Variant"
+                            Command="{Binding AddVariantCommand}"
+                            Margin="0,0,8,0"/>
+						<Button Content="Save Changes"
+                            Background="#2E7D32"
+                            Foreground="White"
+                            Command="{Binding SaveCommand}"/>
+					</StackPanel>
+				</DockPanel>
+
+				<DataGrid ItemsSource="{Binding Variants}"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="False"
+                      HeadersVisibility="Column"
+                      RowHeight="40">
+
+					<DataGrid.Columns>
+						<DataGridTextColumn Header="Order"
+                                        Binding="{Binding DisplayOrder}"
+                                        Width="60"/>
+
+						<DataGridTextColumn Header="Variant Name"
+                                        Binding="{Binding Name}"
+                                        Width="*"/>
+
+						<DataGridTextColumn Header="Price"
+                                        Binding="{Binding Price}"
+                                        Width="120"/>
+
+						<DataGridCheckBoxColumn Header="Active"
+                                            Binding="{Binding IsActive}"
+                                            Width="80"/>
+
+						<DataGridTemplateColumn Width="60">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<Button Content="✕"
+                                        Foreground="Red"
+                                        Background="Transparent"
+                                        Command="{Binding DataContext.DeleteVariantCommand,
+                                          RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                        CommandParameter="{Binding}"/>
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+					</DataGrid.Columns>
+				</DataGrid>
+			</StackPanel>
+		</Border>
+	</Grid>
+
+</Page>

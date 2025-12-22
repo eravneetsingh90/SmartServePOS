@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using SmartServePOS.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,11 +19,18 @@ namespace SmartServePOS.Views
 	/// <summary>
 	/// Interaction logic for VariantView.xaml
 	/// </summary>
-	public partial class VariantView : Page
+	public partial class ProductVariantView : Page
 	{
-		public VariantView()
+		public ProductVariantView()
 		{
 			InitializeComponent();
+			if (DataContext == null)
+			{
+				if (App.Services is not null)
+				{
+					DataContext = App.Services.GetService<ProductVariantViewModel>();
+				}
+			}
 		}
 	}
 }

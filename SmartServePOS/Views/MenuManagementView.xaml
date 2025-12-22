@@ -108,7 +108,7 @@
                                FontSize="36"
                                HorizontalAlignment="Center"/>
 
-					<TextBlock Text="Variants"
+					<TextBlock Text="Products Variants"
                                FontSize="16"
                                FontWeight="SemiBold"
                                Margin="0,8,0,0"
