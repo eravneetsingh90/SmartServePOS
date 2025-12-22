@@ -55,7 +55,7 @@
                           ItemsSource="{Binding Categories}"
                           AutoGenerateColumns="False"
                           CanUserAddRows="False"
-                          RowHeight="42"
+                          RowHeight="38"
                           HeadersVisibility="Column"
                           GridLinesVisibility="None"
                           BorderThickness="0"
@@ -94,7 +94,24 @@
 
 					<!-- COLUMNS -->
 					<DataGrid.Columns>
+						<DataGridTextColumn Header="Order"
+								Width="80"
+								Binding="{Binding DisplayOrder,
+								Mode=TwoWay,
+							    UpdateSourceTrigger=PropertyChanged}">
+							<DataGridTextColumn.ElementStyle>
+								<Style TargetType="TextBlock">
+									<Setter Property="HorizontalAlignment" Value="Center"/>
+									<Setter Property="VerticalAlignment" Value="Center"/>
+								</Style>
+							</DataGridTextColumn.ElementStyle>
 
+							<DataGridTextColumn.EditingElementStyle>
+								<Style TargetType="TextBox">
+									<Setter Property="HorizontalContentAlignment" Value="Center"/>
+								</Style>
+							</DataGridTextColumn.EditingElementStyle>
+						</DataGridTextColumn>
 						<!-- CATEGORY NAME -->
 						<DataGridTextColumn Header="Category Name"
                                             Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
@@ -110,25 +127,6 @@
 								<Style TargetType="TextBox">
 									<Setter Property="Padding" Value="8"/>
 									<Setter Property="BorderBrush" Value="#C62828"/>
-								</Style>
-							</DataGridTextColumn.EditingElementStyle>
-						</DataGridTextColumn>
-
-						<DataGridTextColumn Header="Order"
-											Width="80"
-											Binding="{Binding DisplayOrder,
-											Mode=TwoWay,
-										    UpdateSourceTrigger=PropertyChanged}">
-							<DataGridTextColumn.ElementStyle>
-								<Style TargetType="TextBlock">
-									<Setter Property="HorizontalAlignment" Value="Center"/>
-									<Setter Property="VerticalAlignment" Value="Center"/>
-								</Style>
-							</DataGridTextColumn.ElementStyle>
-
-							<DataGridTextColumn.EditingElementStyle>
-								<Style TargetType="TextBox">
-									<Setter Property="HorizontalContentAlignment" Value="Center"/>
 								</Style>
 							</DataGridTextColumn.EditingElementStyle>
 						</DataGridTextColumn>

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using SmartServePOS.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +24,13 @@ namespace SmartServePOS.Views
 		public ProductView()
 		{
 			InitializeComponent();
+			if (DataContext == null)
+			{
+				if (App.Services is not null)
+				{
+					DataContext = App.Services.GetService<ProductViewModel>();
+				}
+			}
 		}
 	}
 }
