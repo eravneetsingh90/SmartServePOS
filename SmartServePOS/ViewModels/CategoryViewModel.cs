@@ -1,8 +1,9 @@
 ﻿using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Input;
-using SmartServePOS.Command;
 using SmartServe.Domain.Stores;
 using SmartServe.EFCore.Models;
+using SmartServePOS.Command;
 
 namespace SmartServePOS.ViewModels
 {
@@ -32,11 +33,9 @@ namespace SmartServePOS.ViewModels
 		{
 			Categories.Clear();
 
-			// Load tracked entities (important for edit + save)
 			var data = await _categoryStore.GetAllAsync(asNoTracking: false);
-
-			foreach (var category in data)
-				Categories.Add(category);
+			foreach (var c in data)
+				Categories.Add(c);
 		}
 
 		// ================= ADD =================
@@ -49,16 +48,9 @@ namespace SmartServePOS.ViewModels
 			});
 		}
 
-		// ================= SAVE (BATCH) =================
+		// ================= SAVE =================
 		private async Task SaveAsync()
 		{
-			/*
-             * Strategy:
-             * - New items → Add
-             * - Existing items → Update
-             * - Single SaveChanges at end
-             */
-
 			foreach (var category in Categories)
 			{
 				if (category.CategoryId == 0)
@@ -67,19 +59,26 @@ namespace SmartServePOS.ViewModels
 					await _categoryStore.UpdateAsync(category);
 			}
 
-			// Optional reload to sync state
 			await LoadAsync();
 		}
 
-		// ================= DELETE =================
+		// ================= DELETE WITH CONFIRM =================
 		private async void DeleteCategory(object? parameter)
 		{
 			if (parameter is not Category category)
 				return;
 
+			var result = MessageBox.Show(
+				$"Are you sure you want to delete category \"{category.Name}\"?",
+				"Confirm Delete",
+				MessageBoxButton.YesNo,
+				MessageBoxImage.Warning);
+
+			if (result != MessageBoxResult.Yes)
+				return;
+
 			Categories.Remove(category);
 
-			// Only delete if it already exists in DB
 			if (category.CategoryId != 0)
 				await _categoryStore.DeleteAsync(category);
 		}
