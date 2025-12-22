@@ -17,13 +17,13 @@ namespace SmartServePOS.ViewModels
 		public ICommand IncreaseQtyCommand { get; }
 		public ICommand DecreaseQtyCommand { get; }
 		public ICommand RemoveItemCommand { get; }
-		public ObservableCollection<CategoryModelDto> Categories { get; }
+		public ObservableCollection<CategoryDto> Categories { get; }
 		public ObservableCollection<ProductModelDto> Products { get; }
 		public ObservableCollection<ProductVariantModelDto> Variants { get; }
 		public ObservableCollection<BillItemModelDto> BillItems { get; }
 
-		private CategoryModelDto _selectedCategory;
-		public CategoryModelDto SelectedCategory
+		private CategoryDto _selectedCategory;
+		public CategoryDto SelectedCategory
 		{
 			get => _selectedCategory;
 			set
@@ -87,7 +87,7 @@ namespace SmartServePOS.ViewModels
 			DecreaseQtyCommand = new RelayCommand<BillItemModelDto>(DecreaseQty);
 			RemoveItemCommand = new RelayCommand<BillItemModelDto>(RemoveItem);
 
-			Categories = new ObservableCollection<CategoryModelDto>();
+			Categories = new ObservableCollection<CategoryDto>();
 			Products = new ObservableCollection<ProductModelDto>();
 			Variants = new ObservableCollection<ProductVariantModelDto>();
 			BillItems = new ObservableCollection<BillItemModelDto>();
@@ -103,7 +103,7 @@ namespace SmartServePOS.ViewModels
 
 			foreach (var category in _catalogService.GetCategories())
 			{
-				Categories.Add(new CategoryModelDto
+				Categories.Add(new CategoryDto
 				{
 					CategoryId = category.CategoryId,
 					Name = category.Name

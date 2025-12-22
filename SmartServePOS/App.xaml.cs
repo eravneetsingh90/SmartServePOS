@@ -43,6 +43,7 @@ namespace SmartServePOS
 			services.AddSingleton<BillingView>();
 			services.AddSingleton<BillingViewModel>();
 
+			services.AddSingleton<MenuManagementView>();
 			//
 			services.AddScoped<IPrintService, PrintService>();
 

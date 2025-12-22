@@ -42,5 +42,11 @@ namespace SmartServePOS
 			// Navigate the main frame to the POSView
 			MainFrame.Navigate(new TableView());
 		}
+
+		private void MenuManagementButton_Click(object sender, RoutedEventArgs e)
+		{
+			// Navigate the main frame to the POSView
+			MainFrame.Navigate(new MenuManagementView());
+		}
 	}
 }

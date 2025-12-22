@@ -92,7 +92,16 @@
                             Margin="0,0,8,0"
 							/>
 
-					</StackPanel>
+					<Button x:Name="MenuManagementButton"
+							Content="Menu Management"
+							Click="MenuManagementButton_Click"
+							Background="#C62828"
+							Foreground="White"
+							Padding="14,6"
+							Margin="0,0,8,0"
+					/>
+
+				</StackPanel>
 			</DockPanel>
 		</Border>
 
