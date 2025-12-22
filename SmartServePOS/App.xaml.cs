@@ -3,8 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SmartServe.Domain.Dependencies;
 using SmartServe.Domain.Services;
 using SmartServe.EFCore.Dependencies;
-using SmartServePOS.Helper;
-using SmartServePOS.ViewModels;
+using SmartServePOS.Dependencies;
 using SmartServePOS.Views;
 using System.Windows;
 
@@ -33,20 +32,8 @@ namespace SmartServePOS
 			// Stores (EFCore)
 			services.UseDomain();
 
-			// WPF Views & ViewModels
-			services.AddSingleton<LoginView>();
-			services.AddSingleton<LoginViewModel>();
-			services.AddTransient<TableView>();
-			services.AddSingleton<TableViewModel>();
-			services.AddSingleton<MainWindow>();
-			services.AddSingleton<MainViewModel>();
-			services.AddSingleton<BillingView>();
-			services.AddSingleton<BillingViewModel>();
-
-			services.AddSingleton<MenuManagementView>();
-			//
-			services.AddScoped<IPrintService, PrintService>();
-
+			services.UseApp();
+			
 			Services = services.BuildServiceProvider();
 
 			// Resolve main window (do not show yet) and register it as the application's main window.

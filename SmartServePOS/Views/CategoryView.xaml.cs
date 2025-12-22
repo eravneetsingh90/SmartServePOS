@@ -1,37 +1,22 @@
-﻿using SmartServePOS.Models;
-using System.Collections.ObjectModel;
+﻿using Microsoft.Extensions.DependencyInjection;
+using SmartServePOS.ViewModels;
 using System.Windows.Controls;
 
 namespace SmartServePOS.Views
 {
 	public partial class CategoryView : Page
 	{
-		public ObservableCollection<CategoryDto> Categories { get; } = new();
-
 		public CategoryView()
 		{
 			InitializeComponent();
-			CategoryGrid.ItemsSource = Categories;
-
-			// TEMP DATA
-			Categories.Add(new CategoryDto { Name = "Ice Cream Scoops", IsActive = true });
-			Categories.Add(new CategoryDto { Name = "Burgers", IsActive = true });
-			Categories.Add(new CategoryDto { Name = "Beverages", IsActive = false });
-		}
-
-		private void AddCategory_Click(object sender, System.Windows.RoutedEventArgs e)
-		{
-			Categories.Add(new CategoryDto
+			if (DataContext == null)
 			{
-				Name = "New Category",
-				IsActive = true
-			});
-		}
-
-		private void SaveChanges_Click(object sender, System.Windows.RoutedEventArgs e)
-		{
-			// Later: validate + call service
-			// For now: no-op
+				if (App.Services is not null)
+				{
+					DataContext = App.Services.GetService<CategoryViewModel>();
+				}
+			}
 		}
 	}
 }
+
