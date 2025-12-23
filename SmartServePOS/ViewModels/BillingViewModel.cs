@@ -17,6 +17,7 @@ namespace SmartServePOS.ViewModels
 		public ICommand IncreaseQtyCommand { get; }
 		public ICommand DecreaseQtyCommand { get; }
 		public ICommand RemoveItemCommand { get; }
+		public ICommand ReloadMenuCommand { get; }
 		public ObservableCollection<CategoryDto> Categories { get; }
 		public ObservableCollection<ProductModelDto> Products { get; }
 		public ObservableCollection<ProductVariantModelDto> Variants { get; }
@@ -86,6 +87,8 @@ namespace SmartServePOS.ViewModels
 			IncreaseQtyCommand = new RelayCommand<BillItemModelDto>(IncreaseQty);
 			DecreaseQtyCommand = new RelayCommand<BillItemModelDto>(DecreaseQty);
 			RemoveItemCommand = new RelayCommand<BillItemModelDto>(RemoveItem);
+			
+			ReloadMenuCommand = new RelayCommand(_ => _catalogService.Reset());
 
 			Categories = new ObservableCollection<CategoryDto>();
 			Products = new ObservableCollection<ProductModelDto>();

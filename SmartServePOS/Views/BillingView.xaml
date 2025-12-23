@@ -17,8 +17,8 @@
 		<!-- ================= TOP BAR ================= -->
 		<Grid Grid.Row="0" Margin="6">
 			<Grid.ColumnDefinitions>
-				<ColumnDefinition/>
-				<ColumnDefinition Width="320"/>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="300"/>
 			</Grid.ColumnDefinitions>
 
 			<TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
@@ -43,6 +43,11 @@
                         Background="#555"
                         Foreground="White"
                         Margin="4"/>
+				<!--<Button Content="Reload Menu" Width="90"
+						Background="#555"
+						Foreground="White"
+						Margin="4"
+						Command="{Binding ReloadMenuCommand}"/>-->
 			</StackPanel>
 		</Grid>
 
