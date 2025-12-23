@@ -11,35 +11,177 @@
 	<Grid Margin="16">
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="220"/>
-			<ColumnDefinition Width="280"/>
+			<ColumnDefinition Width="240"/>
 			<ColumnDefinition Width="*"/>
 		</Grid.ColumnDefinitions>
 
 		<!-- ================= CATEGORIES ================= -->
-		<Border Grid.Column="0" Padding="12" CornerRadius="8" Background="White">
+		<Border Grid.Column="0"
+        Background="White"
+        CornerRadius="8"
+        BorderBrush="#E0E0E0"
+        BorderThickness="1"
+        Padding="12"
+        Margin="0,0,12,0">
+
 			<StackPanel>
-				<TextBlock Text="Categories" FontWeight="Bold" Margin="0,0,0,8"/>
+				<TextBlock Text="Categories"
+                   FontSize="12"
+                   FontWeight="SemiBold"
+                   Margin="0,0,0,8"/>
+
 				<ListBox ItemsSource="{Binding Categories}"
-                     SelectedItem="{Binding SelectedCategory}">
+				SelectedItem="{Binding SelectedCategory}"
+				BorderThickness="0"
+				Background="Transparent"
+				ScrollViewer.VerticalScrollBarVisibility="Auto">
+
+					<!-- Remove default selection visuals -->
+					<ListBox.ItemContainerStyle>
+						<Style TargetType="ListBoxItem">
+							<Setter Property="Padding" Value="0"/>
+							<Setter Property="Margin" Value="2"/>
+							<Setter Property="Background" Value="Transparent"/>
+							<Setter Property="BorderThickness" Value="0"/>
+							<Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+						</Style>
+					</ListBox.ItemContainerStyle>
+
 					<ListBox.ItemTemplate>
 						<DataTemplate>
-							<TextBlock Text="{Binding Name}" Padding="10"/>
+							<Border x:Name="Root"
+						   Height="46"
+						   Background="#333333"
+						   CornerRadius="6">
+
+								<Grid>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="6"/>
+										<ColumnDefinition Width="*"/>
+									</Grid.ColumnDefinitions>
+
+									<!-- Accent Bar -->
+									<Border x:Name="Accent"
+								   Grid.Column="0"
+								   Background="#C62828"
+								   CornerRadius="6,0,0,6"
+								   Visibility="Collapsed"/>
+
+									<!-- Text -->
+									<TextBlock Grid.Column="1"
+									  Text="{Binding Name}"
+									  FontSize="12"
+									  FontWeight="SemiBold"
+									  Foreground="White"
+									  VerticalAlignment="Center"
+									  Margin="12,0"/>
+								</Grid>
+							</Border>
+
+							<!-- STATES -->
+							<DataTemplate.Triggers>
+
+								<!-- Selected -->
+								<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}"
+            Value="True">
+									<Setter TargetName="Root" Property="Background" Value="#3E3E3E"/>
+									<Setter TargetName="Accent" Property="Visibility" Value="Visible"/>
+								</DataTrigger>
+
+								<!-- Hover -->
+								<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsMouseOver}"
+            Value="True">
+									<Setter TargetName="Root" Property="Background" Value="#444444"/>
+								</DataTrigger>
+
+							</DataTemplate.Triggers>
 						</DataTemplate>
 					</ListBox.ItemTemplate>
 				</ListBox>
 			</StackPanel>
 		</Border>
 
+
 		<!-- ================= PRODUCTS ================= -->
-		<Border Grid.Column="1" Padding="12" CornerRadius="8"
-            Background="White" Margin="12,0">
+		<Border Grid.Column="1"
+        Background="White"
+        CornerRadius="8"
+        BorderBrush="#F3F4F6"
+        BorderThickness="1"
+        Padding="12"
+        Margin="0,0,12,0">
+
 			<StackPanel>
-				<TextBlock Text="Products" FontWeight="Bold" Margin="0,0,0,8"/>
+				<TextBlock Text="Products"
+                   FontSize="12"
+                   FontWeight="SemiBold"
+                   Margin="0,0,0,8"/>
+
 				<ListBox ItemsSource="{Binding Products}"
-                     SelectedItem="{Binding SelectedProduct}">
+				SelectedItem="{Binding SelectedProduct}"
+				BorderThickness="0"
+				Background="Transparent"
+				ScrollViewer.VerticalScrollBarVisibility="Auto">
+
+					<!-- Remove default selection visuals -->
+					<ListBox.ItemContainerStyle>
+						<Style TargetType="ListBoxItem">
+							<Setter Property="Padding" Value="0"/>
+							<Setter Property="Margin" Value="2"/>
+							<Setter Property="Background" Value="Transparent"/>
+							<Setter Property="BorderThickness" Value="0"/>
+							<Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+						</Style>
+					</ListBox.ItemContainerStyle>
+
 					<ListBox.ItemTemplate>
 						<DataTemplate>
-							<TextBlock Text="{Binding Name}" Padding="10"/>
+							<Border x:Name="Root"
+						   Height="46"
+						   Background="#eaeaea"
+						   CornerRadius="6">
+
+								<Grid>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="6"/>
+										<ColumnDefinition Width="*"/>
+									</Grid.ColumnDefinitions>
+
+									<!-- Accent Bar -->
+									<Border x:Name="Accent"
+								   Grid.Column="0"
+								   Background="#C62828"
+								   CornerRadius="6,0,0,6"
+								   Visibility="Collapsed"/>
+
+									<!-- Text -->
+									<TextBlock Grid.Column="1"
+									  Text="{Binding Name}"
+									  FontSize="12"
+									  FontWeight="SemiBold"
+									  Foreground="Black"
+									  VerticalAlignment="Center"
+									  Margin="12,0"/>
+								</Grid>
+							</Border>
+
+							<!-- STATES -->
+							<DataTemplate.Triggers>
+
+								<!-- Selected -->
+								<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}"
+            Value="True">
+									<Setter TargetName="Root" Property="Background" Value="#D1D5DB"/>
+									<Setter TargetName="Accent" Property="Visibility" Value="Visible"/>
+								</DataTrigger>
+
+								<!-- Hover -->
+								<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsMouseOver}"
+            Value="True">
+									<Setter TargetName="Root" Property="Background" Value="#E5E7EB"/>
+								</DataTrigger>
+
+							</DataTemplate.Triggers>
 						</DataTemplate>
 					</ListBox.ItemTemplate>
 				</ListBox>
@@ -54,18 +196,23 @@
 				<DockPanel Margin="0,0,0,12">
 					<TextBlock Text="{Binding SelectedProduct.Name}"
                            FontSize="18"
-                           FontWeight="Bold"
+                           FontWeight="SemiBold"
                            DockPanel.Dock="Left"/>
 
 					<StackPanel Orientation="Horizontal"
-                            DockPanel.Dock="Right">
+								DockPanel.Dock="Right"
+								Margin="10,0,0,0">
 						<Button Content="+ Add Variant"
                             Command="{Binding AddVariantCommand}"
-                            Margin="0,0,8,0"/>
+                            Padding="12,6"
+							Margin="0,0,8,0"
+							Background="#F3F3F3"
+							BorderBrush="#CCC"/>
 						<Button Content="Save Changes"
-                            Background="#2E7D32"
-                            Foreground="White"
-                            Command="{Binding SaveCommand}"/>
+								Padding="14,6"
+								Background="#2E7D32"
+								Foreground="White"
+								Command="{Binding SaveCommand}"/>
 					</StackPanel>
 				</DockPanel>
 

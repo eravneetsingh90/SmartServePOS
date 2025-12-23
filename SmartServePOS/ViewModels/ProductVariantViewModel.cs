@@ -87,6 +87,7 @@ namespace SmartServePOS.ViewModels
 
 			foreach (var c in items.Where(x => x.IsActive==true))
 				Categories.Add(c);
+			SelectedCategory = Categories.FirstOrDefault();
 		}
 
 		private async Task LoadProductsAsync()
@@ -103,6 +104,7 @@ namespace SmartServePOS.ViewModels
 			{
 				Products.Add(p);
 			}
+			SelectedProduct = Products.FirstOrDefault();
 		}
 
 		private async Task LoadVariantsAsync()
