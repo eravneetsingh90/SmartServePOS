@@ -52,7 +52,7 @@ namespace SmartServePOS.ViewModels
 		{
 			Categories.Clear();
 
-			var data = await _categoryStore.GetAllAsync(asNoTracking: false);
+			var data = await _categoryStore.GetAllAsync();
 
 			foreach (var c in data.OrderBy(x => x.DisplayOrder))
 				Categories.Add(c);
@@ -70,7 +70,7 @@ namespace SmartServePOS.ViewModels
 			if (SelectedCategory == null)
 				return;
 
-			var data = await _productStore.GetAllAsync(asNoTracking: false);
+			var data = await _productStore.GetAllAsync();
 
 			foreach (var p in data
 				.Where(x => x.CategoryId == SelectedCategory.CategoryId)

@@ -33,7 +33,7 @@ namespace SmartServePOS.ViewModels
 		{
 			Categories.Clear();
 
-			var data = await _categoryStore.GetAllAsync(asNoTracking: false);
+			var data = await _categoryStore.GetAllAsync();
 			foreach (var c in data.OrderBy(x => x.DisplayOrder))
 				Categories.Add(c);
 		}

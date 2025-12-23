@@ -216,38 +216,128 @@
 					</StackPanel>
 				</DockPanel>
 
-				<DataGrid ItemsSource="{Binding Variants}"
-                      AutoGenerateColumns="False"
-                      CanUserAddRows="False"
-                      HeadersVisibility="Column"
-                      RowHeight="40">
 
+				<DataGrid Grid.Row="1"
+							  ItemsSource="{Binding Variants}"
+							  AutoGenerateColumns="False"
+							  CanUserAddRows="False"
+							  RowHeight="38"
+							  HeadersVisibility="Column"
+							  GridLinesVisibility="None"
+							  BorderThickness="0"
+							  Background="White"
+							  SelectionMode="Single">
+					<!-- HEADER STYLE -->
+					<DataGrid.ColumnHeaderStyle>
+						<Style TargetType="DataGridColumnHeader">
+							<Setter Property="Background" Value="#F7F7F7"/>
+							<Setter Property="Foreground" Value="#555"/>
+							<Setter Property="FontWeight" Value="SemiBold"/>
+							<Setter Property="Padding" Value="12,8"/>
+							<Setter Property="BorderThickness" Value="0,0,0,1"/>
+							<Setter Property="BorderBrush" Value="#DDD"/>
+						</Style>
+					</DataGrid.ColumnHeaderStyle>
+					<!-- ROW STYLE -->
+					<DataGrid.RowStyle>
+						<Style TargetType="DataGridRow">
+							<Setter Property="Background" Value="White"/>
+							<Setter Property="BorderThickness" Value="0,0,0,1"/>
+							<Setter Property="BorderBrush" Value="#EEE"/>
+
+							<Style.Triggers>
+								<Trigger Property="IsMouseOver" Value="True">
+									<Setter Property="Background" Value="#F9F9F9"/>
+								</Trigger>
+								<Trigger Property="IsSelected" Value="True">
+									<Setter Property="Background" Value="#FFF3E0"/>
+								</Trigger>
+							</Style.Triggers>
+						</Style>
+					</DataGrid.RowStyle>
 					<DataGrid.Columns>
 						<DataGridTextColumn Header="Order"
-                                        Binding="{Binding DisplayOrder}"
-                                        Width="60"/>
+					Width="80"
+					Binding="{Binding DisplayOrder,
+					Mode=TwoWay,
+				    UpdateSourceTrigger=PropertyChanged}">
+							<DataGridTextColumn.ElementStyle>
+								<Style TargetType="TextBlock">
+									<Setter Property="HorizontalAlignment" Value="Center"/>
+									<Setter Property="VerticalAlignment" Value="Center"/>
+								</Style>
+							</DataGridTextColumn.ElementStyle>
 
+							<DataGridTextColumn.EditingElementStyle>
+								<Style TargetType="TextBox">
+									<Setter Property="HorizontalContentAlignment" Value="Center"/>
+								</Style>
+							</DataGridTextColumn.EditingElementStyle>
+						</DataGridTextColumn>
 						<DataGridTextColumn Header="Variant Name"
-                                        Binding="{Binding Name}"
-                                        Width="*"/>
+                    Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                    Width="*">
+							<DataGridTextColumn.ElementStyle>
+								<Style TargetType="TextBlock">
+									<Setter Property="Padding" Value="12,0"/>
+									<Setter Property="VerticalAlignment" Value="Center"/>
+								</Style>
+							</DataGridTextColumn.ElementStyle>
+
+							<DataGridTextColumn.EditingElementStyle>
+								<Style TargetType="TextBox">
+									<Setter Property="Padding" Value="8"/>
+									<Setter Property="BorderBrush" Value="#C62828"/>
+								</Style>
+							</DataGridTextColumn.EditingElementStyle>
+						</DataGridTextColumn>
 
 						<DataGridTextColumn Header="Price"
-                                        Binding="{Binding Price}"
-                                        Width="120"/>
+											Binding="{Binding Price, UpdateSourceTrigger=PropertyChanged}"
+											Width="120">		
+							<DataGridTextColumn.ElementStyle>
+								<Style TargetType="TextBlock">
+									<Setter Property="Padding" Value="12,0"/>
+									<Setter Property="VerticalAlignment" Value="Center"/>
+								</Style>
+							</DataGridTextColumn.ElementStyle>
 
+							<DataGridTextColumn.EditingElementStyle>
+								<Style TargetType="TextBox">
+									<Setter Property="Padding" Value="8"/>
+									<Setter Property="BorderBrush" Value="#C62828"/>
+								</Style>
+							</DataGridTextColumn.EditingElementStyle>
+						</DataGridTextColumn>
+
+
+						<!-- ACTIVE -->
 						<DataGridCheckBoxColumn Header="Active"
-                                            Binding="{Binding IsActive}"
-                                            Width="80"/>
+										Binding="{Binding IsActive,
+												  Mode=TwoWay,
+												  UpdateSourceTrigger=PropertyChanged}"
+										Width="100">
+							<DataGridCheckBoxColumn.ElementStyle>
+								<Style TargetType="CheckBox">
+									<Setter Property="HorizontalAlignment" Value="Center"/>
+									<Setter Property="VerticalAlignment" Value="Center"/>
+								</Style>
+							</DataGridCheckBoxColumn.ElementStyle>
+						</DataGridCheckBoxColumn>
 
+						<!-- DELETE -->
 						<DataGridTemplateColumn Width="60">
 							<DataGridTemplateColumn.CellTemplate>
 								<DataTemplate>
 									<Button Content="✕"
-                                        Foreground="Red"
-                                        Background="Transparent"
-                                        Command="{Binding DataContext.DeleteVariantCommand,
-                                          RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                        CommandParameter="{Binding}"/>
+                    Foreground="Red"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    FontSize="14"
+                    ToolTip="Delete Category"
+                    Command="{Binding DataContext.DeleteCommand,
+                                      RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                    CommandParameter="{Binding}"/>
 								</DataTemplate>
 							</DataGridTemplateColumn.CellTemplate>
 						</DataGridTemplateColumn>
