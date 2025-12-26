@@ -17,24 +17,23 @@
 
 		<!-- ================= CATEGORIES ================= -->
 		<Border Grid.Column="0"
-        Background="White"
-        CornerRadius="8"
-        BorderBrush="#E0E0E0"
-        BorderThickness="1"
-        Padding="12"
-        Margin="0,0,12,0">
+				Background="White"
+				CornerRadius="6"
+				Padding="6"
+				Opacity="{Binding IsSearchActive,
+                Converter={StaticResource BoolToOpacityConverter}}"
+				IsHitTestVisible="{Binding IsSearchActive,
+                Converter={StaticResource BoolToHitTestConverter}}">
 
-			<StackPanel>
-				<TextBlock Text="Categories"
-                   FontSize="12"
-                   FontWeight="SemiBold"
-                   Margin="0,0,0,8"/>
-
-				<ListBox ItemsSource="{Binding Categories}"
-				SelectedItem="{Binding SelectedCategory}"
-				BorderThickness="0"
-				Background="Transparent"
-				ScrollViewer.VerticalScrollBarVisibility="Auto">
+			<GroupBox Header="Categories"
+					  FontSize="14"
+					  Background="#262626">
+				<ListBox
+				ItemsSource="{Binding Categories}"
+             SelectedItem="{Binding SelectedCategory}"
+             BorderThickness="0"
+             Background="Transparent"
+             ScrollViewer.VerticalScrollBarVisibility="Auto">
 
 					<!-- Remove default selection visuals -->
 					<ListBox.ItemContainerStyle>
@@ -50,9 +49,9 @@
 					<ListBox.ItemTemplate>
 						<DataTemplate>
 							<Border x:Name="Root"
-						   Height="46"
-						   Background="#333333"
-						   CornerRadius="6">
+                        Height="46"
+                        Background="#333333"
+                        CornerRadius="6">
 
 								<Grid>
 									<Grid.ColumnDefinitions>
@@ -62,19 +61,19 @@
 
 									<!-- Accent Bar -->
 									<Border x:Name="Accent"
-								   Grid.Column="0"
-								   Background="#C62828"
-								   CornerRadius="6,0,0,6"
-								   Visibility="Collapsed"/>
+                                Grid.Column="0"
+                                Background="#C62828"
+                                CornerRadius="6,0,0,6"
+                                Visibility="Collapsed"/>
 
 									<!-- Text -->
 									<TextBlock Grid.Column="1"
-									  Text="{Binding Name}"
-									  FontSize="12"
-									  FontWeight="SemiBold"
-									  Foreground="White"
-									  VerticalAlignment="Center"
-									  Margin="12,0"/>
+                                   Text="{Binding Name}"
+                                   FontSize="12"
+                                   FontWeight="SemiBold"
+                                   Foreground="White"
+                                   VerticalAlignment="Center"
+                                   Margin="12,0"/>
 								</Grid>
 							</Border>
 
@@ -83,14 +82,14 @@
 
 								<!-- Selected -->
 								<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}"
-            Value="True">
+                                 Value="True">
 									<Setter TargetName="Root" Property="Background" Value="#3E3E3E"/>
 									<Setter TargetName="Accent" Property="Visibility" Value="Visible"/>
 								</DataTrigger>
 
 								<!-- Hover -->
 								<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsMouseOver}"
-            Value="True">
+                                 Value="True">
 									<Setter TargetName="Root" Property="Background" Value="#444444"/>
 								</DataTrigger>
 
@@ -98,7 +97,7 @@
 						</DataTemplate>
 					</ListBox.ItemTemplate>
 				</ListBox>
-			</StackPanel>
+			</GroupBox>
 		</Border>
 
 
@@ -111,12 +110,9 @@
         Padding="12"
         Margin="0,0,12,0">
 
-			<StackPanel>
-				<TextBlock Text="Products"
-                   FontSize="12"
-                   FontWeight="SemiBold"
-                   Margin="0,0,0,8"/>
-
+			<GroupBox Header="Products"
+		  FontSize="14"
+		  Background="White">
 				<ListBox ItemsSource="{Binding Products}"
 				SelectedItem="{Binding SelectedProduct}"
 				BorderThickness="0"
@@ -185,7 +181,7 @@
 						</DataTemplate>
 					</ListBox.ItemTemplate>
 				</ListBox>
-			</StackPanel>
+			</GroupBox>
 		</Border>
 
 		<!-- ================= VARIANTS ================= -->
