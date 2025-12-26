@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using HandyControl.Tools;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SmartServe.Domain.Dependencies;
 using SmartServe.Domain.Services;
@@ -16,6 +17,7 @@ namespace SmartServePOS
 
 		protected override async void OnStartup(StartupEventArgs e)
 		{
+			ConfigHelper.Instance.SetLang("en");
 			base.OnStartup(e);
 
 			Configuration = new ConfigurationBuilder()

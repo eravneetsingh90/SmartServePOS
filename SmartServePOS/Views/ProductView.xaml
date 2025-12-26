@@ -30,7 +30,7 @@
                            Margin="0,0,0,8"/>
 
 				<ListBox ItemsSource="{Binding Categories}"
-						SelectedItem="{Binding SelectedCategory}"
+						SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"
 						BorderThickness="0"
 						Background="Transparent"
 						ScrollViewer.VerticalScrollBarVisibility="Auto">
@@ -127,18 +127,21 @@
 								Margin="10,0,0,0">
 
 						<Button Content="+ Add Product"
-                                Padding="12,6"
                                 Margin="0,0,8,0"
                                 Background="#F3F3F3"
                                 BorderBrush="#CCC"
                                 Command="{Binding AddProductCommand}"/>
 
 						<Button Content="Save Changes"
-                                Padding="14,6"
                                 Background="#2E7D32"
                                 Foreground="White"
                                 IsEnabled="{Binding CanSave}"
                                 Command="{Binding SaveCommand}"/>
+						
+						<Button Content="Refresh 🔄"
+								Background="#0047AB"
+								Foreground="White"
+								Command="{Binding RefreshCommand}"/>
 					</StackPanel>
 				</DockPanel>
 

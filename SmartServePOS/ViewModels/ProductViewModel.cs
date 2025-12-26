@@ -1,6 +1,7 @@
 ﻿using SmartServe.Domain.Stores;
 using SmartServe.EFCore.Models;
 using SmartServePOS.Command;
+using SmartServePOS.Helper;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
@@ -9,9 +10,10 @@ namespace SmartServePOS.ViewModels
 {
 	public class ProductViewModel : BaseViewModel
 	{
-		private readonly CategoryStore _categoryStore;
-		private readonly ProductStore _productStore;
-
+		private readonly ICategoryStore _categoryStore;
+		private readonly IProductStore _productStore;
+		private readonly INotificationService _notificationService;
+		private readonly IDialogService _dialogService;
 		public ObservableCollection<Category> Categories { get; } = new();
 		public ObservableCollection<Product> Products { get; } = new();
 
@@ -30,39 +32,37 @@ namespace SmartServePOS.ViewModels
 		public ICommand AddProductCommand { get; }
 		public ICommand SaveCommand { get; }
 		public ICommand DeleteProductCommand { get; }
-
+		public ICommand RefreshCommand { get; }
 		public ProductViewModel(
-			CategoryStore categoryStore,
-			ProductStore productStore)
+			ICategoryStore categoryStore,
+			IProductStore productStore,
+			INotificationService notificationService, 
+			IDialogService dialogService)
 		{
 			_categoryStore = categoryStore;
 			_productStore = productStore;
-
+			_notificationService = notificationService;
+			_dialogService = dialogService;
 			AddProductCommand = new RelayCommand(_ => AddProduct());
 			SaveCommand = new RelayCommand(async _ => await SaveAsync());
 			DeleteProductCommand = new RelayCommand(DeleteProduct);
-
+			RefreshCommand = new RelayCommand(async _ => await LoadProductsAsync());
 			_ = LoadCategoriesAsync();
 		}
 
-		// =============================
-		// LOAD CATEGORIES
-		// =============================
 		private async Task LoadCategoriesAsync()
 		{
 			Categories.Clear();
 
-			var data = await _categoryStore.GetAllAsync();
+			var data = await _categoryStore.GetAllCategoriesByOrderAsync();
 
-			foreach (var c in data.OrderBy(x => x.DisplayOrder))
+			foreach (var c in data)
 				Categories.Add(c);
 
-			SelectedCategory = Categories.FirstOrDefault();
+			if(SelectedCategory == null)
+				SelectedCategory = Categories.FirstOrDefault();
 		}
 
-		// =============================
-		// LOAD PRODUCTS BY CATEGORY
-		// =============================
 		private async Task LoadProductsAsync()
 		{
 			Products.Clear();
@@ -70,19 +70,13 @@ namespace SmartServePOS.ViewModels
 			if (SelectedCategory == null)
 				return;
 
-			var data = await _productStore.GetAllAsync();
-
-			foreach (var p in data
-				.Where(x => x.CategoryId == SelectedCategory.CategoryId)
-				.OrderBy(x => x.DisplayOrder))
+			var data = await _productStore.GetProductsByCategoryAsync(SelectedCategory.CategoryId);
+			foreach (var p in data)
 			{
 				Products.Add(p);
 			}
 		}
 
-		// =============================
-		// ADD PRODUCT
-		// =============================
 		private void AddProduct()
 		{
 			if (SelectedCategory == null)
@@ -101,66 +95,35 @@ namespace SmartServePOS.ViewModels
 			});
 		}
 
-		// =============================
-		// SAVE (WITH DUPLICATE CHECK)
-		// =============================
 		private async Task SaveAsync()
 		{
 			if (SelectedCategory == null)
 				return;
-
-			// 🔴 Duplicate check (per category)
-			var duplicateNames = Products
-				.Where(p => !string.IsNullOrWhiteSpace(p.Name))
-				.GroupBy(p => p.Name.Trim().ToLower())
-				.Where(g => g.Count() > 1)
-				.Select(g => g.Key)
-				.ToList();
-
-			if (duplicateNames.Any())
+			try
 			{
-				MessageBox.Show(
-					"Duplicate product names are not allowed within the same category.",
-					"Duplicate Products",
-					MessageBoxButton.OK,
-					MessageBoxImage.Warning);
-
+				await _productStore.SaveBulkProductsAsync(Products);
+				_notificationService.Success("Products saved successfully");
+			}
+			catch (Exception ex)
+			{
+				await _dialogService.ShowWarningAsync(string.Empty, ex.Message);
 				return;
 			}
-
-			// SAVE
-			foreach (var product in Products)
-			{
-				if (product.ProductId == 0)
-					await _productStore.AddAsync(product);
-				else
-					await _productStore.UpdateAsync(product);
-			}
-
-			await LoadProductsAsync();
 		}
-
-		// =============================
-		// DELETE
-		// =============================
 		private async void DeleteProduct(object? parameter)
 		{
 			if (parameter is not Product product)
 				return;
 
-			var result = MessageBox.Show(
-				$"Delete product \"{product.Name}\"?",
-				"Confirm Delete",
-				MessageBoxButton.YesNo,
-				MessageBoxImage.Warning);
+			var result = await _dialogService.ShowConfirmAsync("Confirm Delete", $"Are you sure you want to delete product \"{product.Name}\"?");
 
-			if (result != MessageBoxResult.Yes)
+			if (!result)
 				return;
 
 			Products.Remove(product);
 
 			if (product.ProductId != 0)
-				await _productStore.DeleteAsync(product);
+				await _productStore.DeleteAndSaveAsync(product);
 		}
 	}
 }

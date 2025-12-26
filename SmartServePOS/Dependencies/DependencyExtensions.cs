@@ -29,6 +29,8 @@ namespace SmartServePOS.Dependencies
 			services.AddSingleton<ProductVariantViewModel>();
 
 			services.AddScoped<IPrintService, PrintService>();
+			services.AddScoped<INotificationService, HandyNotificationService>();
+			services.AddScoped<IDialogService, HandyDialogService>();
 
 			return services;
 		}

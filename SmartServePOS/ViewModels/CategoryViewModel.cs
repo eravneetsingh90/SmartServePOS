@@ -1,16 +1,17 @@
-﻿using System.Collections.ObjectModel;
-using System.Windows;
-using System.Windows.Input;
-using SmartServe.Domain.Stores;
+﻿using SmartServe.Domain.Stores;
 using SmartServe.EFCore.Models;
 using SmartServePOS.Command;
+using SmartServePOS.Helper;
+using System.Collections.ObjectModel;
+using System.Windows.Input;
 
 namespace SmartServePOS.ViewModels
 {
 	public class CategoryViewModel : BaseViewModel
 	{
 		private readonly ICategoryStore _categoryStore;
-
+		private readonly INotificationService _notificationService;
+		private readonly IDialogService _dialogService;
 		public ObservableCollection<Category> Categories { get; } = new();
 
 		public ICommand AddCommand { get; }
@@ -18,10 +19,11 @@ namespace SmartServePOS.ViewModels
 		public ICommand RefreshCommand { get; }
 		public ICommand DeleteCommand { get; }
 
-		public CategoryViewModel(ICategoryStore categoryStore)
+		public CategoryViewModel(ICategoryStore categoryStore, INotificationService notificationService, IDialogService dialogService)
 		{
 			_categoryStore = categoryStore;
-
+			_notificationService = notificationService;
+			_dialogService = dialogService;
 			AddCommand = new RelayCommand(_ => AddCategory());
 			SaveCommand = new RelayCommand(async _ => await SaveAsync());
 			RefreshCommand = new RelayCommand(async _ => await LoadAsync());
@@ -30,7 +32,6 @@ namespace SmartServePOS.ViewModels
 			_ = LoadAsync();
 		}
 
-		// ================= LOAD =================
 		private async Task LoadAsync()
 		{
 			Categories.Clear();
@@ -39,7 +40,6 @@ namespace SmartServePOS.ViewModels
 				Categories.Add(c);
 		}
 
-		// ================= ADD =================
 		private void AddCategory()
 		{
 			int nextOrder = Categories.Any()
@@ -54,39 +54,28 @@ namespace SmartServePOS.ViewModels
 			});
 		}
 
-		// ================= SAVE =================
 		private async Task SaveAsync()
 		{
 			try
 			{
 				await _categoryStore.SaveBulkCategoriesAsync(Categories);
-				MessageBox.Show("Success", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-				//await LoadAsync();
+				_notificationService.Success("Categories saved successfully");
 			}
 			catch (Exception ex)
 			{
-				MessageBox.Show(
-					ex.Message,
-					String.Empty,
-					MessageBoxButton.OK,
-					MessageBoxImage.Warning);
+				await _dialogService.ShowWarningAsync(string.Empty,ex.Message);
 				return;
 			}
 		}
 
-		// ================= DELETE WITH CONFIRM =================
 		private async void DeleteCategory(object? parameter)
 		{
 			if (parameter is not Category category)
 				return;
 
-			var result = MessageBox.Show(
-				$"Are you sure you want to delete category \"{category.Name}\"?",
-				"Confirm Delete",
-				MessageBoxButton.YesNo,
-				MessageBoxImage.Warning);
+			var result = await _dialogService.ShowConfirmAsync("Confirm Delete", $"Are you sure you want to delete category \"{category.Name}\"?");
 
-			if (result != MessageBoxResult.Yes)
+			if (!result)
 				return;
 
 			Categories.Remove(category);
