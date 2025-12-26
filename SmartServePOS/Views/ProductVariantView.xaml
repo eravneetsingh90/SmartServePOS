@@ -204,15 +204,17 @@
 								Margin="10,0,0,0">
 						<Button Content="+ Add Variant"
                             Command="{Binding AddVariantCommand}"
-                            Padding="12,6"
-							Margin="0,0,8,0"
+                            Margin="0,0,8,0"
 							Background="#F3F3F3"
 							BorderBrush="#CCC"/>
 						<Button Content="Save Changes"
-								Padding="14,6"
 								Background="#2E7D32"
 								Foreground="White"
 								Command="{Binding SaveCommand}"/>
+						<Button Content="Refresh 🔄"
+								Background="#0047AB"
+								Foreground="White"
+								Command="{Binding RefreshCommand}"/>
 					</StackPanel>
 				</DockPanel>
 

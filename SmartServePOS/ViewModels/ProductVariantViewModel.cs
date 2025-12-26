@@ -1,48 +1,47 @@
 ﻿using SmartServe.Domain.Stores;
 using SmartServe.EFCore.Models;
 using SmartServePOS.Command;
+using SmartServePOS.Helper;
 using System.Collections.ObjectModel;
-using System.Windows;
 using System.Windows.Input;
 
 namespace SmartServePOS.ViewModels
 {
 	public class ProductVariantViewModel : BaseViewModel
 	{
-		private readonly CategoryStore _categoryStore;
-		private readonly ProductStore _productStore;
-		private readonly ProductVariantStore _variantStore;
-
+		private readonly ICategoryStore _categoryStore;
+		private readonly IProductStore _productStore;
+		private readonly IProductVariantStore _variantStore;
+		private readonly INotificationService _notificationService;
+		private readonly IDialogService _dialogService;
+		public ICommand RefreshCommand { get; }
 		public ProductVariantViewModel(
-			CategoryStore categoryStore,
-			ProductStore productStore,
-			ProductVariantStore variantStore)
+			ICategoryStore categoryStore,
+			IProductStore productStore,
+			IProductVariantStore variantStore,
+			INotificationService notificationService,
+			IDialogService dialogService)
 		{
 			_categoryStore = categoryStore;
 			_productStore = productStore;
 			_variantStore = variantStore;
-
+			_notificationService = notificationService;
+			_dialogService = dialogService;
 			Categories = new ObservableCollection<Category>();
 			Products = new ObservableCollection<Product>();
 			Variants = new ObservableCollection<ProductVariant>();
 
 			AddVariantCommand = new RelayCommand(_ => AddVariant());
 			SaveCommand = new RelayCommand(async _ => await SaveAsync());
-			DeleteVariantCommand = new RelayCommand<ProductVariant>(DeleteVariant);
-
+			DeleteCommand = new RelayCommand<ProductVariant>(DeleteVariant);
+			RefreshCommand = new RelayCommand(async _ => await LoadVariantsAsync());
 			_ = LoadCategoriesAsync();
 		}
 
-		// =========================
-		// COLLECTIONS
-		// =========================
 		public ObservableCollection<Category> Categories { get; }
 		public ObservableCollection<Product> Products { get; }
 		public ObservableCollection<ProductVariant> Variants { get; }
 
-		// =========================
-		// SELECTED CATEGORY
-		// =========================
 		private Category? _selectedCategory;
 		public Category? SelectedCategory
 		{
@@ -55,9 +54,6 @@ namespace SmartServePOS.ViewModels
 			}
 		}
 
-		// =========================
-		// SELECTED PRODUCT
-		// =========================
 		private Product? _selectedProduct;
 		public Product? SelectedProduct
 		{
@@ -70,24 +66,19 @@ namespace SmartServePOS.ViewModels
 			}
 		}
 
-		// =========================
-		// COMMANDS
-		// =========================
 		public ICommand AddVariantCommand { get; }
 		public ICommand SaveCommand { get; }
-		public ICommand DeleteVariantCommand { get; }
+		public ICommand DeleteCommand { get; }
 
-		// =========================
-		// LOAD DATA
-		// =========================
 		private async Task LoadCategoriesAsync()
 		{
 			Categories.Clear();
-			var items = await _categoryStore.GetAllAsync();
+			var items = await _categoryStore.GetAllCategoriesByOrderAsync();
 
-			foreach (var c in items.Where(x => x.IsActive==true))
+			foreach (var c in items)
 				Categories.Add(c);
-			SelectedCategory = Categories.FirstOrDefault();
+			if(SelectedCategory == null)
+				SelectedCategory = Categories.FirstOrDefault();
 		}
 
 		private async Task LoadProductsAsync()
@@ -98,13 +89,13 @@ namespace SmartServePOS.ViewModels
 			if (SelectedCategory == null)
 				return;
 
-			var products = await _productStore.GetAllAsync();
-			foreach (var p in products
-				.Where(x => x.CategoryId == SelectedCategory.CategoryId && x.IsActive==true))
+			var products = await _productStore.GetProductsByCategoryAsync(SelectedCategory.CategoryId);
+			foreach (var p in products)
 			{
 				Products.Add(p);
 			}
-			SelectedProduct = Products.FirstOrDefault();
+			if(SelectedProduct == null)
+				SelectedProduct = Products.FirstOrDefault();
 		}
 
 		private async Task LoadVariantsAsync()
@@ -114,17 +105,13 @@ namespace SmartServePOS.ViewModels
 			if (SelectedProduct == null)
 				return;
 
-			var variants = await _variantStore.GetAllAsync();
-			foreach (var v in variants
-				.Where(x => x.ProductId == SelectedProduct.ProductId))
+			var variants = await _variantStore.GetProductsVariantByProductAsync(SelectedProduct.ProductId);
+			foreach (var v in variants)
 			{
 				Variants.Add(v);
 			}
 		}
 
-		// =========================
-		// ADD VARIANT
-		// =========================
 		private void AddVariant()
 		{
 			if (SelectedProduct == null)
@@ -147,68 +134,34 @@ namespace SmartServePOS.ViewModels
 			OnPropertyChanged(nameof(Variants));
 		}
 
-		private bool CanAddVariant()
-		{
-			return SelectedProduct != null;
-		}
-
-		// =========================
-		// DELETE VARIANT
-		// =========================
-		private void DeleteVariant(ProductVariant? variant)
+		private async void DeleteVariant(ProductVariant? variant)
 		{
 			if (variant == null)
 				return;
 
-			var result = MessageBox.Show(
-				$"Delete variant '{variant.Name}'?",
-				"Confirm Delete",
-				MessageBoxButton.YesNo,
-				MessageBoxImage.Warning);
+			var result = await _dialogService.ShowConfirmAsync("Confirm Delete", $"Are you sure you want to delete variant \"{variant.Name}\"?");
 
-			if (result != MessageBoxResult.Yes)
+			if (!result)
 				return;
 
 			Variants.Remove(variant);
 
 			if (variant.ProductVariantId != 0)
-				_ = _variantStore.DeleteAsync(variant);
+				_ = _variantStore.DeleteAndSaveAsync(variant);
 		}
 
-		// =========================
-		// SAVE
-		// =========================
 		private async Task SaveAsync()
 		{
-			// Simple duplicate check per product
-			var duplicate = Variants
-				.GroupBy(x => x.Name.Trim().ToLower())
-				.Any(g => g.Count() > 1);
-
-			if (duplicate)
+			try
 			{
-				MessageBox.Show(
-					"Duplicate variant names are not allowed for the same product.",
-					"Validation Error",
-					MessageBoxButton.OK,
-					MessageBoxImage.Error);
+				await _variantStore.SaveBulkProductVariantsAsync(Variants);
+				_notificationService.Success("Saved Successfully");
+			}
+			catch (Exception ex)
+			{
+				await _dialogService.ShowWarningAsync(string.Empty, ex.Message);
 				return;
 			}
-
-			foreach (var variant in Variants)
-			{
-				if (variant.ProductVariantId == 0)
-					await _variantStore.AddAsync(variant);
-				else
-					await _variantStore.UpdateAsync(variant);
-			}
-
-			await LoadVariantsAsync();
-		}
-
-		private bool CanSave()
-		{
-			return Variants.Any();
 		}
 	}
 }
