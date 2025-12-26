@@ -9,20 +9,22 @@ namespace SmartServePOS.ViewModels
 {
 	public class CategoryViewModel : BaseViewModel
 	{
-		private readonly CategoryStore _categoryStore;
+		private readonly ICategoryStore _categoryStore;
 
 		public ObservableCollection<Category> Categories { get; } = new();
 
 		public ICommand AddCommand { get; }
 		public ICommand SaveCommand { get; }
+		public ICommand RefreshCommand { get; }
 		public ICommand DeleteCommand { get; }
 
-		public CategoryViewModel(CategoryStore categoryStore)
+		public CategoryViewModel(ICategoryStore categoryStore)
 		{
 			_categoryStore = categoryStore;
 
 			AddCommand = new RelayCommand(_ => AddCategory());
 			SaveCommand = new RelayCommand(async _ => await SaveAsync());
+			RefreshCommand = new RelayCommand(async _ => await LoadAsync());
 			DeleteCommand = new RelayCommand(DeleteCategory);
 
 			_ = LoadAsync();
@@ -32,9 +34,8 @@ namespace SmartServePOS.ViewModels
 		private async Task LoadAsync()
 		{
 			Categories.Clear();
-
-			var data = await _categoryStore.GetAllAsync();
-			foreach (var c in data.OrderBy(x => x.DisplayOrder))
+			var data = await _categoryStore.GetAllCategoriesByOrderAsync();
+			foreach (var c in data)
 				Categories.Add(c);
 		}
 
@@ -45,44 +46,32 @@ namespace SmartServePOS.ViewModels
 			? Categories.Max(c => c.DisplayOrder) + 1
 			: 1;
 
-				Categories.Add(new Category
-				{
-					Name = "New Category",
-					IsActive = true,
-					DisplayOrder = nextOrder
-				});	
+			Categories.Add(new Category
+			{
+				Name = "New Category",
+				IsActive = true,
+				DisplayOrder = nextOrder
+			});
 		}
 
 		// ================= SAVE =================
 		private async Task SaveAsync()
 		{
-			var duplicateNames = Categories
-			.Where(c => !string.IsNullOrWhiteSpace(c.Name))
-			.GroupBy(c => c.Name.Trim().ToLower())
-			.Where(g => g.Count() > 1)
-			.Select(g => g.Key)
-			.ToList();
-			
-			if (duplicateNames.Any())
+			try
+			{
+				await _categoryStore.SaveBulkCategoriesAsync(Categories);
+				MessageBox.Show("Success", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+				//await LoadAsync();
+			}
+			catch (Exception ex)
 			{
 				MessageBox.Show(
-					"Duplicate category names are not allowed.\n\n" +
-					"Please ensure all category names are unique.",
-					"Duplicate Categories",
+					ex.Message,
+					String.Empty,
 					MessageBoxButton.OK,
 					MessageBoxImage.Warning);
-
-				return; // ❌ Stop save
+				return;
 			}
-			foreach (var category in Categories)
-			{
-				if (category.CategoryId == 0)
-					await _categoryStore.AddAsync(category);
-				else
-					await _categoryStore.UpdateAsync(category);
-			}
-
-			await LoadAsync();
 		}
 
 		// ================= DELETE WITH CONFIRM =================
@@ -103,7 +92,7 @@ namespace SmartServePOS.ViewModels
 			Categories.Remove(category);
 
 			if (category.CategoryId != 0)
-				await _categoryStore.DeleteAsync(category);
+				await _categoryStore.DeleteAndSaveAsync(category);
 		}
 	}
 }

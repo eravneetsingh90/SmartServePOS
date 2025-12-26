@@ -41,12 +41,17 @@
                                 Background="#F3F3F3"
                                 BorderBrush="#CCC"
                                 Command="{Binding AddCommand}"/>
-
 						<Button Content="Save Changes"
                                 Padding="14,6"
+								Margin="0,0,8,0"
                                 Background="#2E7D32"
                                 Foreground="White"
                                 Command="{Binding SaveCommand}"/>
+						<Button Content="Refresh 🔄"
+								Padding="14,6"
+								Background="#0047AB"
+								Foreground="White"
+								Command="{Binding RefreshCommand}"/>
 					</StackPanel>
 				</DockPanel>
 
