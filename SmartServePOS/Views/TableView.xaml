@@ -129,14 +129,71 @@
 										Margin="0,0,2,0"
 										Background="Transparent"
 										BorderThickness="1"
-										Content="🖨" />
+										Content="🖨">
+
+										<Button.Style>
+											<Style TargetType="Button">
+												<!--  Hidden by default  -->
+												<Setter Property="Visibility" Value="Collapsed" />
+
+												<Style.Triggers>
+													<!--  Show ONLY when Running Table  -->
+													<DataTrigger Binding="{Binding StatusName}" Value="Running Table">
+														<Setter Property="Visibility" Value="Visible" />
+													</DataTrigger>
+												</Style.Triggers>
+											</Style>
+										</Button.Style>
+
+									</Button>
+
 
 									<Button
 										Width="36"
 										Height="34"
 										Background="Transparent"
 										BorderThickness="1"
-										Content="👁" />
+										Content="👁">
+
+										<Button.Style>
+											<Style TargetType="Button">
+												<!--  Hidden by default  -->
+												<Setter Property="Visibility" Value="Collapsed" />
+
+												<Style.Triggers>
+													<!--  Show ONLY when Running Table  -->
+													<DataTrigger Binding="{Binding StatusName}" Value="Running Table">
+														<Setter Property="Visibility" Value="Visible" />
+													</DataTrigger>
+												</Style.Triggers>
+											</Style>
+										</Button.Style>
+
+									</Button>
+									<Button
+										Width="36"
+										Height="34"
+										Margin="2,0,0,0"
+										Background="Transparent"
+										BorderThickness="1"
+										Content="💾">
+
+										<Button.Style>
+											<Style TargetType="Button">
+												<!--  Hidden by default  -->
+												<Setter Property="Visibility" Value="Collapsed" />
+
+												<Style.Triggers>
+													<!--  Show only when Printed Table  -->
+													<DataTrigger Binding="{Binding StatusName}" Value="Printed Table">
+														<Setter Property="Visibility" Value="Visible" />
+													</DataTrigger>
+												</Style.Triggers>
+											</Style>
+										</Button.Style>
+
+									</Button>
+
 								</StackPanel>
 							</Grid>
 
