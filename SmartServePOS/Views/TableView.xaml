@@ -68,7 +68,6 @@
 			<TextBlock Foreground="#FFB74D" Text="● Running KOT" />
 		</StackPanel>
 
-		<!--  Body: responsive, scrollable grid of table tiles  -->
 		<ScrollViewer VerticalScrollBarVisibility="Auto">
 			<ItemsControl ItemsSource="{Binding Tables}">
 				<ItemsControl.ItemsPanel>
@@ -82,149 +81,74 @@
 
 				<ItemsControl.ItemTemplate>
 					<DataTemplate>
-						<Border
-							Width="120"
-							Height="95"
+						<Grid
 							Margin="8"
 							Background="White"
-							BorderBrush="#BDBDBD"
-							BorderThickness="1"
-							CornerRadius="6"
 							Cursor="Hand">
 
-							<Grid>
+							<!--  Dotted Border Look  -->
+							<Border
+								BorderBrush="#E0E0E0"
+								BorderThickness="1"
+								CornerRadius="8" />
 
-								<!--  Dotted Border Look  -->
-								<Border
-									BorderBrush="#BDBDBD"
-									BorderThickness="1"
-									CornerRadius="6" />
+							<Grid Margin="8">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="*" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="36" />
+								</Grid.RowDefinitions>
 
-								<Grid Margin="8">
-									<Grid.RowDefinitions>
-										<RowDefinition Height="*" />
-										<RowDefinition Height="Auto" />
-									</Grid.RowDefinitions>
+								<!--  Table Name  -->
+								<TextBlock
+									HorizontalAlignment="Center"
+									VerticalAlignment="Center"
+									FontSize="16"
+									FontWeight="SemiBold"
+									Text="{Binding DisplayName}" />
 
-									<!--  Table Name  -->
-									<TextBlock
-										HorizontalAlignment="Center"
-										VerticalAlignment="Center"
-										FontSize="16"
-										FontWeight="SemiBold"
-										Text="{Binding DisplayName}" />
-
-									<!--  Amount  -->
-									<TextBlock
-										Grid.Row="1"
-										HorizontalAlignment="Center"
-										VerticalAlignment="Center"
-										FontSize="14"
-										FontWeight="Bold"
-										Foreground="#2E7D32"
-										Text="{Binding Amount, StringFormat=₹ {0:N2}}" />
-								</Grid>
-
-								<!--  Status Strip  -->
-								<Border
-									Width="6"
-									HorizontalAlignment="Left"
-									Background="{Binding ColorHex}"
-									CornerRadius="6,0,0,6" />
-
+								<!--  Amount  -->
+								<TextBlock
+									Grid.Row="1"
+									HorizontalAlignment="Center"
+									VerticalAlignment="Center"
+									FontSize="12"
+									FontWeight="Bold"
+									Foreground="#2E7D32"
+									Text="{Binding Amount, StringFormat=₹ {0:N2}}" />
 								<!--  Action Icons  -->
-								<!--<StackPanel
-									Margin="0,0,6,6"
-									HorizontalAlignment="Right"
+								<StackPanel
+									Grid.Row="2"
+									HorizontalAlignment="Center"
 									VerticalAlignment="Bottom"
 									Orientation="Horizontal">
 
 									<Button
-										Width="26"
-										Height="26"
-										Margin="2"
+										Width="36"
+										Height="34"
+										Margin="0,0,2,0"
 										Background="Transparent"
-										BorderThickness="0"
+										BorderThickness="1"
 										Content="🖨" />
 
 									<Button
-										Width="26"
-										Height="26"
-										Margin="2"
+										Width="36"
+										Height="34"
 										Background="Transparent"
-										BorderThickness="0"
+										BorderThickness="1"
 										Content="👁" />
-								</StackPanel>-->
-
-							</Grid>
-						</Border>
-						<!--<Button
-							Width="150"
-							Height="100"
-							Margin="8"
-							HorizontalContentAlignment="Stretch"
-							VerticalContentAlignment="Stretch"
-							Background="White"
-							BorderBrush="#BDBDBD"
-							BorderThickness="1"
-							Click="TableButton_Click"
-							CommandParameter="{Binding}"
-							ToolTip="{Binding DisplayName}">
-							<Grid Margin="4">
-								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="8" />
-									<ColumnDefinition Width="*" />
-								</Grid.ColumnDefinitions>
-
-								<Grid.RowDefinitions>
-									<RowDefinition Height="*" />
-									<RowDefinition Height="Auto" />
-								</Grid.RowDefinitions>
-
-								-->
-						<!--  Status color strip  -->
-						<!--
-								<Border
-									Grid.RowSpan="2"
-									Grid.Column="0"
-									Background="{Binding ColorHex}"
-									CornerRadius="4,0,0,4" />
-
-								-->
-						<!--  Main Content  -->
-						<!--
-								<StackPanel
-									Grid.Row="0"
-									Grid.Column="1"
-									Margin="10,6"
-									VerticalAlignment="Center">
-
-									<TextBlock
-										FontSize="16"
-										FontWeight="SemiBold"
-										Text="{Binding DisplayName}"
-										TextTrimming="CharacterEllipsis" />
-
-									<TextBlock
-										Margin="0,4,0,0"
-										FontSize="14"
-										Foreground="#616161"
-										Text="{Binding Amount, StringFormat=₹ {0}}" />
 								</StackPanel>
-
-								-->
-						<!--  Status text (bottom right)  -->
-						<!--<TextBlock Grid.Column="1"
-										   Grid.Row="1"
-										   Text="{Binding StatusName}"
-										   FontSize="11"
-										   Foreground="#757575"
-										   HorizontalAlignment="Right"
-										   Margin="0,0,6,4"/>-->
-						<!--
 							</Grid>
 
-						</Button>-->
+							<!--  Status Strip  -->
+							<Border
+								Width="6"
+								HorizontalAlignment="Left"
+								Background="{Binding ColorHex}"
+								CornerRadius="6,0,0,6" />
+
+						</Grid>
+
 					</DataTemplate>
 				</ItemsControl.ItemTemplate>
 			</ItemsControl>
