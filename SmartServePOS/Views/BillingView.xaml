@@ -18,7 +18,7 @@
 		<Grid Grid.Row="0" Margin="6">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*"/>
-				<ColumnDefinition Width="300"/>
+				<ColumnDefinition Width="Auto"/>
 			</Grid.ColumnDefinitions>
 
 			<TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
@@ -34,20 +34,24 @@
 				<Button Content="Dine In" Width="90"
                         Background="#C62828"
                         Foreground="White"
-                        Margin="4"/>
+                        Margin="10,4,4,4"
+						Cursor="Hand"/>
 				<Button Content="Delivery" Width="90"
                         Background="#555"
                         Foreground="White"
-                        Margin="4"/>
+                        Margin="4"
+						Cursor="Hand"/>
 				<Button Content="Pick Up" Width="90"
                         Background="#555"
                         Foreground="White"
-                        Margin="4"/>
-				<!--<Button Content="Reload Menu" Width="90"
+                        Margin="4"
+						Cursor="Hand"/>
+				<Button Content="Refresh" Width="90"
 						Background="#555"
 						Foreground="White"
 						Margin="4"
-						Command="{Binding ReloadMenuCommand}"/>-->
+						Command="{Binding ReloadMenuCommand}"
+						Cursor="Hand"/>
 			</StackPanel>
 		</Grid>
 
@@ -336,7 +340,7 @@ IsHitTestVisible="{Binding IsSearchActive,
 					</Grid.RowDefinitions>
 
 					<!-- Header -->
-					<Grid Margin="0,0,0,0">
+					<Grid Margin="0,0,0,6">
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition Width="20"/>
 							<!-- Remove -->
@@ -348,17 +352,12 @@ IsHitTestVisible="{Binding IsSearchActive,
 							<!-- Price -->
 						</Grid.ColumnDefinitions>
 
-						<!-- Empty header for remove column -->
-						<TextBlock Grid.Column="0"/>
-
-						<!-- ITEM -->
 						<TextBlock Grid.Column="1"
                Text="ITEMS"
                FontWeight="Bold"
                FontSize="12"
                Foreground="#555"/>
 
-						<!-- QTY -->
 						<TextBlock Grid.Column="2"
                Text="QTY."
                FontWeight="Bold"
@@ -366,7 +365,6 @@ IsHitTestVisible="{Binding IsSearchActive,
                Foreground="#555"
                HorizontalAlignment="Center"/>
 
-						<!-- PRICE -->
 						<TextBlock Grid.Column="3"
                Text="PRICE"
                FontWeight="Bold"
@@ -377,7 +375,105 @@ IsHitTestVisible="{Binding IsSearchActive,
 
 
 					<!-- Bill Items -->
-					<ListView Grid.Row="1"
+					<ItemsControl Grid.Row="1"
+              ItemsSource="{Binding BillItems}"
+              Margin="0,6,0,0">
+
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<StackPanel />
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+
+						<ItemsControl.ItemTemplate>
+							<DataTemplate>
+								<Border BorderBrush="#E6E6E6"
+        BorderThickness="1"
+        CornerRadius="6"
+        Padding="2">
+
+									<Grid>
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="20"/>
+											<ColumnDefinition Width="180"/>
+											<ColumnDefinition Width="110"/>
+											<ColumnDefinition Width="90"/>
+										</Grid.ColumnDefinitions>
+
+										<!-- REMOVE -->
+										<Button Grid.Column="0"
+												Content="✕"
+												Width="24"
+												Height="24"
+												Foreground="Red"
+												Background="Transparent"
+												BorderThickness="0"
+												Cursor="Hand"
+												Padding="5"
+												Command="{Binding DataContext.RemoveItemCommand,
+																  RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+												CommandParameter="{Binding}"/>
+
+										<!-- ITEM -->
+										<StackPanel Grid.Column="1">
+											<TextBlock Text="{Binding ItemName}"
+                                   FontSize="13"
+                                   FontWeight="SemiBold"
+                                   TextWrapping="Wrap"/>
+											<TextBlock Text="{Binding PriceSnapshot, StringFormat=₹{0} each}"
+                                   FontSize="11"
+                                   Foreground="#888"/>
+										</StackPanel>
+
+										<!-- QTY -->
+										<Border Grid.Column="2"
+                            BorderBrush="#DDD"
+                            BorderThickness="1"
+                            CornerRadius="4"
+                            Padding="2"
+                            HorizontalAlignment="Center">
+
+											<StackPanel Orientation="Horizontal">
+												<Button Content="−"
+                                    Width="26"
+                                    Command="{Binding DataContext.DecreaseQtyCommand,
+                                                      RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                    CommandParameter="{Binding}"
+														Cursor="Hand"/>
+
+												<TextBlock Text="{Binding Quantity}"
+                                       Width="26"
+                                       FontWeight="Bold"
+                                       TextAlignment="Center"
+														   VerticalAlignment="Center"/>
+
+												<Button Content="+"
+                                    Width="26"
+                                    Command="{Binding DataContext.IncreaseQtyCommand,
+                                                      RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                    CommandParameter="{Binding}" Cursor="Hand"/>
+											</StackPanel>
+										</Border>
+
+										<!-- PRICE -->
+										<StackPanel Grid.Column="3"
+                                HorizontalAlignment="Right"
+													VerticalAlignment="Center">
+											<TextBlock Text="{Binding TotalPrice, StringFormat=₹{0}}"
+                                   FontSize="14"
+                                   FontWeight="Bold"/>
+											
+										</StackPanel>
+
+									</Grid>
+								</Border>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+
+
+
+					<!--<ListView Grid.Row="1"
           ItemsSource="{Binding BillItems}"
           BorderThickness="0"
           Background="Transparent"
@@ -392,104 +488,83 @@ IsHitTestVisible="{Binding IsSearchActive,
 									<Grid>
 										<Grid.ColumnDefinitions>
 											<ColumnDefinition Width="20"/>
-											<!-- Remove -->
+											--><!-- Remove --><!--
 											<ColumnDefinition Width="180"/>
-											<!-- Item -->
+											--><!-- Item --><!--
 											<ColumnDefinition Width="110"/>
-											<!-- Qty -->
+											--><!-- Qty --><!--
 											<ColumnDefinition Width="90"/>
-											<!-- Price -->
+											--><!-- Price --><!--
 										</Grid.ColumnDefinitions>
 
-										<!-- ❌ REMOVE -->
+										--><!-- REMOVE --><!--
 										<Button Grid.Column="0"
-                            Content="✕"
-                            Width="24"
-                            Height="24"
-                            FontSize="14"
-                            Foreground="Red"
-                            Background="Transparent"
-                            BorderThickness="0"
-                            VerticalAlignment="Top"
-                            Command="{Binding DataContext.RemoveItemCommand,
-                                              RelativeSource={RelativeSource AncestorType=ListView}}"
-                            CommandParameter="{Binding}"/>
+            Content="✕"
+            Width="24"
+            Height="24"
+            Foreground="Red"
+            Background="Transparent"
+            BorderThickness="0"
+            Command="{Binding DataContext.RemoveItemCommand,
+                              RelativeSource={RelativeSource AncestorType=ListView}}"
+            CommandParameter="{Binding}"/>
 
-										<!-- ITEM NAME -->
-										<StackPanel Grid.Column="1"
-                                Margin="4,0">
+										--><!-- ITEM --><!--
+										<StackPanel Grid.Column="1">
 											<TextBlock Text="{Binding ItemName}"
-                                   FontSize="13"
-                                   FontWeight="SemiBold"
-                                   TextWrapping="Wrap"/>
+                   FontSize="13"
+                   FontWeight="SemiBold"
+                   TextWrapping="Wrap"/>
 
 											<TextBlock Text="{Binding PriceSnapshot, StringFormat=₹{0} each}"
-                                   FontSize="11"
-                                   Foreground="#888"/>
+                   FontSize="11"
+                   Foreground="#888"/>
 										</StackPanel>
 
-										<!-- QTY CONTROL -->
+										--><!-- QTY --><!--
 										<Border Grid.Column="2"
-                            BorderBrush="#DDD"
-                            BorderThickness="1"
-                            CornerRadius="4"
-                            Padding="2"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center">
+            BorderBrush="#DDD"
+            BorderThickness="1"
+            CornerRadius="4"
+            Padding="2"
+            HorizontalAlignment="Center">
 
 											<StackPanel Orientation="Horizontal">
-
 												<Button Content="−"
-                                    Width="26"
-                                    Height="26"
-                                    FontSize="16"
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    Command="{Binding DataContext.DecreaseQtyCommand,
-                                                      RelativeSource={RelativeSource AncestorType=ListView}}"
-                                    CommandParameter="{Binding}"/>
+                    Width="26"
+                    Command="{Binding DataContext.DecreaseQtyCommand,
+                                      RelativeSource={RelativeSource AncestorType=ListView}}"
+                    CommandParameter="{Binding}"/>
 
 												<TextBlock Text="{Binding Quantity}"
-                                       Width="26"
-                                       FontWeight="Bold"
-                                       TextAlignment="Center"
-                                       VerticalAlignment="Center"/>
+                       Width="26"
+                       TextAlignment="Center"
+                       FontWeight="Bold"/>
 
 												<Button Content="+"
-                                    Width="26"
-                                    Height="26"
-                                    FontSize="16"
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    Command="{Binding DataContext.IncreaseQtyCommand,
-                                                      RelativeSource={RelativeSource AncestorType=ListView}}"
-                                    CommandParameter="{Binding}"/>
-
-
+                    Width="26"
+                    Command="{Binding DataContext.IncreaseQtyCommand,
+                                      RelativeSource={RelativeSource AncestorType=ListView}}"
+                    CommandParameter="{Binding}"/>
 											</StackPanel>
 										</Border>
 
-										<!-- PRICE -->
+										--><!-- PRICE --><!--
 										<StackPanel Grid.Column="3"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Center">
-
+                HorizontalAlignment="Right">
 											<TextBlock Text="{Binding TotalPrice, StringFormat=₹{0}}"
-                                   FontSize="14"
-                                   FontWeight="Bold"
-                                   TextAlignment="Right"/>
+                   FontWeight="Bold"/>
 
 											<TextBlock Text="{Binding PriceSnapshot, StringFormat=₹{0}}"
-                                   FontSize="11"
-                                   Foreground="#888"
-                                   TextAlignment="Right"/>
+                   FontSize="11"
+                   Foreground="#888"/>
 										</StackPanel>
-
 									</Grid>
+
 								</Border>
 							</DataTemplate>
 						</ListView.ItemTemplate>
-					</ListView>
+					</ListView>-->
 
 					<!-- Footer -->
 					<Border Grid.Row="2"
