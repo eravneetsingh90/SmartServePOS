@@ -74,7 +74,7 @@
                           Converter={StaticResource BoolToOpacityConverter}}"
         IsHitTestVisible="{Binding IsSearchActive,
                                    Converter={StaticResource BoolToHitTestConverter}}">
-				
+
 
 				<ListBox ItemsSource="{Binding Categories}"
              SelectedItem="{Binding SelectedCategory}"
@@ -240,60 +240,78 @@ IsHitTestVisible="{Binding IsSearchActive,
 					</Grid.RowDefinitions>
 
 					<!-- Product Name -->
-					<TextBlock Text="{Binding SelectedProduct.Name}"
-                   FontSize="12"
-                   FontWeight="Bold"
-                   />
+					<TextBlock
+            Text="{Binding SelectedProduct.Name}"
+            FontSize="12"
+            FontWeight="Bold"
+            Margin="4,2,4,6"/>
+
+					<!-- Variant List -->
 					<ScrollViewer Grid.Row="1"
-              VerticalScrollBarVisibility="Auto"
-              HorizontalScrollBarVisibility="Disabled">
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
 
-						<ItemsControl ItemsSource="{Binding Variants}"
-                  HorizontalAlignment="Stretch">
+						<ItemsControl ItemsSource="{Binding Variants}">
 
-							<!-- CORRECT panel -->
+							<!-- 🔑 REQUIRED: Stretch item container -->
+							<ItemsControl.ItemContainerStyle>
+								<Style TargetType="ContentPresenter">
+									<Setter Property="HorizontalAlignment" Value="Stretch"/>
+								</Style>
+							</ItemsControl.ItemContainerStyle>
+
+							<!-- Panel -->
 							<ItemsControl.ItemsPanel>
 								<ItemsPanelTemplate>
 									<VirtualizingStackPanel />
 								</ItemsPanelTemplate>
 							</ItemsControl.ItemsPanel>
 
+							<!-- Item Template -->
 							<ItemsControl.ItemTemplate>
 								<DataTemplate>
 
-									<Button Command="{Binding DataContext.AddVariantCommand,
-                                          RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                        CommandParameter="{Binding}"
-                        Margin="5,5"
-                        MinHeight="60"
-                        HorizontalAlignment="Stretch"
-                        Background="White"
-                        BorderBrush="#C62828"
-                        BorderThickness="1">
+									<Button
+                            Command="{Binding DataContext.AddVariantCommand,
+                                              RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                            CommandParameter="{Binding}"
+                            Margin="5"
+                            MinHeight="46"
+                            Background="White"
+                            BorderBrush="#C62828"
+                            BorderThickness="1"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch">
 
 										<!-- ONE ROW GRID -->
-										<Grid>
+										<Grid Margin="12,6">
 											<Grid.ColumnDefinitions>
-												<ColumnDefinition Width="*"/>
+												<!-- Name takes all remaining space -->
+												<ColumnDefinition Width="*" />
+												<!-- Price auto-sized but pushed right -->
 												<ColumnDefinition Width="Auto" />
 											</Grid.ColumnDefinitions>
 
 											<!-- Variant Name -->
-											<TextBlock Text="{Binding VariantName}"
-													   FontSize="16"
-													   FontWeight="SemiBold"
-													   VerticalAlignment="Center" />
+											<TextBlock
+                                    Text="{Binding VariantName}"
+                                    FontSize="16"
+                                    FontWeight="SemiBold"
+                                    VerticalAlignment="Center"
+                                    TextTrimming="CharacterEllipsis" />
 
-											<!-- Price -->
-											<TextBlock Grid.Column="1"
-													   Text="{Binding Price, StringFormat=₹ {0}}"
-													   FontSize="16"
-													   FontWeight="Bold"
-													   Foreground="#2E7D32"
-													   VerticalAlignment="Center"
-													   Margin="16,0,0,0"/>
+											<!-- Price (EXTREME RIGHT) -->
+											<TextBlock
+                                    Grid.Column="1"
+                                    Text="{Binding Price, StringFormat=₹ {0:N0}}"
+                                    FontSize="16"
+                                    FontWeight="Bold"
+                                    Foreground="#2E7D32"
+                                    VerticalAlignment="Center"
+                                    Margin="16,0,0,0" />
 										</Grid>
 									</Button>
+
 								</DataTemplate>
 							</ItemsControl.ItemTemplate>
 
@@ -446,8 +464,8 @@ IsHitTestVisible="{Binding IsSearchActive,
                                     Command="{Binding DataContext.IncreaseQtyCommand,
                                                       RelativeSource={RelativeSource AncestorType=ListView}}"
                                     CommandParameter="{Binding}"/>
-												
-		
+
+
 											</StackPanel>
 										</Border>
 
