@@ -85,7 +85,12 @@
 							Margin="8"
 							Background="White"
 							Cursor="Hand">
-
+							<Grid.InputBindings>
+								<MouseBinding
+									Command="{Binding DataContext.OpenTableCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+									CommandParameter="{Binding}"
+									MouseAction="LeftClick" />
+							</Grid.InputBindings>
 							<!--  Dotted Border Look  -->
 							<Border
 								BorderBrush="#E0E0E0"
@@ -115,7 +120,9 @@
 									FontSize="12"
 									FontWeight="Bold"
 									Foreground="#2E7D32"
-									Text="{Binding Amount, StringFormat=₹ {0:N2}}" />
+									Text="{Binding Amount, StringFormat=₹ {0:N2}}"
+									Visibility="{Binding Amount, Converter={StaticResource AmountToVisibilityConverter}}" />
+
 								<!--  Action Icons  -->
 								<StackPanel
 									Grid.Row="2"

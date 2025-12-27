@@ -31,6 +31,7 @@ namespace SmartServePOS.Dependencies
 			services.AddScoped<IPrintService, PrintService>();
 			services.AddScoped<INotificationService, HandyNotificationService>();
 			services.AddScoped<IDialogService, HandyDialogService>();
+			services.AddScoped<INavigationService, NavigationService>(); 
 
 			return services;
 		}

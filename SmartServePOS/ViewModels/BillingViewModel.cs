@@ -13,7 +13,7 @@ namespace SmartServePOS.ViewModels
 		private string _searchText;
 		private bool _isSearchActive;
 		private readonly IPrintService _printService;
-		private int _currentOrderId = 1; // hardcoded for now
+		private int _currentOrderId = 0; // hardcoded for now
 		private readonly ICatalogService _catalogService;
 		public ICommand IncreaseQtyCommand { get; }
 		public ICommand DecreaseQtyCommand { get; }
@@ -37,6 +37,8 @@ namespace SmartServePOS.ViewModels
 		}
 
 		private ProductModelDto _selectedProduct;
+		private int orderId;
+
 		public ProductModelDto SelectedProduct
 		{
 			get => _selectedProduct;
@@ -79,10 +81,12 @@ namespace SmartServePOS.ViewModels
 		// CONSTRUCTOR
 		// =============================
 		public BillingViewModel(
-			ICatalogService catalogService, 
+			//int orderId,
+			ICatalogService catalogService,
 			IPrintService printService,
 			IBillingService billingService)
 		{
+			//_currentOrderId = orderId;
 			_catalogService = catalogService;
 			_printService = printService;
 			_billingService = billingService;
@@ -101,6 +105,7 @@ namespace SmartServePOS.ViewModels
 			BillItems = new ObservableCollection<BillItemModelDto>();
 			LoadCategories();
 		}
+
 		private void LoadCategories()
 		{
 			Categories.Clear();
@@ -113,8 +118,8 @@ namespace SmartServePOS.ViewModels
 					Name = category.Name
 				});
 			}
-
-			SelectedCategory = Categories.FirstOrDefault();
+			if (SelectedCategory == null)
+				SelectedCategory = Categories.FirstOrDefault();
 		}
 		private void LoadProducts()
 		{
@@ -135,8 +140,8 @@ namespace SmartServePOS.ViewModels
 					Name = product.Name
 				});
 			}
-
-			SelectedProduct = Products.FirstOrDefault();
+			if(SelectedProduct == null)
+				SelectedProduct = Products.FirstOrDefault();
 		}
 		private void LoadVariants()
 		{
@@ -299,6 +304,32 @@ namespace SmartServePOS.ViewModels
 
 			// optional: clear bill after save
 			BillItems.Clear();
+			OnPropertyChanged(nameof(GrandTotal));
+		}
+
+		public async Task LoadOrderAsync(int orderId)
+		{
+			BillItems.Clear();
+			_currentOrderId = orderId;
+			if (_currentOrderId <= 0)
+			{
+				return;
+			}
+
+			var order = await _billingService.GetOrderAsync(_currentOrderId);
+			if (order == null)
+				return;
+
+			foreach (var item in order.OrderItems)
+			{
+				BillItems.Add(new BillItemModelDto
+				{
+					VariantId = item.VariantId ?? 0,
+					ItemName = item.Variant?.Name ?? string.Empty,
+					Quantity = item.Quantity,
+					PriceSnapshot = item.PriceSnapshot
+				});
+			}
 			OnPropertyChanged(nameof(GrandTotal));
 		}
 	}

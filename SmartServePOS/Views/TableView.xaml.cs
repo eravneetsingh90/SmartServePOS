@@ -18,31 +18,5 @@ namespace SmartServePOS.Views
 				}
 			}
 		}
-
-		//private void TableButton_Click(object sender, RoutedEventArgs e)
-		//{
-		//	if (sender is Button btn && btn.CommandParameter is GetTableViewDto table)
-		//	{
-		//		// Resolve BillingViewModel with required dependencies from DI container
-		//		BillingViewModel billingViewModel = null;
-		//		if (App.Services is not null)
-		//		{
-		//			billingViewModel = App.Services.GetService<BillingViewModel>();
-		//		}
-		//		else
-		//		{
-		//			throw new InvalidOperationException("BillingViewModel dependencies must be provided via DI.");
-		//		}
-
-		//		var billingView = new BillingView();
-		//		billingView.DataContext = billingViewModel;
-		//		//If BillingViewModel had a SelectedTable property, you could set it here.
-		//		// Navigate using the MainWindow's frame so it replaces the current page.
-		//		if (Application.Current.MainWindow is MainWindow mw)
-		//		{
-		//			mw.MainFrame.Navigate(billingView);
-		//		}
-		//	}
-		//}
 	}
 }
