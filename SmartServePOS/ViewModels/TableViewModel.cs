@@ -1,15 +1,9 @@
-﻿using SmartServe.Domain.Models;
-using SmartServe.Domain.Stores;
+﻿using SmartServe.Domain.Stores;
 using SmartServePOS.Command;
 using SmartServePOS.Models;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace SmartServePOS.ViewModels
@@ -21,9 +15,9 @@ namespace SmartServePOS.ViewModels
 		// Simple command placeholder - replace with your navigation/logic
 		public ICommand OpenTableCommand { get; }
 
-		private readonly RestaurantTableStore _tableStore;
+		private readonly IRestaurantTableStore _tableStore;
 
-		public TableViewModel(RestaurantTableStore tableStore)
+		public TableViewModel(IRestaurantTableStore tableStore)
 		{
 			_tableStore = tableStore ?? throw new ArgumentNullException(nameof(tableStore));
 

@@ -623,6 +623,7 @@
 								<Button
 									Width="90"
 									Margin="4"
+									Command="{Binding SaveCommand}"
 									Background="#C62828"
 									Content="Save"
 									Foreground="White" />

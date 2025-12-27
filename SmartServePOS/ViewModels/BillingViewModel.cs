@@ -1,4 +1,5 @@
-﻿using SmartServe.Domain.Services;
+﻿using SmartServe.Domain.Models;
+using SmartServe.Domain.Services;
 using SmartServePOS.Command;
 using SmartServePOS.Helper;
 using SmartServePOS.Models;
@@ -46,12 +47,9 @@ namespace SmartServePOS.ViewModels
 				LoadVariants();
 			}
 		}
-
 		public decimal GrandTotal => BillItems.Sum(x => x.TotalPrice);
-
 		public ICommand PrintCommand { get; }
 		public ICommand AddVariantCommand { get; }
-
 		public string SearchText
 		{
 			get => _searchText;
@@ -65,7 +63,6 @@ namespace SmartServePOS.ViewModels
 				PerformSearch();
 			}
 		}
-
 		public bool IsSearchActive
 		{
 			get => _isSearchActive;
@@ -75,31 +72,35 @@ namespace SmartServePOS.ViewModels
 				OnPropertyChanged(nameof(IsSearchActive));
 			}
 		}
+		private readonly IBillingService _billingService;
+		public ICommand SaveCommand { get; }
 
 		// =============================
 		// CONSTRUCTOR
 		// =============================
-		public BillingViewModel(ICatalogService catalogService, IPrintService printService)
+		public BillingViewModel(
+			ICatalogService catalogService, 
+			IPrintService printService,
+			IBillingService billingService)
 		{
 			_catalogService = catalogService;
 			_printService = printService;
-			
+			_billingService = billingService;
+
 			IncreaseQtyCommand = new RelayCommand<BillItemModelDto>(IncreaseQty);
 			DecreaseQtyCommand = new RelayCommand<BillItemModelDto>(DecreaseQty);
 			RemoveItemCommand = new RelayCommand<BillItemModelDto>(RemoveItem);
-			
 			ReloadMenuCommand = new RelayCommand(_ => _catalogService.Reset());
+			SaveCommand = new RelayCommand(async _ => await SaveAsync());
+			AddVariantCommand = new RelayCommand<ProductVariantModelDto>(AddVariantToBill);
+			PrintCommand = new RelayCommand<BillPrintModel>(PrintBill);
 
 			Categories = new ObservableCollection<CategoryDto>();
 			Products = new ObservableCollection<ProductModelDto>();
 			Variants = new ObservableCollection<ProductVariantModelDto>();
 			BillItems = new ObservableCollection<BillItemModelDto>();
-
-			AddVariantCommand = new RelayCommand<ProductVariantModelDto>(AddVariantToBill);
-			PrintCommand = new RelayCommand<BillPrintModel>(PrintBill);
 			LoadCategories();
 		}
-
 		private void LoadCategories()
 		{
 			Categories.Clear();
@@ -115,7 +116,6 @@ namespace SmartServePOS.ViewModels
 
 			SelectedCategory = Categories.FirstOrDefault();
 		}
-
 		private void LoadProducts()
 		{
 			Products.Clear();
@@ -138,7 +138,6 @@ namespace SmartServePOS.ViewModels
 
 			SelectedProduct = Products.FirstOrDefault();
 		}
-
 		private void LoadVariants()
 		{
 			Variants.Clear();
@@ -159,7 +158,6 @@ namespace SmartServePOS.ViewModels
 				});
 			}
 		}
-
 		private void AddVariantToBill(ProductVariantModelDto variant)
 		{
 			var existing = BillItems.FirstOrDefault(x => x.VariantId == variant.VariantId);
@@ -188,7 +186,6 @@ namespace SmartServePOS.ViewModels
 			item.Quantity++;
 			OnPropertyChanged(nameof(GrandTotal));
 		}
-
 		private void DecreaseQty(BillItemModelDto item)
 		{
 			if (item == null) return;
@@ -204,7 +201,6 @@ namespace SmartServePOS.ViewModels
 
 			OnPropertyChanged(nameof(GrandTotal));
 		}
-
 		private void RemoveItem(BillItemModelDto item)
 		{
 			if (item == null) return;
@@ -212,7 +208,6 @@ namespace SmartServePOS.ViewModels
 			BillItems.Remove(item);
 			OnPropertyChanged(nameof(GrandTotal));
 		}
-
 		private void PerformSearch()
 		{
 			Variants.Clear();
@@ -243,7 +238,6 @@ namespace SmartServePOS.ViewModels
 				});
 			}
 		}
-
 		private BillPrintModel BuildBillPrintModel()
 		{
 			return new BillPrintModel
@@ -283,8 +277,30 @@ namespace SmartServePOS.ViewModels
 			// Phase 2 (later):
 			// _printService.PrintBill(bill, showPreview: false);
 		}
+		private async Task SaveAsync()
+		{
+			if (!BillItems.Any())
+				return;
 
+			var request = new BillingSaveRequest
+			{
+				OrderId = null, // always new for now
+				OrderType = "DINE_IN",
+				TotalAmount = GrandTotal,
+				Items = BillItems.Select(x => new BillingItem
+				{
+					VariantId = x.VariantId,
+					Quantity = x.Quantity,
+					PriceSnapshot = x.PriceSnapshot
+				}).ToList()
+			};
 
+			var orderId = await _billingService.SaveOrderAsync(request);
+
+			// optional: clear bill after save
+			BillItems.Clear();
+			OnPropertyChanged(nameof(GrandTotal));
+		}
 	}
 }
 
