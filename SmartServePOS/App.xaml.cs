@@ -38,13 +38,11 @@ namespace SmartServePOS
 			
 			Services = services.BuildServiceProvider();
 
-			// Resolve main window (do not show yet) and register it as the application's main window.
 			var mainWindow = Services.GetRequiredService<MainWindow>();
-			this.MainWindow = mainWindow;
+			mainWindow.Show();
 
-			// Resolve login view and show it modally. LoginView will close itself on success and show the MainWindow.
 			var loginView = Services.GetRequiredService<LoginView>();
-			loginView.ShowDialog();
+			mainWindow.Navigate(loginView);
 
 			Services = services.BuildServiceProvider();
 

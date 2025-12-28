@@ -1,25 +1,32 @@
 ﻿using SmartServe.Domain.Services;
 using SmartServe.EFCore.Models;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using SmartServePOS.Command;
+using SmartServePOS.Helper;
+using System.Windows.Input;
 
 namespace SmartServePOS.ViewModels
 {
-	public class LoginViewModel : INotifyPropertyChanged
+	public class LoginViewModel : BaseViewModel
 	{
-		private readonly AuthService _authService;
+		private readonly MainWindowViewModel _mainWindowVm;
+
+		private readonly IAuthService _authService;
+		private readonly INavigationService _navigationService;
 
 		private string _username = "user";
 		private string _pin = string.Empty;
 		private string _errorMessage = string.Empty;
 		private bool _isBusy;
 
-		public event PropertyChangedEventHandler? PropertyChanged;
 		public event Action? LoginSucceeded;
+		public ICommand LoginCommand { get; }
 
-		public LoginViewModel(AuthService authService)
+		public LoginViewModel(IAuthService authService, INavigationService navigationService, MainWindowViewModel mainWindowVm)
 		{
+			_mainWindowVm = mainWindowVm;
 			_authService = authService;
+			_navigationService = navigationService;
+			LoginCommand = new RelayCommand(async _ => await LoginAsync());
 		}
 
 		public string Username
@@ -32,7 +39,6 @@ namespace SmartServePOS.ViewModels
 			}
 		}
 
-		// Set from PasswordBox (not bound)
 		public string Pin
 		{
 			private get => _pin;
@@ -86,7 +92,8 @@ namespace SmartServePOS.ViewModels
 				}
 
 				// Success
-				LoginSucceeded?.Invoke();
+				_mainWindowVm.IsLoggedIn = true;
+				_navigationService.NavigateToTable();
 			}
 			catch
 			{
@@ -96,11 +103,6 @@ namespace SmartServePOS.ViewModels
 			{
 				IsBusy = false;
 			}
-		}
-
-		private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-		{
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 	}
 }

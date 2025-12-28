@@ -18,6 +18,7 @@
 				x:Key="BoolToOpacityConverter"
 				ActiveOpacity="0.35"
 				NormalOpacity="1" />
+			<local:BoolToGridLengthConverter x:Key="BoolToGridLengthConverter" />
 			<local:BoolToHitTestConverter x:Key="BoolToHitTestConverter" />
 		</ResourceDictionary>
 	</Application.Resources>
