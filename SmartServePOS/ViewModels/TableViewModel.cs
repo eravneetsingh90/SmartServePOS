@@ -23,6 +23,7 @@ namespace SmartServePOS.ViewModels
 		private readonly INavigationService _navigationService;
 		public ICommand OpenTableCommand { get; }
 		public ICommand PrintCommand { get; }
+		public ICommand SaveCommand { get; }
 		private readonly IRestaurantTableStore _tableStore;
 		public TableViewModel(
 			IRestaurantTableStore tableStore, 
@@ -38,6 +39,7 @@ namespace SmartServePOS.ViewModels
 			_navigationService = navigationService;
 			OpenTableCommand = new RelayCommand<GetTableViewDto>(OpenTable);
 			PrintCommand = new RelayCommand<GetTableViewDto>(PrintBill);
+			SaveCommand = new RelayCommand<GetTableViewDto>(SaveAsync);
 			_ = InitializeAsync();
 			
 		}
@@ -116,14 +118,28 @@ namespace SmartServePOS.ViewModels
 				};
 
 				_printService.PrintBill(printbill, showPreview: true);
-				var categories = _catalogService.GetCategories();
 				order.StatusId = _catalogService.GetTableStatusByCode(TableStatusCodes.PRINTED).StatusId;
 				var updatedOrderId = await _billingService.UpdateOrderAsync(order);
 				_ = InitializeAsync();
 
 			}
 		}
-		
+
+		private async void SaveAsync(GetTableViewDto bill)
+		{
+			if (bill != null && bill.OrderId != null && bill.OrderId > 0)
+			{
+				int orderId = Convert.ToInt32(bill.OrderId);
+				var order = await _billingService.GetOrderAsync(orderId);
+				if (order == null)
+					return;
+				order.StatusId = _catalogService.GetTableStatusByCode(TableStatusCodes.BLANK).StatusId;
+				var updatedOrderId = await _billingService.UpdateOrderAsync(order);
+				_ = InitializeAsync();
+
+			}
+		}
+
 	}
 
 }
