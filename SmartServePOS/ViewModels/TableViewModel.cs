@@ -13,10 +13,11 @@ using System.Windows.Navigation;
 
 namespace SmartServePOS.ViewModels
 {
-	public class TableViewModel : INotifyPropertyChanged
+	public class TableViewModel : BaseViewModel
 	{
 		private readonly IPrintService _printService;
 		private readonly IBillingService _billingService;
+		private readonly ICatalogService _catalogService;
 
 		public ObservableCollection<GetTableViewDto> Tables { get; } = new();
 		private readonly INavigationService _navigationService;
@@ -27,8 +28,10 @@ namespace SmartServePOS.ViewModels
 			IRestaurantTableStore tableStore, 
 			INavigationService navigationService,
 			IPrintService printService,
-			IBillingService billingService)
+			IBillingService billingService,
+			ICatalogService catalogService)
 		{
+			_catalogService = catalogService;
 			_billingService = billingService;
 			_printService = printService;
 			_tableStore = tableStore ?? throw new ArgumentNullException(nameof(tableStore));
@@ -36,6 +39,7 @@ namespace SmartServePOS.ViewModels
 			OpenTableCommand = new RelayCommand<GetTableViewDto>(OpenTable);
 			PrintCommand = new RelayCommand<GetTableViewDto>(PrintBill);
 			_ = InitializeAsync();
+			
 		}
 
 		private async Task InitializeAsync()
@@ -82,7 +86,8 @@ namespace SmartServePOS.ViewModels
 		{
 			if (bill != null && bill.OrderId != null && bill.OrderId >0)
 			{
-				var order = await _billingService.GetOrderAsync(Convert.ToInt32(bill.OrderId));
+				int orderId = Convert.ToInt32(bill.OrderId);
+				var order = await _billingService.GetOrderAsync(orderId);
 				if (order == null)
 					return;
 				var sumItems = order.OrderItems.Sum(x => x.Quantity * x.PriceSnapshot);
@@ -111,21 +116,10 @@ namespace SmartServePOS.ViewModels
 				};
 
 				_printService.PrintBill(printbill, showPreview: true);
-
-				var billinbSaveRequest = new BillingSaveRequest
-				{
-					OrderId = bill.OrderId, 
-					
-					//OrderType = "DINE_IN",
-					//TotalAmount = sumItems,
-					//Items = order.OrderItems.Select(x => new BillingItem
-					//{
-					//	VariantId = x.VariantId??0,
-					//	Quantity = x.Quantity,
-					//	PriceSnapshot = x.PriceSnapshot
-					//}).ToList()
-				};
-				var orderId = await _billingService.SaveOrderAsync(billinbSaveRequest);
+				var categories = _catalogService.GetCategories();
+				order.StatusId = _catalogService.GetTableStatusByCode(TableStatusCodes.PRINTED).StatusId;
+				var updatedOrderId = await _billingService.UpdateOrderAsync(order);
+				_ = InitializeAsync();
 
 			}
 		}
