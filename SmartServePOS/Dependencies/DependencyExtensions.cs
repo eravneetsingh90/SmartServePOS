@@ -14,11 +14,11 @@ namespace SmartServePOS.Dependencies
 			services.AddSingleton<LoginView>();
 			services.AddSingleton<LoginViewModel>();
 			services.AddTransient<TableView>();
-			services.AddSingleton<TableViewModel>();
+			services.AddTransient<TableViewModel>();
 			services.AddSingleton<MainWindow>();
 			services.AddSingleton<MainViewModel>();
 			services.AddSingleton<BillingView>();
-			services.AddSingleton<BillingViewModel>();
+			services.AddTransient<BillingViewModel>();
 			services.AddSingleton<MenuManagementView>();
 
 			services.AddSingleton<CategoryView>();
