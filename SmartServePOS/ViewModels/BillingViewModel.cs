@@ -10,20 +10,36 @@ namespace SmartServePOS.ViewModels
 {
 	public class BillingViewModel : BaseViewModel
 	{
-		private string _searchText;
-		private bool _isSearchActive;
-		private readonly IPrintService _printService;
-		private int _currentOrderId = 0; // hardcoded for now
-		private readonly ICatalogService _catalogService;
+		#region commands
 		public ICommand IncreaseQtyCommand { get; }
 		public ICommand DecreaseQtyCommand { get; }
 		public ICommand RemoveItemCommand { get; }
 		public ICommand ReloadMenuCommand { get; }
+		public ICommand PrintCommand { get; }
+		public ICommand AddVariantCommand { get; }
+		public ICommand SaveCommand { get; }
+		#endregion
+
+		#region collections
 		public ObservableCollection<CategoryDto> Categories { get; }
 		public ObservableCollection<ProductModelDto> Products { get; }
 		public ObservableCollection<ProductVariantModelDto> Variants { get; }
 		public ObservableCollection<BillItemModelDto> BillItems { get; }
+		#endregion
 
+		#region services
+		private readonly IPrintService _printService;
+		private readonly ICatalogService _catalogService;
+		private readonly IBillingService _billingService;
+		private readonly INavigationService _navigationService;
+
+		#endregion
+
+		#region properties
+		private int _currentOrderId = 0;
+		private int _currentTableId = 0;
+		private string _searchText;
+		private bool _isSearchActive;
 		private CategoryDto _selectedCategory;
 		public CategoryDto SelectedCategory
 		{
@@ -35,10 +51,7 @@ namespace SmartServePOS.ViewModels
 				LoadProducts();
 			}
 		}
-
 		private ProductModelDto _selectedProduct;
-		private int orderId;
-
 		public ProductModelDto SelectedProduct
 		{
 			get => _selectedProduct;
@@ -50,8 +63,6 @@ namespace SmartServePOS.ViewModels
 			}
 		}
 		public decimal GrandTotal => BillItems.Sum(x => x.TotalPrice);
-		public ICommand PrintCommand { get; }
-		public ICommand AddVariantCommand { get; }
 		public string SearchText
 		{
 			get => _searchText;
@@ -74,23 +85,21 @@ namespace SmartServePOS.ViewModels
 				OnPropertyChanged(nameof(IsSearchActive));
 			}
 		}
-		private readonly IBillingService _billingService;
-		public ICommand SaveCommand { get; }
+		#endregion
 
-		// =============================
-		// CONSTRUCTOR
-		// =============================
+		#region constructors
 		public BillingViewModel(
 			//int orderId,
 			ICatalogService catalogService,
 			IPrintService printService,
-			IBillingService billingService)
+			IBillingService billingService,
+			INavigationService navigationService)
 		{
 			//_currentOrderId = orderId;
 			_catalogService = catalogService;
 			_printService = printService;
 			_billingService = billingService;
-
+			_navigationService = navigationService;
 			IncreaseQtyCommand = new RelayCommand<BillItemModelDto>(IncreaseQty);
 			DecreaseQtyCommand = new RelayCommand<BillItemModelDto>(DecreaseQty);
 			RemoveItemCommand = new RelayCommand<BillItemModelDto>(RemoveItem);
@@ -105,7 +114,9 @@ namespace SmartServePOS.ViewModels
 			BillItems = new ObservableCollection<BillItemModelDto>();
 			LoadCategories();
 		}
+		#endregion
 
+		#region methods
 		private void LoadCategories()
 		{
 			Categories.Clear();
@@ -140,7 +151,7 @@ namespace SmartServePOS.ViewModels
 					Name = product.Name
 				});
 			}
-			if(SelectedProduct == null)
+			if (SelectedProduct == null)
 				SelectedProduct = Products.FirstOrDefault();
 		}
 		private void LoadVariants()
@@ -289,7 +300,9 @@ namespace SmartServePOS.ViewModels
 
 			var request = new BillingSaveRequest
 			{
-				OrderId = null, // always new for now
+				OrderId = _currentOrderId, 
+				TableId = _currentTableId,
+				TableStatusCode = TableStatusCodes.RUNNING,
 				OrderType = "DINE_IN",
 				TotalAmount = GrandTotal,
 				Items = BillItems.Select(x => new BillingItem
@@ -305,11 +318,12 @@ namespace SmartServePOS.ViewModels
 			// optional: clear bill after save
 			BillItems.Clear();
 			OnPropertyChanged(nameof(GrandTotal));
+			_navigationService.NavigateToTable();
 		}
-
-		public async Task LoadOrderAsync(int orderId)
+		public async Task LoadOrderAsync(int orderId, int tableId)
 		{
 			BillItems.Clear();
+			_currentTableId = tableId;
 			_currentOrderId = orderId;
 			if (_currentOrderId <= 0)
 			{
@@ -332,6 +346,7 @@ namespace SmartServePOS.ViewModels
 			}
 			OnPropertyChanged(nameof(GrandTotal));
 		}
+		#endregion
 	}
 }
 

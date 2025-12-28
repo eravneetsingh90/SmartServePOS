@@ -129,13 +129,14 @@
 									HorizontalAlignment="Center"
 									VerticalAlignment="Bottom"
 									Orientation="Horizontal">
-
 									<Button
 										Width="36"
 										Height="34"
 										Margin="0,0,2,0"
 										Background="Transparent"
 										BorderThickness="1"
+										Command="{Binding DataContext.PrintCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+										CommandParameter="{Binding}"
 										Content="🖨">
 
 										<Button.Style>
@@ -145,7 +146,7 @@
 
 												<Style.Triggers>
 													<!--  Show ONLY when Running Table  -->
-													<DataTrigger Binding="{Binding StatusName}" Value="Running Table">
+													<DataTrigger Binding="{Binding StatusCode}" Value="RUNNING">
 														<Setter Property="Visibility" Value="Visible" />
 													</DataTrigger>
 												</Style.Triggers>
@@ -155,7 +156,7 @@
 									</Button>
 
 
-									<Button
+									<!--<Button
 										Width="36"
 										Height="34"
 										Background="Transparent"
@@ -164,19 +165,23 @@
 
 										<Button.Style>
 											<Style TargetType="Button">
-												<!--  Hidden by default  -->
+												-->
+									<!--  Hidden by default  -->
+									<!--
 												<Setter Property="Visibility" Value="Collapsed" />
 
 												<Style.Triggers>
-													<!--  Show ONLY when Running Table  -->
-													<DataTrigger Binding="{Binding StatusName}" Value="Running Table">
+													-->
+									<!--  Show ONLY when Running Table  -->
+									<!--
+													<DataTrigger Binding="{Binding StatusCode}" Value="RUNNING">
 														<Setter Property="Visibility" Value="Visible" />
 													</DataTrigger>
 												</Style.Triggers>
 											</Style>
 										</Button.Style>
 
-									</Button>
+									</Button>-->
 									<Button
 										Width="36"
 										Height="34"
@@ -192,7 +197,7 @@
 
 												<Style.Triggers>
 													<!--  Show only when Printed Table  -->
-													<DataTrigger Binding="{Binding StatusName}" Value="Printed Table">
+													<DataTrigger Binding="{Binding StatusCode}" Value="PRINTED">
 														<Setter Property="Visibility" Value="Visible" />
 													</DataTrigger>
 												</Style.Triggers>
@@ -203,16 +208,13 @@
 
 								</StackPanel>
 							</Grid>
-
 							<!--  Status Strip  -->
 							<Border
 								Width="6"
 								HorizontalAlignment="Left"
 								Background="{Binding ColorHex}"
 								CornerRadius="6,0,0,6" />
-
 						</Grid>
-
 					</DataTemplate>
 				</ItemsControl.ItemTemplate>
 			</ItemsControl>

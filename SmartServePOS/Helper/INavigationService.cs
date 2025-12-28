@@ -2,6 +2,7 @@
 {
 	public interface INavigationService
 	{
-		void NavigateToBilling(int orderId);
+		void NavigateToBilling(int orderId,int tableId);
+		void NavigateToTable();
 	}
 }
