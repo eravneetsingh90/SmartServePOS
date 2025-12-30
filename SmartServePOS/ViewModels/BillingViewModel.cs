@@ -297,15 +297,15 @@ namespace SmartServePOS.ViewModels
 		{
 			if (!BillItems.Any())
 				return;
-
-			var request = new BillingSaveRequest
+			var statusId = _catalogService.GetTableStatusByCode(TableStatusCodes.RUNNING).StatusId;
+			var request = new OrderDto
 			{
 				OrderId = _currentOrderId, 
 				TableId = _currentTableId,
-				TableStatusCode = TableStatusCodes.RUNNING,
+				StatusId = statusId,
 				OrderType = "DINE_IN",
 				TotalAmount = GrandTotal,
-				Items = BillItems.Select(x => new BillingItem
+				OrderItems = BillItems.Select(x => new OrderItemDto
 				{
 					VariantId = x.VariantId,
 					Quantity = x.Quantity,
@@ -313,7 +313,7 @@ namespace SmartServePOS.ViewModels
 				}).ToList()
 			};
 
-			var orderId = await _billingService.SaveOrderAsync(request);
+			var orderId = await _billingService.CreateOrderAsync(request);
 
 			// optional: clear bill after save
 			BillItems.Clear();

@@ -6,7 +6,7 @@
 	Width="1200"
 	Height="700"
 	Background="#F5F5F5"
-	Icon="Assets/Icons/SmartServe.ico"
+	Icon="Assets/Icons/smartserve.ico"
 	ResizeMode="CanResize"
 	WindowStartupLocation="CenterScreen">
 
