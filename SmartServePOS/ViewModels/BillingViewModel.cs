@@ -1,5 +1,6 @@
 ﻿using SmartServe.Domain.Models;
 using SmartServe.Domain.Services;
+using SmartServe.EFCore.Models;
 using SmartServePOS.Command;
 using SmartServePOS.Helper;
 using SmartServePOS.Models;
@@ -298,23 +299,35 @@ namespace SmartServePOS.ViewModels
 			if (!BillItems.Any())
 				return;
 			var statusId = _catalogService.GetTableStatusByCode(TableStatusCodes.RUNNING).StatusId;
-			var request = new OrderDto
+
+			if (_currentOrderId <= 0)
 			{
-				OrderId = _currentOrderId, 
-				TableId = _currentTableId,
-				StatusId = statusId,
-				OrderType = "DINE_IN",
-				TotalAmount = GrandTotal,
-				OrderItems = BillItems.Select(x => new OrderItemDto
+				var request = new OrderDto
 				{
+					OrderId = _currentOrderId,
+					TableId = _currentTableId,
+					StatusId = statusId,
+					OrderType = "DINE_IN",
+					TotalAmount = GrandTotal
+				};
+
+				_currentOrderId = await _billingService.CreateOrderAsync(request);
+
+			}
+			else 
+			{ 
+			
+			}
+
+				var orderItems = BillItems.Select(x => new OrderItemDto
+				{
+					OrderId = _currentOrderId,
 					VariantId = x.VariantId,
 					Quantity = x.Quantity,
 					PriceSnapshot = x.PriceSnapshot
-				}).ToList()
-			};
-
-			var orderId = await _billingService.CreateOrderAsync(request);
-
+				}).ToList();
+			
+			await _billingService.CreateOrderItemsAsync(orderItems);
 			// optional: clear bill after save
 			BillItems.Clear();
 			OnPropertyChanged(nameof(GrandTotal));

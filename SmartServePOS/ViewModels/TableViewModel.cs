@@ -119,8 +119,7 @@ namespace SmartServePOS.ViewModels
 
 				_printService.PrintBill(printbill, showPreview: true);
 				order.StatusId = _catalogService.GetTableStatusByCode(TableStatusCodes.PRINTED).StatusId;
-				OrderDto f = new OrderDto();
-				await _billingService.UpdateOrderAsync(f);
+				await _billingService.UpdateOrderAsync(order);
 				_ = InitializeAsync();
 
 			}
@@ -135,8 +134,8 @@ namespace SmartServePOS.ViewModels
 				if (order == null)
 					return;
 				order.StatusId = _catalogService.GetTableStatusByCode(TableStatusCodes.BLANK).StatusId;
-				OrderDto orderDto = new OrderDto();
-				await _billingService.UpdateOrderAsync(orderDto);
+				order.ClosedAt = DateTime.UtcNow;
+				await _billingService.UpdateOrderAsync(order);
 				_ = InitializeAsync();
 
 			}
