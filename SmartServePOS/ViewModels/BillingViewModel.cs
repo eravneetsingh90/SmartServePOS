@@ -1,6 +1,6 @@
-﻿using SmartServe.Domain.Models;
+﻿using SmartServe.Domain.Constants;
+using SmartServe.Domain.Models;
 using SmartServe.Domain.Services;
-using SmartServe.EFCore.Models;
 using SmartServePOS.Command;
 using SmartServePOS.Helper;
 using SmartServePOS.Models;

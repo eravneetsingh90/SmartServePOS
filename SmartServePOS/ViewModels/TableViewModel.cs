@@ -1,4 +1,6 @@
-﻿using SmartServe.Domain.Models;
+﻿using HandyControl.Controls;
+using SmartServe.Domain.Constants;
+using SmartServe.Domain.Models;
 using SmartServe.Domain.Services;
 using SmartServe.Domain.Stores;
 using SmartServe.EFCore.Models;
@@ -9,7 +11,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using System.Windows.Navigation;
 
 namespace SmartServePOS.ViewModels
 {
@@ -18,15 +19,48 @@ namespace SmartServePOS.ViewModels
 		private readonly IPrintService _printService;
 		private readonly IBillingService _billingService;
 		private readonly ICatalogService _catalogService;
+		public bool IsPaymentPopupOpen { get; set; }
+		public int SelectedTableId { get; set; }
+		public int SelectedOrderId { get; set; }
+		public decimal BillTotal { get; set; }
+		public string SelectedTableName { get; set; }
 
 		public ObservableCollection<GetTableViewDto> Tables { get; } = new();
 		private readonly INavigationService _navigationService;
 		public ICommand OpenTableCommand { get; }
 		public ICommand PrintCommand { get; }
-		public ICommand SaveCommand { get; }
+		public ICommand ClosePaymentPopupCommand { get; }
+		public ICommand OpenPaymentCommand { get; }
+		public ICommand SettleAndSaveCommand { get; }
 		private readonly IRestaurantTableStore _tableStore;
+		public bool IsPartPayment => SelectedPaymentMode == Helper.PaymentMode.Part;
+		private decimal _partPaymentCash;
+		public decimal PartPaymentCash
+		{
+			get => _partPaymentCash;
+			set
+			{
+				_partPaymentCash = value;
+				OnPropertyChanged();
+				OnPropertyChanged(nameof(RemainingAmount));
+			}
+		}
+		public decimal RemainingAmount =>
+	Math.Max(0, BillTotal - PartPaymentCash);
+		private Helper.PaymentMode _selectedPaymentMode;
+		public Helper.PaymentMode SelectedPaymentMode
+		{
+			get => _selectedPaymentMode;
+			set
+			{
+				_selectedPaymentMode = value;
+				OnPropertyChanged();
+				OnPropertyChanged(nameof(IsPartPayment));
+				OnPropertyChanged(nameof(RemainingAmount));
+			}
+		}
 		public TableViewModel(
-			IRestaurantTableStore tableStore, 
+			IRestaurantTableStore tableStore,
 			INavigationService navigationService,
 			IPrintService printService,
 			IBillingService billingService,
@@ -39,9 +73,12 @@ namespace SmartServePOS.ViewModels
 			_navigationService = navigationService;
 			OpenTableCommand = new RelayCommand<GetTableViewDto>(OpenTable);
 			PrintCommand = new RelayCommand<GetTableViewDto>(PrintBill);
-			SaveCommand = new RelayCommand<GetTableViewDto>(SaveAsync);
+			//SaveCommand = new RelayCommand<GetTableViewDto>(SaveAsync);
+			OpenPaymentCommand = new RelayCommand<GetTableViewDto>(OpenPayment);
+			SettleAndSaveCommand = new RelayCommand<GetTableViewDto>(SettleAndSaveAsync);
+			ClosePaymentPopupCommand = new RelayCommand(_ => ClosePaymentPopup());
 			_ = InitializeAsync();
-			
+
 		}
 
 		private async Task InitializeAsync()
@@ -77,7 +114,7 @@ namespace SmartServePOS.ViewModels
 			if (table == null)
 				return;
 
-			_navigationService.NavigateToBilling(table.OrderId??0,table.TableId);
+			_navigationService.NavigateToBilling(table.OrderId ?? 0, table.TableId);
 		}
 
 		public event PropertyChangedEventHandler? PropertyChanged;
@@ -86,7 +123,7 @@ namespace SmartServePOS.ViewModels
 
 		private async void PrintBill(GetTableViewDto bill)
 		{
-			if (bill != null && bill.OrderId != null && bill.OrderId >0)
+			if (bill != null && bill.OrderId != null && bill.OrderId > 0)
 			{
 				int orderId = Convert.ToInt32(bill.OrderId);
 				var order = await _billingService.GetOrderAsync(orderId);
@@ -125,22 +162,59 @@ namespace SmartServePOS.ViewModels
 			}
 		}
 
-		private async void SaveAsync(GetTableViewDto bill)
+		//private async void SaveAsync(GetTableViewDto bill)
+		//{
+		//	if (bill != null && bill.OrderId != null && bill.OrderId > 0)
+		//	{
+		//		int orderId = Convert.ToInt32(bill.OrderId);
+		//		var order = await _billingService.GetOrderAsync(orderId);
+		//		if (order == null)
+		//			return;
+		//		order.StatusId = _catalogService.GetTableStatusByCode(TableStatusCodes.BLANK).StatusId;
+		//		order.ClosedAt = DateTime.UtcNow;
+		//		await _billingService.UpdateOrderAsync(order);
+		//		_ = InitializeAsync();
+
+		//	}
+		//}
+		private void OpenPayment(GetTableViewDto table)
 		{
-			if (bill != null && bill.OrderId != null && bill.OrderId > 0)
-			{
-				int orderId = Convert.ToInt32(bill.OrderId);
-				var order = await _billingService.GetOrderAsync(orderId);
-				if (order == null)
-					return;
-				order.StatusId = _catalogService.GetTableStatusByCode(TableStatusCodes.BLANK).StatusId;
-				order.ClosedAt = DateTime.UtcNow;
-				await _billingService.UpdateOrderAsync(order);
-				_ = InitializeAsync();
+			if (table.OrderId == null)
+				return;
 
-			}
+			SelectedTableId = table.TableId;
+			SelectedOrderId = table.OrderId.Value;
+			SelectedTableName = table.DisplayName;
+			BillTotal = table.Amount;
+
+			IsPaymentPopupOpen = true;
+
+			OnPropertyChanged(nameof(IsPaymentPopupOpen));
+			OnPropertyChanged(nameof(SelectedTableName));
+			OnPropertyChanged(nameof(BillTotal));
 		}
+		private async void SettleAndSaveAsync(GetTableViewDto sd)
+		{
+			IsPaymentPopupOpen = false;
+			OnPropertyChanged(nameof(IsPaymentPopupOpen));
 
+
+			await _billingService.CloseOrderAsync(
+				SelectedOrderId,
+				new PaymentDto
+				{
+					OrderId=SelectedOrderId,
+					Mode = SelectedPaymentMode.ToString().ToUpper(),
+					Amount = BillTotal,
+					PartPaymentCash = PartPaymentCash
+				});
+			_ = InitializeAsync();
+		}
+		private void ClosePaymentPopup()
+		{
+			IsPaymentPopupOpen = false;
+			OnPropertyChanged(nameof(IsPaymentPopupOpen));
+		}
 	}
 
 }
