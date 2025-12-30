@@ -37,6 +37,7 @@ namespace SmartServePOS.ViewModels
 		#endregion
 
 		#region properties
+		private bool _isEditable = true;
 		private int _currentOrderId = 0;
 		private int _currentTableId = 0;
 		private string _searchText;
@@ -84,6 +85,16 @@ namespace SmartServePOS.ViewModels
 			{
 				_isSearchActive = value;
 				OnPropertyChanged(nameof(IsSearchActive));
+			}
+		}
+
+		public bool IsEditable
+		{
+			get => _isEditable;
+			private set
+			{
+				_isEditable = value;
+				OnPropertyChanged(nameof(IsEditable));
 			}
 		}
 		#endregion
@@ -313,11 +324,28 @@ namespace SmartServePOS.ViewModels
 
 				_currentOrderId = await _billingService.CreateOrderAsync(request);
 
+				var orderItems = BillItems.Select(x => new OrderItemDto
+				{
+					OrderId = _currentOrderId,
+					VariantId = x.VariantId,
+					Quantity = x.Quantity,
+					PriceSnapshot = x.PriceSnapshot
+				}).ToList();
+
+				await _billingService.CreateOrderItemsAsync(orderItems);
 			}
 			else 
-			{ 
-			
-			}
+			{
+				var request = new OrderDto
+				{
+					OrderId = _currentOrderId,
+					TableId = _currentTableId,
+					StatusId = statusId,
+					OrderType = "DINE_IN",
+					TotalAmount = GrandTotal
+				};
+
+				await _billingService.UpdateOrderAsync(request);
 
 				var orderItems = BillItems.Select(x => new OrderItemDto
 				{
@@ -326,8 +354,9 @@ namespace SmartServePOS.ViewModels
 					Quantity = x.Quantity,
 					PriceSnapshot = x.PriceSnapshot
 				}).ToList();
-			
-			await _billingService.CreateOrderItemsAsync(orderItems);
+
+				await _billingService.UpdateOrderItemsAsync(_currentOrderId,orderItems);
+			}
 			// optional: clear bill after save
 			BillItems.Clear();
 			OnPropertyChanged(nameof(GrandTotal));
@@ -352,7 +381,7 @@ namespace SmartServePOS.ViewModels
 				BillItems.Add(new BillItemModelDto
 				{
 					VariantId = item.VariantId ?? 0,
-					ItemName = item.Variant?.Name ?? string.Empty,
+					ItemName = item.Variant.Product.Name + " - " + item.Variant?.Name,
 					Quantity = item.Quantity,
 					PriceSnapshot = item.PriceSnapshot
 				});

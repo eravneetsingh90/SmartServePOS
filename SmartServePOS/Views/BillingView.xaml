@@ -40,7 +40,7 @@
 					Content="Dine In"
 					Cursor="Hand"
 					Foreground="White" />
-				<Button
+				<!--<Button
 					Width="90"
 					Margin="4"
 					Background="#555"
@@ -61,7 +61,7 @@
 					Command="{Binding ReloadMenuCommand}"
 					Content="Refresh"
 					Cursor="Hand"
-					Foreground="White" />
+					Foreground="White" />-->
 			</StackPanel>
 		</Grid>
 
@@ -505,14 +505,15 @@
 									Background="#C62828"
 									Command="{Binding SaveCommand}"
 									Content="Save"
-									Foreground="White" />
-								<Button
+									Foreground="White"
+									IsEnabled="{Binding IsEditable}" />
+								<!--<Button
 									Width="90"
 									Margin="4"
 									Background="#444"
 									Command="{Binding PrintCommand}"
 									Content="Print"
-									Foreground="White" />
+									Foreground="White" />-->
 							</StackPanel>
 
 							<StackPanel Grid.Column="1" HorizontalAlignment="Right">
