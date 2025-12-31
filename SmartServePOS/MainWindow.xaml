@@ -105,6 +105,14 @@
 						Content="Menu Management"
 						Foreground="White" />
 
+					<Button
+						x:Name="StockManagementButton"
+						Margin="0,0,8,0"
+						Background="#C62828"
+						Click="StockManagementButton_Click"
+						Content="Stock Management"
+						Foreground="White" />
+
 				</StackPanel>
 			</DockPanel>
 		</Border>
