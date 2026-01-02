@@ -60,6 +60,7 @@ namespace SmartServePOS.ViewModels
 			{
 				await _categoryStore.SaveBulkAsync(Categories);
 				_notificationService.Success("Saved Successfully");
+				await LoadAsync();
 			}
 			catch (Exception ex)
 			{

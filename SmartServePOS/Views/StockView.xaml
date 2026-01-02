@@ -42,8 +42,8 @@
 					Margin="4"
 					Padding="12,6"
 					Command="{Binding AdjustStockCommand}"
-					Content="Adjust Stock"
-					IsEnabled="{Binding SelectedItem, Converter={StaticResource NullToBoolConverter}}" />
+					Content="Adjust Stock" />
+				<!--  IsEnabled="{Binding SelectedItem, Converter={StaticResource NullToBoolConverter}}" />  -->
 			</StackPanel>
 		</Grid>
 

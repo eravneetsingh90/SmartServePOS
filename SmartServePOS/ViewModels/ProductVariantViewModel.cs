@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using SmartServe.Domain.Models;
+using SmartServe.Domain.Services;
 using SmartServe.Domain.Stores;
 using SmartServe.EFCore.Models;
 using SmartServePOS.Command;
@@ -17,6 +18,7 @@ namespace SmartServePOS.ViewModels
 		private readonly ICategoryStore _categoryStore;
 		private readonly IProductStore _productStore;
 		private readonly IProductVariantStore _variantStore;
+		private readonly ICatalogService _catalogService;
 		#endregion
 
 		#region services
@@ -37,6 +39,7 @@ namespace SmartServePOS.ViewModels
 		public ObservableCollection<Product> Products { get; }
 		public ObservableCollection<ProductVariantModel> Variants { get; }
 		public IEnumerable<StockMode> StockModes { get; } = Enum.GetValues(typeof(StockMode)).Cast<StockMode>();
+		public IEnumerable<Brand> Brands { get; }
 		private Category? _selectedCategory;
 		public Category? SelectedCategory
 		{
@@ -68,7 +71,8 @@ namespace SmartServePOS.ViewModels
 			IProductStore productStore,
 			IProductVariantStore variantStore,
 			INotificationService notificationService,
-			IDialogService dialogService)
+			IDialogService dialogService,
+			ICatalogService catalogService)
 		{
 			_mapper = mapper;
 			_categoryStore = categoryStore;
@@ -76,10 +80,13 @@ namespace SmartServePOS.ViewModels
 			_variantStore = variantStore;
 			_notificationService = notificationService;
 			_dialogService = dialogService;
+			_catalogService = catalogService;
+
 			Categories = new ObservableCollection<Category>();
 			Products = new ObservableCollection<Product>();
 			Variants = new ObservableCollection<ProductVariantModel>();
 
+			Brands = _catalogService.GetBrands();
 			AddVariantCommand = new RelayCommand(_ => AddVariant());
 			SaveCommand = new RelayCommand(async _ => await SaveAsync());
 			DeleteCommand = new RelayCommand<ProductVariantModel>(DeleteVariant);
@@ -178,6 +185,7 @@ namespace SmartServePOS.ViewModels
 				var productVariants = _mapper.Map<List<ProductVariant>>(Variants);
 				await _variantStore.SaveBulkAsync(productVariants);
 				_notificationService.Success("Saved Successfully");
+				await LoadVariantsAsync();
 			}
 			catch (Exception ex)
 			{

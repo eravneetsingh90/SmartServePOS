@@ -103,6 +103,7 @@ namespace SmartServePOS.ViewModels
 			{
 				await _productStore.SaveBulkAsync(Products);
 				_notificationService.Success("Saved Successfully");
+				await LoadProductsAsync();
 			}
 			catch (Exception ex)
 			{
