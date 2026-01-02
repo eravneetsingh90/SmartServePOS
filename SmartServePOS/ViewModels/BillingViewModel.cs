@@ -115,7 +115,7 @@ namespace SmartServePOS.ViewModels
 			IncreaseQtyCommand = new RelayCommand<BillItemModelDto>(IncreaseQty);
 			DecreaseQtyCommand = new RelayCommand<BillItemModelDto>(DecreaseQty);
 			RemoveItemCommand = new RelayCommand<BillItemModelDto>(RemoveItem);
-			ReloadMenuCommand = new RelayCommand(_ => _catalogService.Reset());
+			ReloadMenuCommand = new RelayCommand(_ => RefreshAsync());
 			SaveCommand = new RelayCommand(async _ => await SaveAsync());
 			AddVariantCommand = new RelayCommand<ProductVariantModelDto>(AddVariantToBill);
 			PrintCommand = new RelayCommand<BillPrintModel>(PrintBill);
@@ -387,6 +387,11 @@ namespace SmartServePOS.ViewModels
 				});
 			}
 			OnPropertyChanged(nameof(GrandTotal));
+		}
+		public async void RefreshAsync()
+		{
+			await _catalogService.Refresh();
+			LoadCategories();
 		}
 		#endregion
 	}

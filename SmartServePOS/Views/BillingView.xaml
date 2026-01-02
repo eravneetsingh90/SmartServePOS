@@ -54,6 +54,7 @@
 					Content="Pick Up"
 					Cursor="Hand"
 					Foreground="White" />
+				-->
 				<Button
 					Width="90"
 					Margin="4"
@@ -61,7 +62,7 @@
 					Command="{Binding ReloadMenuCommand}"
 					Content="Refresh"
 					Cursor="Hand"
-					Foreground="White" />-->
+					Foreground="White" />
 			</StackPanel>
 		</Grid>
 

@@ -238,7 +238,7 @@
 					GridLinesVisibility="None"
 					HeadersVisibility="Column"
 					ItemsSource="{Binding Variants}"
-					RowHeight="38"
+					RowHeight="46"
 					SelectionMode="Single">
 					<!--  HEADER STYLE  -->
 					<DataGrid.ColumnHeaderStyle>
