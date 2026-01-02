@@ -25,7 +25,6 @@ namespace SmartServePOS.Models
 			}
 		}
 
-		// 🔥 ITEM DISCOUNT
 		public decimal DiscountAmount { get; set; }   // ₹ value
 
 		public decimal GrossPrice => Quantity * PriceSnapshot;

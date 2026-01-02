@@ -54,7 +54,7 @@ namespace SmartServePOS.ViewModels
 		{
 			Categories.Clear();
 
-			var data = await _categoryStore.GetAllCategoriesByOrderAsync();
+			var data = await _categoryStore.GetAllAsync();
 
 			foreach (var c in data)
 				Categories.Add(c);
@@ -70,7 +70,7 @@ namespace SmartServePOS.ViewModels
 			if (SelectedCategory == null)
 				return;
 
-			var data = await _productStore.GetProductsByCategoryAsync(SelectedCategory.CategoryId);
+			var data = await _productStore.GetByCategoryIdAsync(SelectedCategory.CategoryId);
 			foreach (var p in data)
 			{
 				Products.Add(p);
@@ -101,7 +101,7 @@ namespace SmartServePOS.ViewModels
 				return;
 			try
 			{
-				await _productStore.SaveBulkProductsAsync(Products);
+				await _productStore.SaveBulkAsync(Products);
 				_notificationService.Success("Saved Successfully");
 			}
 			catch (Exception ex)
@@ -123,7 +123,7 @@ namespace SmartServePOS.ViewModels
 			Products.Remove(product);
 
 			if (product.ProductId != 0)
-				await _productStore.DeleteAndSaveAsync(product);
+				await _productStore.DeleteAsync(product.ProductId);
 		}
 	}
 }

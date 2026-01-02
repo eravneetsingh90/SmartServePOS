@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SmartServePOS.Helper;
+using SmartServePOS.Mapping;
 using SmartServePOS.ViewModels;
 using SmartServePOS.Views;
 
@@ -10,6 +11,9 @@ namespace SmartServePOS.Dependencies
 		public static IServiceCollection UseApp(
 			this IServiceCollection services)
 		{
+			//mapping profiles
+			services.AddAutoMapper(typeof(MappingProfile));
+
 			//Views and ViewModels
 			services.AddTransient<LoginView>();
 			services.AddTransient<LoginViewModel>();

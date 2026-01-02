@@ -325,17 +325,21 @@
 						</DataGridTextColumn>
 
 
-						<DataGridCheckBoxColumn
-							Width="100"
-							Binding="{Binding TracksStock, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-							Header="Tracks Stock">
-							<DataGridCheckBoxColumn.ElementStyle>
-								<Style TargetType="CheckBox">
-									<Setter Property="HorizontalAlignment" Value="Center" />
-									<Setter Property="VerticalAlignment" Value="Center" />
-								</Style>
-							</DataGridCheckBoxColumn.ElementStyle>
-						</DataGridCheckBoxColumn>
+						<!--  STOCK MODE  -->
+						<DataGridTemplateColumn Width="160" Header="Stock Mode">
+
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<ComboBox
+										Margin="4"
+										VerticalContentAlignment="Center"
+										ItemsSource="{Binding DataContext.StockModes, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+										SelectedItem="{Binding StockMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+
+						</DataGridTemplateColumn>
+
 						<!--  ACTIVE  -->
 						<DataGridCheckBoxColumn
 							Width="60"
