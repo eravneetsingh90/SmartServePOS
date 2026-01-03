@@ -1,6 +1,7 @@
 ﻿using SmartServe.Domain.Constants;
 using SmartServe.Domain.Models;
 using SmartServe.Domain.Services;
+using SmartServe.EFCore.Models;
 using SmartServePOS.Command;
 using SmartServePOS.Helper;
 using SmartServePOS.Models;
@@ -24,7 +25,7 @@ namespace SmartServePOS.ViewModels
 		#region collections
 		public ObservableCollection<CategoryDto> Categories { get; }
 		public ObservableCollection<ProductModelDto> Products { get; }
-		public ObservableCollection<ProductVariantModelDto> Variants { get; }
+		public ObservableCollection<ProductVariantModel> Variants { get; }
 		public ObservableCollection<BillItemModelDto> BillItems { get; }
 		#endregion
 
@@ -97,7 +98,7 @@ namespace SmartServePOS.ViewModels
 				OnPropertyChanged(nameof(IsEditable));
 			}
 		}
-		#endregion
+#endregion
 
 		#region constructors
 		public BillingViewModel(
@@ -117,12 +118,12 @@ namespace SmartServePOS.ViewModels
 			RemoveItemCommand = new RelayCommand<BillItemModelDto>(RemoveItem);
 			ReloadMenuCommand = new RelayCommand(_ => RefreshAsync());
 			SaveCommand = new RelayCommand(async _ => await SaveAsync());
-			AddVariantCommand = new RelayCommand<ProductVariantModelDto>(AddVariantToBill);
+			AddVariantCommand = new RelayCommand<ProductVariantModel>(AddVariantToBill);
 			PrintCommand = new RelayCommand<BillPrintModel>(PrintBill);
 
 			Categories = new ObservableCollection<CategoryDto>();
 			Products = new ObservableCollection<ProductModelDto>();
-			Variants = new ObservableCollection<ProductVariantModelDto>();
+			Variants = new ObservableCollection<ProductVariantModel>();
 			BillItems = new ObservableCollection<BillItemModelDto>();
 			LoadCategories();
 		}
@@ -177,18 +178,18 @@ namespace SmartServePOS.ViewModels
 
 			foreach (var variant in variants)
 			{
-				Variants.Add(new ProductVariantModelDto
+				Variants.Add(new ProductVariantModel
 				{
 					ProductId = variant.ProductId,
-					VariantId = variant.ProductVariantId,
+					ProductVariantId = variant.ProductVariantId,
 					Price = variant.Price,
-					VariantName = variant.Name
+					Name = variant.Name
 				});
 			}
 		}
-		private void AddVariantToBill(ProductVariantModelDto variant)
+		private void AddVariantToBill(ProductVariantModel variant)
 		{
-			var existing = BillItems.FirstOrDefault(x => x.VariantId == variant.VariantId);
+			var existing = BillItems.FirstOrDefault(x => x.VariantId == variant.ProductVariantId);
 
 			if (existing != null)
 			{
@@ -198,8 +199,8 @@ namespace SmartServePOS.ViewModels
 			{
 				BillItems.Add(new BillItemModelDto
 				{
-					VariantId = variant.VariantId,
-					ItemName = $"{SelectedProduct.Name} - {variant.VariantName}",
+					VariantId = variant.ProductVariantId,
+					ItemName = $"{SelectedProduct.Name} - {variant.Name}",
 					Quantity = 1,
 					PriceSnapshot = variant.Price
 				});
@@ -257,11 +258,11 @@ namespace SmartServePOS.ViewModels
 
 			foreach (var item in results)
 			{
-				Variants.Add(new ProductVariantModelDto
+				Variants.Add(new ProductVariantModel
 				{
-					VariantId = item.VariantId,
+					ProductVariantId = item.VariantId,
 					ProductId = item.ProductId,
-					VariantName = $"{item.ProductName} - {item.VariantName}",
+					Name = $"{item.ProductName} - {item.VariantName}",
 					Price = item.Price
 				});
 			}

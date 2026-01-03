@@ -1,4 +1,7 @@
-﻿using System.Windows.Controls;
+﻿using SmartServePOS.Models;
+using SmartServePOS.ViewModels;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace SmartServePOS.Views
 {
@@ -8,5 +11,16 @@ namespace SmartServePOS.Views
 		{
 			InitializeComponent();
 		}
-    }
+		private void VariantClicked(object sender, MouseButtonEventArgs e)
+		{
+			if (sender is ListBoxItem item &&
+				item.DataContext is ProductVariantModel variant &&
+				DataContext is BillingViewModel vm &&
+				vm.AddVariantCommand.CanExecute(variant))
+			{
+				vm.AddVariantCommand.Execute(variant);
+			}
+		}
+
+	}
 }
