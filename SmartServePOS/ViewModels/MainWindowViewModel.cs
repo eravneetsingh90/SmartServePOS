@@ -13,6 +13,17 @@
 				OnPropertyChanged();
 			}
 		}
+		private bool _isLoading = true;
+		public bool IsLoading
+		{
+			get => _isLoading;
+			set
+			{
+				_isLoading = value;
+				OnPropertyChanged();
+			}
+		}
+
 	}
 
 }
