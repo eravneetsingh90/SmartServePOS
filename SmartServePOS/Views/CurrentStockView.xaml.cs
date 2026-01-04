@@ -7,16 +7,16 @@ namespace SmartServePOS.Views
 	/// <summary>
 	/// Interaction logic for StockView.xaml
 	/// </summary>
-	public partial class StockView : Page
+	public partial class CurrentStockView : Page
 	{
-		public StockView()
+		public CurrentStockView()
 		{
 			InitializeComponent();
 			if (DataContext == null)
 			{
 				if (App.Services is not null)
 				{
-					DataContext = App.Services.GetService<StockViewModel>();
+					DataContext = App.Services.GetService<CurrentStockViewModel>();
 				}
 			}
 		}

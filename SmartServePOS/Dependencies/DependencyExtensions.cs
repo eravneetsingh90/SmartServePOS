@@ -31,8 +31,8 @@ namespace SmartServePOS.Dependencies
 			services.AddSingleton<ProductVariantView>();
 			services.AddSingleton<ProductVariantViewModel>();
 			services.AddSingleton<StockManagementView>();
-			services.AddSingleton<StockView>();
-			services.AddSingleton<StockViewModel>();
+			services.AddSingleton<CurrentStockView>();
+			services.AddSingleton<CurrentStockViewModel>();
 
 			services.AddScoped<IPrintService, PrintService>();
 			services.AddScoped<INotificationService, HandyNotificationService>();

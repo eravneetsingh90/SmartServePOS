@@ -14,7 +14,7 @@ namespace SmartServePOS.Views
 		}
 		private void OpenIceCreamStock_Click(object sender, MouseButtonEventArgs e)
 		{
-			NavigationService?.Navigate(new StockView());
+			NavigationService?.Navigate(new CurrentStockView());
 		}
 
 		private void OpenIngredientStock_Click(object sender, MouseButtonEventArgs e)
