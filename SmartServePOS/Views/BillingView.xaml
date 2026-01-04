@@ -309,7 +309,7 @@
 											FontSize="13"
 											FontWeight="SemiBold"
 											Foreground="#222"
-											Text="{Binding Name}"
+											Text="{Binding VariantName}"
 											TextTrimming="None"
 											TextWrapping="Wrap" />
 

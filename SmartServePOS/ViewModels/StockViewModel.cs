@@ -63,18 +63,18 @@ namespace SmartServePOS.ViewModels
 		{
 			Items.Clear();
 
-			var stock = await _stockStore.GetAllAsync();
+			//var stock = await _stockStore.GetAllAsync();
 
-			foreach (var item in stock)
-			{
-				Items.Add(new StockModel
-				{
-					BrandName = item?.Variant?.Brand?.Name ?? string.Empty,
-					VariantName = item?.Variant.Name ?? string.Empty,
-					Quantity = item?.Quantity ?? 0,
-					Status = item?.Quantity > 0 ? "In Stock" : "Out of Stock"
-				});
-			}
+			//foreach (var item in stock)
+			//{
+			//	Items.Add(new StockModel
+			//	{
+			//		BrandName = item?.Variant?.Brand?.Name ?? string.Empty,
+			//		VariantName = item?.Variant.Name ?? string.Empty,
+			//		Quantity = item?.Quantity ?? 0,
+			//		Status = item?.Quantity > 0 ? "In Stock" : "Out of Stock"
+			//	});
+			//}
 		}
 
 		// ================= SEARCH =================

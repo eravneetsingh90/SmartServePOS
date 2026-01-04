@@ -170,7 +170,7 @@ namespace SmartServePOS.ViewModels
 			var variant = new ProductVariantModel
 			{
 				ProductId = SelectedProduct.ProductId,
-				Name = "New Variant",
+				VariantName = "New Variant",
 				Price = 0,
 				IsActive = true,
 				DisplayOrder = nextOrder,
@@ -186,15 +186,15 @@ namespace SmartServePOS.ViewModels
 			if (variant == null)
 				return;
 
-			var result = await _dialogService.ShowConfirmAsync("Confirm Delete", $"Are you sure you want to delete variant \"{variant.Name}\"?");
+			var result = await _dialogService.ShowConfirmAsync("Confirm Delete", $"Are you sure you want to delete variant \"{variant.VariantName}\"?");
 
 			if (!result)
 				return;
 
 			Variants.Remove(variant);
 
-			if (variant.ProductVariantId != 0)
-				_ = _variantStore.DeleteAsync(variant.ProductVariantId);
+			if (variant.VariantId != 0)
+				_ = _variantStore.DeleteAsync(variant.VariantId);
 		}
 
 		private async Task SaveAsync()

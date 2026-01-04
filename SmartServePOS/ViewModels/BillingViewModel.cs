@@ -181,15 +181,15 @@ namespace SmartServePOS.ViewModels
 				Variants.Add(new ProductVariantModel
 				{
 					ProductId = variant.ProductId,
-					ProductVariantId = variant.ProductVariantId,
+					VariantId = variant.VariantId,
 					Price = variant.Price,
-					Name = variant.Name
+					VariantName = variant.VariantName
 				});
 			}
 		}
 		private void AddVariantToBill(ProductVariantModel variant)
 		{
-			var existing = BillItems.FirstOrDefault(x => x.VariantId == variant.ProductVariantId);
+			var existing = BillItems.FirstOrDefault(x => x.VariantId == variant.VariantId);
 
 			if (existing != null)
 			{
@@ -199,8 +199,8 @@ namespace SmartServePOS.ViewModels
 			{
 				BillItems.Add(new BillItemModelDto
 				{
-					VariantId = variant.ProductVariantId,
-					ItemName = $"{SelectedProduct.Name} - {variant.Name}",
+					VariantId = variant.VariantId,
+					ItemName = $"{SelectedProduct.Name} - {variant.VariantName}",
 					Quantity = 1,
 					PriceSnapshot = variant.Price
 				});
@@ -260,9 +260,9 @@ namespace SmartServePOS.ViewModels
 			{
 				Variants.Add(new ProductVariantModel
 				{
-					ProductVariantId = item.VariantId,
+					VariantId = item.VariantId,
 					ProductId = item.ProductId,
-					Name = $"{item.ProductName} - {item.VariantName}",
+					VariantName = $"{item.ProductName} - {item.VariantName}",
 					Price = item.Price
 				});
 			}
@@ -382,7 +382,7 @@ namespace SmartServePOS.ViewModels
 				BillItems.Add(new BillItemModelDto
 				{
 					VariantId = item.VariantId ?? 0,
-					ItemName = item.Variant.Product.Name + " - " + item.Variant?.Name,
+					ItemName = item.Variant.Product.Name + " - " + item.Variant?.VariantName,
 					Quantity = item.Quantity,
 					PriceSnapshot = item.PriceSnapshot
 				});

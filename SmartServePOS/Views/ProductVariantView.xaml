@@ -298,7 +298,7 @@
 						<DataGridTextColumn
 							Width="*"
 							MinWidth="120"
-							Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+							Binding="{Binding VariantName, UpdateSourceTrigger=PropertyChanged}"
 							Header="Variant Name">
 							<DataGridTextColumn.ElementStyle>
 								<Style TargetType="TextBlock">

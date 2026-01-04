@@ -143,7 +143,7 @@ namespace SmartServePOS.ViewModels
 
 					Items = order.OrderItems.Select(x => new BillPrintItem
 					{
-						Name = x.Variant.Name,
+						Name = x.Variant.VariantName,
 						Quantity = x.Quantity,
 						UnitPrice = x.PriceSnapshot
 					}).ToList(),
