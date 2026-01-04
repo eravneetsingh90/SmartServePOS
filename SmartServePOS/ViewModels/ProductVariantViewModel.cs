@@ -39,7 +39,7 @@ namespace SmartServePOS.ViewModels
 		public ObservableCollection<Product> Products { get; }
 		public ObservableCollection<ProductVariantModel> Variants { get; }
 		public IEnumerable<StockMode> StockModes { get; } = Enum.GetValues(typeof(StockMode)).Cast<StockMode>();
-		public IEnumerable<Brand> Brands { get; }
+		public ObservableCollection<BrandModel> Brands { get; }
 		private Category? _selectedCategory;
 		public Category? SelectedCategory
 		{
@@ -85,17 +85,36 @@ namespace SmartServePOS.ViewModels
 			Categories = new ObservableCollection<Category>();
 			Products = new ObservableCollection<Product>();
 			Variants = new ObservableCollection<ProductVariantModel>();
+			Brands = new ObservableCollection<BrandModel>();
 
-			Brands = _catalogService.GetBrands();
 			AddVariantCommand = new RelayCommand(_ => AddVariant());
 			SaveCommand = new RelayCommand(async _ => await SaveAsync());
 			DeleteCommand = new RelayCommand<ProductVariantModel>(DeleteVariant);
 			RefreshCommand = new RelayCommand(async _ => await LoadVariantsAsync());
+			_ = LoadBrandAsync();
 			_ = LoadCategoriesAsync();
 		}
 		#endregion
 
 		#region methods
+		private async Task LoadBrandAsync()
+		{
+			Brands.Clear();
+			var brandsdb = _catalogService.GetBrands();
+			var brands = _mapper.Map<List<BrandModel>>(brandsdb);
+			
+			Brands.Add(new BrandModel
+			{
+				BrandId = null,          
+				Name = "—Select—"
+			});
+			
+			foreach (var v in brands)
+			{
+				Brands.Add(v);
+			}
+			
+		}
 		private async Task LoadCategoriesAsync()
 		{
 			Categories.Clear();

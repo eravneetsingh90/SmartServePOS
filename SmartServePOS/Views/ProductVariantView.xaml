@@ -11,8 +11,8 @@
 
 	<Grid Margin="16">
 		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="200" />
 			<ColumnDefinition Width="220" />
-			<ColumnDefinition Width="240" />
 			<ColumnDefinition Width="*" />
 		</Grid.ColumnDefinitions>
 
@@ -193,20 +193,20 @@
 		<!--  ================= VARIANTS =================  -->
 		<Border
 			Grid.Column="2"
-			Padding="16"
 			Background="White"
 			CornerRadius="8">
 
 			<StackPanel>
 				<DockPanel Margin="0,0,0,12">
 					<TextBlock
+						Margin="20,10,0,0"
 						DockPanel.Dock="Left"
 						FontSize="18"
 						FontWeight="SemiBold"
 						Text="{Binding SelectedProduct.Name}" />
 
 					<StackPanel
-						Margin="10,0,0,0"
+						Margin="10,10,0,0"
 						DockPanel.Dock="Right"
 						Orientation="Horizontal">
 						<Button
@@ -216,6 +216,7 @@
 							Command="{Binding AddVariantCommand}"
 							Content="+ Add Variant" />
 						<Button
+							Margin="0,0,8,0"
 							Background="#2E7D32"
 							Command="{Binding SaveCommand}"
 							Content="Save Changes"
@@ -245,32 +246,40 @@
 						<Style TargetType="DataGridColumnHeader">
 							<Setter Property="Background" Value="#F7F7F7" />
 							<Setter Property="Foreground" Value="#555" />
+							<Setter Property="Padding" Value="10,8" />
 							<Setter Property="FontWeight" Value="SemiBold" />
-							<Setter Property="Padding" Value="12,8" />
 							<Setter Property="BorderThickness" Value="0,0,0,1" />
 							<Setter Property="BorderBrush" Value="#DDD" />
 						</Style>
 					</DataGrid.ColumnHeaderStyle>
-					<!--  ROW STYLE  -->
-					<DataGrid.RowStyle>
+					<DataGrid.Resources>
 						<Style TargetType="DataGridRow">
 							<Setter Property="Background" Value="White" />
+							<Setter Property="Foreground" Value="Black" />
+							<Setter Property="BorderBrush" Value="#E0E0E0" />
 							<Setter Property="BorderThickness" Value="0,0,0,1" />
-							<Setter Property="BorderBrush" Value="#EEE" />
-
 							<Style.Triggers>
-								<Trigger Property="IsMouseOver" Value="True">
-									<Setter Property="Background" Value="#F9F9F9" />
-								</Trigger>
 								<Trigger Property="IsSelected" Value="True">
-									<Setter Property="Background" Value="#FFF3E0" />
+									<Setter Property="Background" Value="#0096FF" />
+									<Setter Property="Foreground" Value="Black" />
+								</Trigger>
+								<Trigger Property="IsMouseOver" Value="True">
+									<Setter Property="Background" Value="#0096FF" />
+									<Setter Property="Foreground" Value="Black" />
+								</Trigger>
+								<Trigger Property="IsEditing" Value="True">
+									<Setter Property="Background" Value="#0096FF" />
+									<Setter Property="Foreground" Value="White" />
+								</Trigger>
+								<Trigger Property="IsEnabled" Value="False">
+									<Setter Property="Opacity" Value="1" />
 								</Trigger>
 							</Style.Triggers>
 						</Style>
-					</DataGrid.RowStyle>
+					</DataGrid.Resources>
 					<DataGrid.Columns>
 						<DataGridTextColumn
-							Width="80"
+							Width="55"
 							Binding="{Binding DisplayOrder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 							Header="Order">
 							<DataGridTextColumn.ElementStyle>
@@ -288,45 +297,60 @@
 						</DataGridTextColumn>
 						<DataGridTextColumn
 							Width="*"
+							MinWidth="120"
 							Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
 							Header="Variant Name">
 							<DataGridTextColumn.ElementStyle>
 								<Style TargetType="TextBlock">
-									<Setter Property="Padding" Value="12,0" />
 									<Setter Property="VerticalAlignment" Value="Center" />
+									<Setter Property="HorizontalAlignment" Value="Left" />
 								</Style>
 							</DataGridTextColumn.ElementStyle>
 
 							<DataGridTextColumn.EditingElementStyle>
 								<Style TargetType="TextBox">
-									<Setter Property="Padding" Value="8" />
 									<Setter Property="BorderBrush" Value="#C62828" />
 								</Style>
 							</DataGridTextColumn.EditingElementStyle>
 						</DataGridTextColumn>
 
 						<DataGridTextColumn
-							Width="120"
+							Width="100"
 							Binding="{Binding Price, UpdateSourceTrigger=PropertyChanged}"
 							Header="Price">
 							<DataGridTextColumn.ElementStyle>
 								<Style TargetType="TextBlock">
-									<Setter Property="Padding" Value="12,0" />
+									<Setter Property="HorizontalAlignment" Value="Left" />
 									<Setter Property="VerticalAlignment" Value="Center" />
 								</Style>
 							</DataGridTextColumn.ElementStyle>
 
 							<DataGridTextColumn.EditingElementStyle>
 								<Style TargetType="TextBox">
-									<Setter Property="Padding" Value="8" />
 									<Setter Property="BorderBrush" Value="#C62828" />
 								</Style>
 							</DataGridTextColumn.EditingElementStyle>
 						</DataGridTextColumn>
 
+						<DataGridTemplateColumn Width="120" Header="Brand">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<ComboBox
+										Height="28"
+										Margin="4"
+										VerticalContentAlignment="Center"
+										DisplayMemberPath="Name"
+										ItemsSource="{Binding DataContext.Brands, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+										SelectedValue="{Binding BrandId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+										SelectedValuePath="BrandId" />
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+
+
 
 						<!--  STOCK MODE  -->
-						<DataGridTemplateColumn Width="160" Header="Stock Mode">
+						<DataGridTemplateColumn Width="140" Header="Stock Mode">
 
 							<DataGridTemplateColumn.CellTemplate>
 								<DataTemplate>
@@ -342,7 +366,7 @@
 
 						<!--  ACTIVE  -->
 						<DataGridCheckBoxColumn
-							Width="60"
+							Width="55"
 							Binding="{Binding IsActive, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 							Header="Active">
 							<DataGridCheckBoxColumn.ElementStyle>
