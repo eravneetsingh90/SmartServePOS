@@ -4,139 +4,282 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	Background="#F5F5F5">
 
-	<Grid Margin="24">
-
+	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
-			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 
-		<!--  HEADER  -->
-		<StackPanel Margin="0,0,0,24">
-			<TextBlock
-				FontSize="24"
-				FontWeight="Bold"
-				Text="Stock Management" />
-			<TextBlock
-				Margin="0,4,0,0"
-				Foreground="#666"
-				Text="Manage inventory and stock movements" />
-		</StackPanel>
+		<Grid Grid.Row="0" Margin="24">
 
-		<!--  TILE GRID  -->
-		<UniformGrid
-			Grid.Row="1"
-			HorizontalAlignment="Left"
-			VerticalAlignment="Top"
-			Columns="3">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="*" />
+			</Grid.RowDefinitions>
 
-			<!--  CATEGORY TILE  -->
-			<Border
-				Width="260"
-				Height="160"
-				Margin="12"
-				Background="White"
-				BorderBrush="#E0E0E0"
-				BorderThickness="1"
-				CornerRadius="8"
-				Cursor="Hand"
-				MouseLeftButtonUp="OpenIceCreamStock_Click">
+			<!--  HEADER  -->
+			<StackPanel Margin="0,0,0,12">
+				<TextBlock
+					FontSize="20"
+					FontWeight="Bold"
+					Text="Selaed Stock Management" />
+				<TextBlock
+					Margin="0,4,0,0"
+					FontSize="12"
+					Foreground="#666"
+					Text="Manage sealed bricks,tubs,gallons" />
+			</StackPanel>
 
-				<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+			<!--  TILE GRID  -->
+			<UniformGrid
+				Grid.Row="1"
+				HorizontalAlignment="Left"
+				VerticalAlignment="Top"
+				Columns="3">
 
-					<TextBlock
-						HorizontalAlignment="Center"
-						FontSize="36"
-						Text="🍨" />
+				<!--  CATEGORY TILE  -->
+				<Border
+					Width="260"
+					Height="160"
+					Margin="12"
+					Background="White"
+					BorderBrush="#E0E0E0"
+					BorderThickness="1"
+					CornerRadius="8"
+					Cursor="Hand"
+					MouseLeftButtonUp="OpenIceCreamStock_Click">
 
-					<TextBlock
-						Margin="0,8,0,0"
-						HorizontalAlignment="Center"
-						FontSize="16"
-						FontWeight="SemiBold"
-						Text="Ice Cream Stock" />
+					<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
 
-					<TextBlock
-						Margin="12,6,12,0"
-						FontSize="12"
-						Foreground="#777"
-						Text="Sealed bricks, tubs, gallons"
-						TextAlignment="Center" />
-				</StackPanel>
-			</Border>
+						<TextBlock
+							HorizontalAlignment="Center"
+							FontSize="36"
+							Text="🍨" />
 
-			<!--  PRODUCT TILE  -->
-			<Border
-				Width="260"
-				Height="160"
-				Margin="12"
-				Background="White"
-				BorderBrush="#E0E0E0"
-				BorderThickness="1"
-				CornerRadius="8"
-				Cursor="Hand"
-				MouseLeftButtonUp="OpenIngredientStock_Click">
+						<TextBlock
+							Margin="0,8,0,0"
+							HorizontalAlignment="Center"
+							FontSize="16"
+							FontWeight="SemiBold"
+							Text="Ice Cream Stock" />
 
-				<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+						<TextBlock
+							Margin="12,6,12,0"
+							FontSize="12"
+							Foreground="#777"
+							Text="Sealed bricks, tubs, gallons"
+							TextAlignment="Center" />
+					</StackPanel>
+				</Border>
 
-					<TextBlock
-						HorizontalAlignment="Center"
-						FontSize="36"
-						Text="🍔" />
+				<!--  PRODUCT TILE  -->
+				<Border
+					Width="260"
+					Height="160"
+					Margin="12"
+					Background="White"
+					BorderBrush="#E0E0E0"
+					BorderThickness="1"
+					CornerRadius="8"
+					Cursor="Hand"
+					MouseLeftButtonUp="OpenIngredientStock_Click">
 
-					<TextBlock
-						Margin="0,8,0,0"
-						HorizontalAlignment="Center"
-						FontSize="16"
-						FontWeight="SemiBold"
-						Text="Ingredient Stock" />
+					<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
 
-					<TextBlock
-						Margin="12,6,12,0"
-						FontSize="12"
-						Foreground="#777"
-						Text="Bun, tikki, cheese"
-						TextAlignment="Center" />
-				</StackPanel>
-			</Border>
+						<TextBlock
+							HorizontalAlignment="Center"
+							FontSize="36"
+							Text="🍔" />
 
-			<!--  VARIANT TILE  -->
-			<Border
-				Width="260"
-				Height="160"
-				Margin="12"
-				Background="White"
-				BorderBrush="#E0E0E0"
-				BorderThickness="1"
-				CornerRadius="8"
-				Cursor="Hand"
-				MouseLeftButtonUp="OpenStockTransactions_Click">
+						<TextBlock
+							Margin="0,8,0,0"
+							HorizontalAlignment="Center"
+							FontSize="16"
+							FontWeight="SemiBold"
+							Text="Ingredient Stock" />
 
-				<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+						<TextBlock
+							Margin="12,6,12,0"
+							FontSize="12"
+							Foreground="#777"
+							Text="Bun, tikki, cheese"
+							TextAlignment="Center" />
+					</StackPanel>
+				</Border>
 
-					<TextBlock
-						HorizontalAlignment="Center"
-						FontSize="36"
-						Text="📜" />
+				<!--  VARIANT TILE  -->
+				<Border
+					Width="260"
+					Height="160"
+					Margin="12"
+					Background="White"
+					BorderBrush="#E0E0E0"
+					BorderThickness="1"
+					CornerRadius="8"
+					Cursor="Hand"
+					MouseLeftButtonUp="OpenStockTransactions_Click">
 
-					<TextBlock
-						Margin="0,8,0,0"
-						HorizontalAlignment="Center"
-						FontSize="16"
-						FontWeight="SemiBold"
-						Text="Stock Transactions" />
+					<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
 
-					<TextBlock
-						Margin="12,6,12,0"
-						FontSize="12"
-						Foreground="#777"
-						Text="Audit &amp; history"
-						TextAlignment="Center" />
-				</StackPanel>
-			</Border>
+						<TextBlock
+							HorizontalAlignment="Center"
+							FontSize="36"
+							Text="📜" />
 
-		</UniformGrid>
+						<TextBlock
+							Margin="0,8,0,0"
+							HorizontalAlignment="Center"
+							FontSize="16"
+							FontWeight="SemiBold"
+							Text="Stock Transactions" />
 
+						<TextBlock
+							Margin="12,6,12,0"
+							FontSize="12"
+							Foreground="#777"
+							Text="Audit &amp; history"
+							TextAlignment="Center" />
+					</StackPanel>
+				</Border>
+
+			</UniformGrid>
+
+		</Grid>
+		<Grid Grid.Row="1" Margin="24">
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="*" />
+			</Grid.RowDefinitions>
+
+			<!--  HEADER  -->
+			<StackPanel Margin="0,0,0,12">
+				<TextBlock
+					FontSize="20"
+					FontWeight="Bold"
+					Text="Selaed Stock Management" />
+				<TextBlock
+					Margin="0,4,0,0"
+					FontSize="12"
+					Foreground="#666"
+					Text="Manage sealed bricks,tubs,gallons" />
+			</StackPanel>
+
+			<!--  TILE GRID  -->
+			<UniformGrid
+				Grid.Row="1"
+				HorizontalAlignment="Left"
+				VerticalAlignment="Top"
+				Columns="3">
+
+				<!--  CATEGORY TILE  -->
+				<Border
+					Width="260"
+					Height="160"
+					Margin="12"
+					Background="White"
+					BorderBrush="#E0E0E0"
+					BorderThickness="1"
+					CornerRadius="8"
+					Cursor="Hand"
+					MouseLeftButtonUp="OpenIceCreamStock_Click">
+
+					<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+
+						<TextBlock
+							HorizontalAlignment="Center"
+							FontSize="36"
+							Text="🍨" />
+
+						<TextBlock
+							Margin="0,8,0,0"
+							HorizontalAlignment="Center"
+							FontSize="16"
+							FontWeight="SemiBold"
+							Text="Ice Cream Stock" />
+
+						<TextBlock
+							Margin="12,6,12,0"
+							FontSize="12"
+							Foreground="#777"
+							Text="Sealed bricks, tubs, gallons"
+							TextAlignment="Center" />
+					</StackPanel>
+				</Border>
+
+				<!--  PRODUCT TILE  -->
+				<Border
+					Width="260"
+					Height="160"
+					Margin="12"
+					Background="White"
+					BorderBrush="#E0E0E0"
+					BorderThickness="1"
+					CornerRadius="8"
+					Cursor="Hand"
+					MouseLeftButtonUp="OpenIngredientStock_Click">
+
+					<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+
+						<TextBlock
+							HorizontalAlignment="Center"
+							FontSize="36"
+							Text="🍔" />
+
+						<TextBlock
+							Margin="0,8,0,0"
+							HorizontalAlignment="Center"
+							FontSize="16"
+							FontWeight="SemiBold"
+							Text="Ingredient Stock" />
+
+						<TextBlock
+							Margin="12,6,12,0"
+							FontSize="12"
+							Foreground="#777"
+							Text="Bun, tikki, cheese"
+							TextAlignment="Center" />
+					</StackPanel>
+				</Border>
+
+				<!--  VARIANT TILE  -->
+				<Border
+					Width="260"
+					Height="160"
+					Margin="12"
+					Background="White"
+					BorderBrush="#E0E0E0"
+					BorderThickness="1"
+					CornerRadius="8"
+					Cursor="Hand"
+					MouseLeftButtonUp="OpenStockTransactions_Click">
+
+					<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+
+						<TextBlock
+							HorizontalAlignment="Center"
+							FontSize="36"
+							Text="📜" />
+
+						<TextBlock
+							Margin="0,8,0,0"
+							HorizontalAlignment="Center"
+							FontSize="16"
+							FontWeight="SemiBold"
+							Text="Stock Transactions" />
+
+						<TextBlock
+							Margin="12,6,12,0"
+							FontSize="12"
+							Foreground="#777"
+							Text="Audit &amp; history"
+							TextAlignment="Center" />
+					</StackPanel>
+				</Border>
+
+			</UniformGrid>
+
+		</Grid>
 	</Grid>
 </Page>
 
