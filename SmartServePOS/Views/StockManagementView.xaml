@@ -82,7 +82,7 @@
 					BorderThickness="1"
 					CornerRadius="8"
 					Cursor="Hand"
-					MouseLeftButtonUp="OpenIngredientStock_Click">
+					MouseLeftButtonUp="OpenAddStock_Click">
 
 					<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
 
@@ -96,13 +96,13 @@
 							HorizontalAlignment="Center"
 							FontSize="16"
 							FontWeight="SemiBold"
-							Text="Ingredient Stock" />
+							Text="Add Stock" />
 
 						<TextBlock
 							Margin="12,6,12,0"
 							FontSize="12"
 							Foreground="#777"
-							Text="Bun, tikki, cheese"
+							Text="Add selaed stock"
 							TextAlignment="Center" />
 					</StackPanel>
 				</Border>
