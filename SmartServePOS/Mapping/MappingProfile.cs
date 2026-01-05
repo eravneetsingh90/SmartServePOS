@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using SmartServe.Domain.Models;
-using SmartServe.EFCore.Models;
 using SmartServePOS.Models;
 
 namespace SmartServePOS.Mapping
@@ -9,7 +8,7 @@ namespace SmartServePOS.Mapping
 	{
 		public MappingProfile()
 		{
-			CreateMap<Brand, BrandModel>().ReverseMap();
+			CreateMap<BrandDto, BrandModel>().ReverseMap();
 			
 		}
 	}

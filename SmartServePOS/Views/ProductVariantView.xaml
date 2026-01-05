@@ -347,21 +347,6 @@
 							</DataGridTemplateColumn.CellTemplate>
 						</DataGridTemplateColumn>
 
-						<DataGridTemplateColumn Width="140" Header="Stock Mode">
-
-							<DataGridTemplateColumn.CellTemplate>
-								<DataTemplate>
-									<ComboBox
-										Margin="4"
-										VerticalContentAlignment="Center"
-										ItemsSource="{Binding DataContext.StockModes, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-										SelectedItem="{Binding StockMode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-								</DataTemplate>
-							</DataGridTemplateColumn.CellTemplate>
-
-						</DataGridTemplateColumn>
-
-						<!--  ACTIVE  -->
 						<DataGridCheckBoxColumn
 							Width="55"
 							Binding="{Binding IsActive, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
