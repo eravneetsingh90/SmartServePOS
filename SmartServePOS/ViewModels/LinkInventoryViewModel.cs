@@ -1,6 +1,5 @@
 ﻿using SmartServe.Domain.Models;
 using SmartServe.Domain.Services;
-using SmartServe.Domain.Stores;
 using SmartServePOS.Command;
 using SmartServePOS.Models;
 using System.Collections.ObjectModel;
@@ -16,7 +15,7 @@ namespace SmartServePOS.ViewModels
 
 		public ObservableCollection<CategoryDto> Categories { get; } = new();
 		public ObservableCollection<ProductDto> Products { get; } = new();
-		public ObservableCollection<ProductVariantDto> Variants { get; } = new();
+		public ObservableCollection<LinkInventoryModel> Variants { get; } = new();
 
 		private CategoryDto _selectedCategory;
 		public CategoryDto SelectedCategory
@@ -25,7 +24,7 @@ namespace SmartServePOS.ViewModels
 			set
 			{
 				SetProperty(ref _selectedCategory, value);
-				//_ = LoadProductsAsync();
+				LoadProducts();
 			}
 		}
 
@@ -36,7 +35,7 @@ namespace SmartServePOS.ViewModels
 			set
 			{
 				SetProperty(ref _selectedProduct, value);
-				//_ = LoadVariantsAsync();
+				LoadVariants();
 			}
 		}
 
@@ -56,8 +55,8 @@ namespace SmartServePOS.ViewModels
 			_catalogService = catalogService;
 			_stockService = stockService;
 
-			//ToggleStockCommand = new RelayCommand<VariantStockSetupDto>(
-			//	async v => await ToggleStockAsync(v));
+			//ToggleStockCommand = new RelayCommand<LinkInventoryModel>(
+				//async v => await ToggleStockAsync(v));
 
 			LoadCategories();
 		}
@@ -103,6 +102,23 @@ namespace SmartServePOS.ViewModels
 			if (SelectedProduct == null)
 				SelectedProduct = Products.FirstOrDefault();
 		}
+		private void LoadVariants()
+		{
+			if (SelectedProduct == null)
+				return;
+			IsLoading = true;
+			Variants.Clear();
+			var variants = _catalogService.GetVariantsByProduct(SelectedProduct.ProductId);
 
+			foreach (var variant in variants)
+			{
+				Variants.Add(new LinkInventoryModel
+				{
+					VariantId = variant.VariantId,
+					Price = variant.Price,
+					VariantName = variant.VariantName
+				});
+			}
+		}
 	}
 }
