@@ -350,7 +350,7 @@
 
 
 						<!--  STOCK MODE  -->
-						<DataGridTemplateColumn Width="140" Header="Stock Mode">
+						<!--<DataGridTemplateColumn Width="140" Header="Stock Mode">
 
 							<DataGridTemplateColumn.CellTemplate>
 								<DataTemplate>
@@ -362,7 +362,7 @@
 								</DataTemplate>
 							</DataGridTemplateColumn.CellTemplate>
 
-						</DataGridTemplateColumn>
+						</DataGridTemplateColumn>-->
 
 						<!--  ACTIVE  -->
 						<DataGridCheckBoxColumn

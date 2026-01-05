@@ -10,94 +10,160 @@
 	Background="#F5F5F5"
 	mc:Ignorable="d">
 
-	<DockPanel Margin="12">
+	<DockPanel Margin="16">
 
 		<!--  ================= HEADER =================  -->
-		<TextBlock
-			Margin="0,0,0,12"
-			DockPanel.Dock="Top"
-			FontSize="20"
-			FontWeight="SemiBold"
-			Text="Add Stock" />
+		<StackPanel Margin="0,0,0,16" DockPanel.Dock="Top">
+			<TextBlock
+				FontSize="22"
+				FontWeight="SemiBold"
+				Text="Add Stock" />
 
-		<!--  ================= CONTENT =================  -->
+			<TextBlock
+				Margin="0,4,0,0"
+				Foreground="#666"
+				Text="Use this screen to add new stock received or opening balance." />
+		</StackPanel>
+
+		<!--  ================= CARD =================  -->
 		<Border
-			Width="420"
-			Padding="20"
+			Width="480"
+			Padding="24"
 			HorizontalAlignment="Left"
 			Background="White"
-			CornerRadius="6">
+			CornerRadius="8">
 
 			<Grid>
 				<Grid.RowDefinitions>
 					<RowDefinition Height="Auto" />
+					<!--  Item  -->
 					<RowDefinition Height="Auto" />
+					<!--  Meta  -->
 					<RowDefinition Height="Auto" />
+					<!--  Current  -->
 					<RowDefinition Height="Auto" />
+					<!--  Qty  -->
 					<RowDefinition Height="Auto" />
+					<!--  Reason  -->
+					<RowDefinition Height="Auto" />
+					<!--  Remarks  -->
+					<RowDefinition Height="Auto" />
+					<!--  Buttons  -->
 				</Grid.RowDefinitions>
 
-				<!--  Stock Item  -->
+				<!--  ================= STOCK ITEM =================  -->
 				<TextBlock FontWeight="SemiBold" Text="Stock Item" />
 
 				<ComboBox
 					Grid.Row="1"
-					Height="32"
-					Margin="0,4,0,12"
+					Height="34"
+					Margin="0,6,0,14"
 					DisplayMemberPath="DisplayName"
+					IsEditable="True"
+					IsTextSearchEnabled="True"
 					ItemsSource="{Binding StockItems}"
 					SelectedItem="{Binding SelectedStockItem}" />
 
-				<!--  Quantity  -->
-				<TextBlock
-					Grid.Row="2"
-					FontWeight="SemiBold"
-					Text="Quantity" />
+				<!--  ================= META INFO =================  -->
+				<Grid Grid.Row="2" Margin="0,0,0,14">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition />
+						<ColumnDefinition />
+					</Grid.ColumnDefinitions>
 
-				<TextBox
-					Grid.Row="3"
-					Height="32"
-					Margin="0,4,0,12"
-					VerticalContentAlignment="Center"
-					Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}" />
+					<StackPanel>
+						<TextBlock
+							FontSize="12"
+							Foreground="#666"
+							Text="Item Type" />
+						<TextBlock FontWeight="SemiBold" Text="{Binding SelectedStockItem.ItemType}" />
+					</StackPanel>
 
-				<!--  Reason  -->
-				<TextBlock
-					Grid.Row="4"
-					Margin="0,0,0,4"
-					FontWeight="SemiBold"
-					Text="Reason" />
+					<StackPanel Grid.Column="1">
+						<TextBlock
+							FontSize="12"
+							Foreground="#666"
+							Text="Unit" />
+						<TextBlock FontWeight="SemiBold" Text="{Binding SelectedStockItem.Unit}" />
+					</StackPanel>
+				</Grid>
 
-				<ComboBox
-					Grid.Row="5"
-					Height="32"
-					Margin="0,4,0,16"
-					ItemsSource="{Binding Reasons}"
-					SelectedItem="{Binding SelectedReason}" />
+				<!--  ================= CURRENT STOCK =================  -->
+				<StackPanel Grid.Row="3" Margin="0,0,0,14">
+					<TextBlock
+						FontSize="12"
+						Foreground="#666"
+						Text="Current Stock" />
+					<!--<TextBlock
+						FontSize="16"
+						FontWeight="SemiBold"
+						Foreground="#2E7D32"
+						Text="{Binding SelectedStockItem.CurrentQuantity}" />-->
+				</StackPanel>
 
-				<!--  Buttons  -->
+				<!--  ================= ADD QUANTITY =================  -->
+				<Grid Grid.Row="4" Margin="0,0,0,14">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition />
+						<ColumnDefinition Width="80" />
+					</Grid.ColumnDefinitions>
+
+					<TextBox
+						Height="34"
+						VerticalContentAlignment="Center"
+						Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}" />
+
+					<TextBlock
+						Grid.Column="1"
+						HorizontalAlignment="Center"
+						VerticalAlignment="Center"
+						FontWeight="SemiBold"
+						Text="{Binding SelectedStockItem.Unit}" />
+				</Grid>
+
+				<!--  ================= REASON =================  -->
+				<StackPanel Grid.Row="5" Margin="0,0,0,14">
+					<TextBlock FontWeight="SemiBold" Text="Reason" />
+					<ComboBox
+						Height="34"
+						Margin="0,6,0,0"
+						ItemsSource="{Binding Reasons}"
+						SelectedItem="{Binding SelectedReason}" />
+				</StackPanel>
+
+				<!--  ================= REMARKS (OPTIONAL) =================  -->
+				<StackPanel Grid.Row="6" Margin="0,0,0,20">
+					<TextBlock
+						FontSize="12"
+						Foreground="#666"
+						Text="Remarks (optional)" />
+					<TextBox
+						Height="60"
+						AcceptsReturn="True"
+						TextWrapping="Wrap" />
+				</StackPanel>
+
+				<!--  ================= ACTIONS =================  -->
 				<StackPanel
-					Grid.Row="6"
+					Grid.Row="7"
 					HorizontalAlignment="Right"
 					Orientation="Horizontal">
 
 					<Button
-						Width="80"
+						Width="90"
 						Margin="0,0,8,0"
 						Command="{Binding ResetCommand}"
 						Content="Reset" />
 
 					<Button
-						Width="100"
+						Width="120"
 						Command="{Binding SaveCommand}"
-						Content="Save"
+						Content="Add Stock"
 						IsEnabled="{Binding IsSaving, Converter={StaticResource InverseBoolConverter}}" />
 				</StackPanel>
 
-				<!--  Loader  -->
 				<!--<hc:Loading IsLoading="{Binding IsSaving}" />-->
 			</Grid>
 		</Border>
-
 	</DockPanel>
 </Page>

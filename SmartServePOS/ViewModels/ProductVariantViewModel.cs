@@ -14,14 +14,9 @@ namespace SmartServePOS.ViewModels
 {
 	public class ProductVariantViewModel : BaseViewModel
 	{
-		#region stores
-		private readonly ICategoryStore _categoryStore;
-		private readonly IProductStore _productStore;
-		private readonly IProductVariantStore _variantStore;
-		private readonly ICatalogService _catalogService;
-		#endregion
-
 		#region services
+		private readonly ICatalogService _catalogService;
+		private readonly IProductService _productService;
 		private readonly INotificationService _notificationService;
 		private readonly IDialogService _dialogService;
 		#endregion
@@ -35,13 +30,13 @@ namespace SmartServePOS.ViewModels
 
 		#region properties
 		private readonly IMapper _mapper;
-		public ObservableCollection<Category> Categories { get; }
-		public ObservableCollection<Product> Products { get; }
+		public ObservableCollection<CategoryModel> Categories { get; }
+		public ObservableCollection<ProductModel> Products { get; }
 		public ObservableCollection<ProductVariantModel> Variants { get; }
 		public IEnumerable<StockMode> StockModes { get; } = Enum.GetValues(typeof(StockMode)).Cast<StockMode>();
 		public ObservableCollection<BrandModel> Brands { get; }
-		private Category? _selectedCategory;
-		public Category? SelectedCategory
+		private CategoryModel? _selectedCategory;
+		public CategoryModel? SelectedCategory
 		{
 			get => _selectedCategory;
 			set
@@ -51,8 +46,8 @@ namespace SmartServePOS.ViewModels
 				_ = LoadProductsAsync();
 			}
 		}
-		private Product? _selectedProduct;
-		public Product? SelectedProduct
+		private ProductModel? _selectedProduct;
+		public ProductModel? SelectedProduct
 		{
 			get => _selectedProduct;
 			set
@@ -67,23 +62,18 @@ namespace SmartServePOS.ViewModels
 		#region constructor
 		public ProductVariantViewModel(
 			IMapper mapper,
-		ICategoryStore categoryStore,
-			IProductStore productStore,
-			IProductVariantStore variantStore,
 			INotificationService notificationService,
 			IDialogService dialogService,
-			ICatalogService catalogService)
+			ICatalogService catalogService,
+			IProductService productService)
 		{
 			_mapper = mapper;
-			_categoryStore = categoryStore;
-			_productStore = productStore;
-			_variantStore = variantStore;
 			_notificationService = notificationService;
 			_dialogService = dialogService;
 			_catalogService = catalogService;
-
-			Categories = new ObservableCollection<Category>();
-			Products = new ObservableCollection<Product>();
+			_productService = productService;
+			Categories = new ObservableCollection<CategoryModel>();
+			Products = new ObservableCollection<ProductModel>();
 			Variants = new ObservableCollection<ProductVariantModel>();
 			Brands = new ObservableCollection<BrandModel>();
 
@@ -93,6 +83,7 @@ namespace SmartServePOS.ViewModels
 			RefreshCommand = new RelayCommand(async _ => await LoadVariantsAsync());
 			_ = LoadBrandAsync();
 			_ = LoadCategoriesAsync();
+			
 		}
 		#endregion
 
@@ -118,10 +109,12 @@ namespace SmartServePOS.ViewModels
 		private async Task LoadCategoriesAsync()
 		{
 			Categories.Clear();
-			var items = await _categoryStore.GetAllAsync();
-
-			foreach (var c in items)
+			var items = await _productService.GetCategoriesAsync();
+			var categoryModels = _mapper.Map<List<CategoryModel>>(items);
+			foreach (var c in categoryModels)
+			{
 				Categories.Add(c);
+			}
 			if (SelectedCategory == null)
 				SelectedCategory = Categories.FirstOrDefault();
 		}
@@ -134,8 +127,9 @@ namespace SmartServePOS.ViewModels
 			if (SelectedCategory == null)
 				return;
 
-			var products = await _productStore.GetByCategoryIdAsync(SelectedCategory.CategoryId);
-			foreach (var p in products)
+			var products = await _productService.GetProductByCategoryIdAsync(SelectedCategory.CategoryId);
+			var productModels = _mapper.Map<List<ProductModel>>(products);
+			foreach (var p in productModels)
 			{
 				Products.Add(p);
 			}
@@ -150,7 +144,7 @@ namespace SmartServePOS.ViewModels
 			if (SelectedProduct == null)
 				return;
 
-			var variants = await _variantStore.GetByProductIdAsync(SelectedProduct.ProductId);
+			var variants = await _productService.GetVariantByProductIdAsync(SelectedProduct.ProductId);
 			var variantModels = _mapper.Map<List<ProductVariantModel>>(variants);
 			foreach (var v in variantModels)
 			{
@@ -194,15 +188,15 @@ namespace SmartServePOS.ViewModels
 			Variants.Remove(variant);
 
 			if (variant.VariantId != 0)
-				_ = _variantStore.DeleteAsync(variant.VariantId);
+				_ = _productService.DeleteVariantAsync(variant.VariantId);
 		}
 
 		private async Task SaveAsync()
 		{
 			try
 			{
-				var productVariants = _mapper.Map<List<ProductVariant>>(Variants);
-				await _variantStore.SaveBulkAsync(productVariants);
+				var productVariants = _mapper.Map<List<ProductVariantDto>>(Variants);
+				await _productService.SaveBulkVariantAsync(productVariants);
 				_notificationService.Success("Saved Successfully");
 				await LoadVariantsAsync();
 			}

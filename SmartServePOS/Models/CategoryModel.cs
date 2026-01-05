@@ -1,6 +1,6 @@
 ﻿namespace SmartServePOS.Models
 {
-	public class CategoryDto
+	public class CategoryModel
 	{
 		public int CategoryId { get; set; }   // category_id
 		public string Name { get; set; }       // name
