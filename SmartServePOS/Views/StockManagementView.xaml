@@ -37,7 +37,40 @@
 				VerticalAlignment="Top"
 				Columns="3">
 
-				<!--  CATEGORY TILE  -->
+				<Border
+					Width="260"
+					Height="160"
+					Margin="12"
+					Background="White"
+					BorderBrush="#E0E0E0"
+					BorderThickness="1"
+					CornerRadius="8"
+					Cursor="Hand"
+					MouseLeftButtonUp="OpenLinkInventory_Click">
+
+					<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+
+						<TextBlock
+							HorizontalAlignment="Center"
+							FontSize="36"
+							Text="🍔" />
+
+						<TextBlock
+							Margin="0,8,0,0"
+							HorizontalAlignment="Center"
+							FontSize="16"
+							FontWeight="SemiBold"
+							Text="Link Product to Inventory" />
+
+						<TextBlock
+							Margin="12,6,12,0"
+							FontSize="12"
+							Foreground="#777"
+							Text="Add selaed product to inventory"
+							TextAlignment="Center" />
+					</StackPanel>
+				</Border>
+
 				<Border
 					Width="260"
 					Height="160"
@@ -72,7 +105,6 @@
 					</StackPanel>
 				</Border>
 
-				<!--  PRODUCT TILE  -->
 				<Border
 					Width="260"
 					Height="160"
@@ -107,7 +139,6 @@
 					</StackPanel>
 				</Border>
 
-				<!--  VARIANT TILE  -->
 				<Border
 					Width="260"
 					Height="160"

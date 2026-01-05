@@ -24,7 +24,7 @@ namespace SmartServePOS.ViewModels
 
 		#region collections
 		public ObservableCollection<CategoryDto> Categories { get; }
-		public ObservableCollection<ProductModelDto> Products { get; }
+		public ObservableCollection<ProductModel> Products { get; }
 		public ObservableCollection<ProductVariantModel> Variants { get; }
 		public ObservableCollection<BillItemModelDto> BillItems { get; }
 		#endregion
@@ -54,8 +54,8 @@ namespace SmartServePOS.ViewModels
 				LoadProducts();
 			}
 		}
-		private ProductModelDto _selectedProduct;
-		public ProductModelDto SelectedProduct
+		private ProductModel _selectedProduct;
+		public ProductModel SelectedProduct
 		{
 			get => _selectedProduct;
 			set
@@ -122,7 +122,7 @@ namespace SmartServePOS.ViewModels
 			PrintCommand = new RelayCommand<BillPrintModel>(PrintBill);
 
 			Categories = new ObservableCollection<CategoryDto>();
-			Products = new ObservableCollection<ProductModelDto>();
+			Products = new ObservableCollection<ProductModel>();
 			Variants = new ObservableCollection<ProductVariantModel>();
 			BillItems = new ObservableCollection<BillItemModelDto>();
 			LoadCategories();
@@ -157,7 +157,7 @@ namespace SmartServePOS.ViewModels
 
 			foreach (var product in products)
 			{
-				Products.Add(new ProductModelDto
+				Products.Add(new ProductModel
 				{
 					CategoryId = product.CategoryId ?? 0,
 					ProductId = product.ProductId,

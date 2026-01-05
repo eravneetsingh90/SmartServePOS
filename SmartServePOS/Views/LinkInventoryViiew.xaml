@@ -1,0 +1,140 @@
+﻿<Page
+	x:Class="SmartServePOS.Views.LinkInventoryView"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:viewmodels="clr-namespace:SmartServePOS.ViewModels"
+	d:DataContext="{d:DesignInstance Type=viewmodels:LinkInventoryViewModel}"
+	Background="#F5F5F5"
+	mc:Ignorable="d">
+	<DockPanel Margin="12">
+
+		<!--  ================= HEADER =================  -->
+		<TextBlock
+			Margin="0,0,0,12"
+			DockPanel.Dock="Top"
+			FontSize="20"
+			FontWeight="SemiBold"
+			Text="Stock Item Setup" />
+
+		<!--  ================= FILTER BAR =================  -->
+		<Border
+			Margin="0,0,0,12"
+			Padding="12"
+			Background="White"
+			CornerRadius="6"
+			DockPanel.Dock="Top">
+
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="200" />
+					<ColumnDefinition Width="200" />
+					<ColumnDefinition />
+				</Grid.ColumnDefinitions>
+
+				<!--  Category  -->
+				<StackPanel>
+					<TextBlock
+						FontSize="12"
+						Foreground="#666"
+						Text="Category" />
+					<ComboBox
+						Height="32"
+						DisplayMemberPath="Name"
+						ItemsSource="{Binding Categories}"
+						SelectedItem="{Binding SelectedCategory}" />
+				</StackPanel>
+
+				<!--  Product  -->
+				<StackPanel Grid.Column="1">
+					<TextBlock
+						FontSize="12"
+						Foreground="#666"
+						Text="Product" />
+					<ComboBox
+						Height="32"
+						DisplayMemberPath="Name"
+						ItemsSource="{Binding Products}"
+						SelectedItem="{Binding SelectedProduct}" />
+				</StackPanel>
+			</Grid>
+		</Border>
+
+		<!--  ================= VARIANT GRID =================  -->
+		<Border
+			Padding="8"
+			Background="White"
+			CornerRadius="6">
+
+			<Grid>
+
+				<!--  Loader  -->
+				<!--<hc:Loading IsLoading="{Binding IsLoading}" />-->
+
+				<DataGrid
+					AutoGenerateColumns="False"
+					CanUserAddRows="False"
+					GridLinesVisibility="None"
+					HeadersVisibility="Column"
+					IsReadOnly="True"
+					ItemsSource="{Binding Variants}"
+					RowHeight="36">
+
+					<DataGrid.Columns>
+
+						<DataGridTextColumn
+							Width="*"
+							Binding="{Binding VariantName}"
+							Header="Variant" />
+
+						<DataGridTextColumn
+							Width="180"
+							Binding="{Binding ProductName}"
+							Header="Product" />
+
+						<DataGridTextColumn
+							Width="160"
+							Binding="{Binding CategoryName}"
+							Header="Category" />
+
+						<DataGridTextColumn
+							Width="100"
+							Binding="{Binding Price, StringFormat=₹ {0:N2}}"
+							Header="Price" />
+
+						<!--  Stock Status  -->
+						<DataGridTemplateColumn Width="140" Header="Stock">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<TextBlock
+										HorizontalAlignment="Center"
+										FontWeight="SemiBold"
+										Foreground="{Binding StockStatusColor}"
+										Text="{Binding StockStatus}" />
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+
+						<!--  Action  -->
+						<DataGridTemplateColumn Width="160" Header="Action">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<Button
+										Width="130"
+										Height="28"
+										Command="{Binding DataContext.ToggleStockCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+										CommandParameter="{Binding}"
+										Content="{Binding ActionText}" />
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+
+					</DataGrid.Columns>
+				</DataGrid>
+
+			</Grid>
+		</Border>
+
+	</DockPanel>
+</Page>

@@ -30,13 +30,13 @@ namespace SmartServePOS.ViewModels
 
 		#region properties
 		private readonly IMapper _mapper;
-		public ObservableCollection<CategoryModel> Categories { get; }
+		public ObservableCollection<CategoryDto> Categories { get; }
 		public ObservableCollection<ProductModel> Products { get; }
 		public ObservableCollection<ProductVariantModel> Variants { get; }
 		public IEnumerable<StockMode> StockModes { get; } = Enum.GetValues(typeof(StockMode)).Cast<StockMode>();
 		public ObservableCollection<BrandModel> Brands { get; }
-		private CategoryModel? _selectedCategory;
-		public CategoryModel? SelectedCategory
+		private CategoryDto? _selectedCategory;
+		public CategoryDto? SelectedCategory
 		{
 			get => _selectedCategory;
 			set
@@ -72,7 +72,7 @@ namespace SmartServePOS.ViewModels
 			_dialogService = dialogService;
 			_catalogService = catalogService;
 			_productService = productService;
-			Categories = new ObservableCollection<CategoryModel>();
+			Categories = new ObservableCollection<CategoryDto>();
 			Products = new ObservableCollection<ProductModel>();
 			Variants = new ObservableCollection<ProductVariantModel>();
 			Brands = new ObservableCollection<BrandModel>();
@@ -110,7 +110,7 @@ namespace SmartServePOS.ViewModels
 		{
 			Categories.Clear();
 			var items = await _productService.GetCategoriesAsync();
-			var categoryModels = _mapper.Map<List<CategoryModel>>(items);
+			var categoryModels = _mapper.Map<List<CategoryDto>>(items);
 			foreach (var c in categoryModels)
 			{
 				Categories.Add(c);

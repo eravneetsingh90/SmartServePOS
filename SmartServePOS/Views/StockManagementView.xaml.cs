@@ -26,5 +26,11 @@ namespace SmartServePOS.Views
 		{
 			NavigationService?.Navigate(new StockTransactionsView());
 		}
+
+		private void OpenLinkInventory_Click(object sender, MouseButtonEventArgs e)
+		{
+			NavigationService?.Navigate(new LinkInventoryView());
+		}
+		
 	}
 }
