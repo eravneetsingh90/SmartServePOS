@@ -24,8 +24,8 @@ namespace SmartServePOS.ViewModels
 
 		#region collections
 		public ObservableCollection<CategoryDto> Categories { get; }
-		public ObservableCollection<ProductModel> Products { get; }
-		public ObservableCollection<ProductVariantModel> Variants { get; }
+		public ObservableCollection<ProductDto> Products { get; }
+		public ObservableCollection<ProductVariantDto> Variants { get; }
 		public ObservableCollection<BillItemModelDto> BillItems { get; }
 		#endregion
 
@@ -54,8 +54,8 @@ namespace SmartServePOS.ViewModels
 				LoadProducts();
 			}
 		}
-		private ProductModel _selectedProduct;
-		public ProductModel SelectedProduct
+		private ProductDto _selectedProduct;
+		public ProductDto SelectedProduct
 		{
 			get => _selectedProduct;
 			set
@@ -118,12 +118,12 @@ namespace SmartServePOS.ViewModels
 			RemoveItemCommand = new RelayCommand<BillItemModelDto>(RemoveItem);
 			ReloadMenuCommand = new RelayCommand(_ => RefreshAsync());
 			SaveCommand = new RelayCommand(async _ => await SaveAsync());
-			AddVariantCommand = new RelayCommand<ProductVariantModel>(AddVariantToBill);
+			AddVariantCommand = new RelayCommand<ProductVariantDto>(AddVariantToBill);
 			PrintCommand = new RelayCommand<BillPrintModel>(PrintBill);
 
 			Categories = new ObservableCollection<CategoryDto>();
-			Products = new ObservableCollection<ProductModel>();
-			Variants = new ObservableCollection<ProductVariantModel>();
+			Products = new ObservableCollection<ProductDto>();
+			Variants = new ObservableCollection<ProductVariantDto>();
 			BillItems = new ObservableCollection<BillItemModelDto>();
 			LoadCategories();
 		}
@@ -157,7 +157,7 @@ namespace SmartServePOS.ViewModels
 
 			foreach (var product in products)
 			{
-				Products.Add(new ProductModel
+				Products.Add(new ProductDto
 				{
 					CategoryId = product.CategoryId ?? 0,
 					ProductId = product.ProductId,
@@ -178,7 +178,7 @@ namespace SmartServePOS.ViewModels
 
 			foreach (var variant in variants)
 			{
-				Variants.Add(new ProductVariantModel
+				Variants.Add(new ProductVariantDto
 				{
 					ProductId = variant.ProductId,
 					VariantId = variant.VariantId,
@@ -187,7 +187,7 @@ namespace SmartServePOS.ViewModels
 				});
 			}
 		}
-		private void AddVariantToBill(ProductVariantModel variant)
+		private void AddVariantToBill(ProductVariantDto variant)
 		{
 			var existing = BillItems.FirstOrDefault(x => x.VariantId == variant.VariantId);
 
@@ -258,7 +258,7 @@ namespace SmartServePOS.ViewModels
 
 			foreach (var item in results)
 			{
-				Variants.Add(new ProductVariantModel
+				Variants.Add(new ProductVariantDto
 				{
 					VariantId = item.VariantId,
 					ProductId = item.ProductId,

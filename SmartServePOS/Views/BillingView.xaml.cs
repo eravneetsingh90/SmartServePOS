@@ -1,4 +1,5 @@
-﻿using SmartServePOS.Models;
+﻿using SmartServe.Domain.Models;
+using SmartServePOS.Models;
 using SmartServePOS.ViewModels;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -14,7 +15,7 @@ namespace SmartServePOS.Views
 		private void VariantClicked(object sender, MouseButtonEventArgs e)
 		{
 			if (sender is ListBoxItem item &&
-				item.DataContext is ProductVariantModel variant &&
+				item.DataContext is ProductVariantDto variant &&
 				DataContext is BillingViewModel vm &&
 				vm.AddVariantCommand.CanExecute(variant))
 			{
