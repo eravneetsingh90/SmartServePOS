@@ -67,8 +67,7 @@ namespace SmartServePOS.ViewModels
 			IsLoading = true;
 
 			Categories.Clear();
-			Products.Clear();
-			Variants.Clear();
+			
 
 			foreach (var category in _catalogService.GetCategories())
 			{
@@ -86,6 +85,8 @@ namespace SmartServePOS.ViewModels
 		}
 		private void LoadProducts()
 		{
+			Products.Clear();
+			Variants.Clear();
 			if (SelectedCategory == null)
 				return;
 
@@ -138,11 +139,9 @@ namespace SmartServePOS.ViewModels
 			if (!variant.IsStockTracked)
 			{
 				// ADD TO STOCK
-				await _stockService.CreateStockItemAsync(
+				await _stockService.ActivateStockItemAsync(
 					itemType: StockItemType.VARIANT,
-					referenceId: variant.VariantId,
-					unit: "PCS",
-					minStockLevel: 0);
+					referenceId: variant.VariantId);
 
 				variant.IsStockTracked = true;
 			}

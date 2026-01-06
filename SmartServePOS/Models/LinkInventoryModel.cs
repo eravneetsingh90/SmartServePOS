@@ -1,8 +1,9 @@
-﻿using System.Windows.Media;
+﻿using SmartServePOS.ViewModels;
+using System.Windows.Media;
 
 namespace SmartServePOS.Models
 {
-	public class LinkInventoryModel
+	public class LinkInventoryModel : BaseViewModel
 	{
 		public int VariantId { get; set; }
 
@@ -12,9 +13,23 @@ namespace SmartServePOS.Models
 
 		public decimal Price { get; set; }
 
-		// Stock state
-		public bool IsStockTracked { get; set; }
+		private bool _isStockTracked;
+		public bool IsStockTracked
+		{
+			get => _isStockTracked;
+			set
+			{
+				if (_isStockTracked == value)
+					return;
 
+				_isStockTracked = value;
+
+				OnPropertyChanged(nameof(IsStockTracked));
+				OnPropertyChanged(nameof(ActionText));
+				OnPropertyChanged(nameof(StockStatus));
+				OnPropertyChanged(nameof(StockStatusColor));
+			}
+		}
 		// UI helpers
 		public string StockStatus => IsStockTracked ? "Tracked" : "Not Tracked";
 
