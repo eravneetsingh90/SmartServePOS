@@ -48,6 +48,29 @@ namespace SmartServePOS.ViewModels
 		}
 
 		public ICommand ToggleStockCommand { get; }
+
+		public ObservableCollection<IngredientStockSetupModel> Ingredients { get; } = new();
+
+		private string _ingredientSearchText;
+		public string IngredientSearchText
+		{
+			get => _ingredientSearchText;
+			set
+			{
+				SetProperty(ref _ingredientSearchText, value);
+				LoadIngredients();
+			}
+		}
+
+		private bool _isIngredientLoading;
+		public bool IsIngredientLoading
+		{
+			get => _isIngredientLoading;
+			set => SetProperty(ref _isIngredientLoading, value);
+		}
+
+		public ICommand ToggleIngredientStockCommand { get; }
+
 		#endregion
 		public LinkInventoryViewModel(
 			ICatalogService catalogService,
@@ -58,8 +81,11 @@ namespace SmartServePOS.ViewModels
 
 			ToggleStockCommand = new RelayCommand<LinkInventoryModel>(
 				async v => await ToggleStockAsync(v));
+			ToggleIngredientStockCommand = new RelayCommand<IngredientStockSetupModel>(
+				async i => await ToggleIngredientStockAsync(i));
 
 			LoadCategories();
+			_ = LoadIngredients();
 		}
 
 		private void LoadCategories()
@@ -159,6 +185,63 @@ namespace SmartServePOS.ViewModels
 			OnPropertyChanged(nameof(Variants));
 
 			IsLoading = false;
+		}
+		private async Task LoadIngredients()
+		{
+			IsIngredientLoading = true;
+			Ingredients.Clear();
+
+			var ingredients = await _stockService.GetIngredients();
+
+			var stockItems = await _stockService
+				.GetStockItemAsync(StockItemType.INGREDIENT);
+
+			var stockLookup = stockItems
+				.ToDictionary(x => x.ReferenceId, x => x);
+
+			foreach (var ing in ingredients)
+			{
+				if (!string.IsNullOrWhiteSpace(IngredientSearchText) &&
+					!ing.Name.Contains(IngredientSearchText,
+						StringComparison.OrdinalIgnoreCase))
+					continue;
+
+				Ingredients.Add(new IngredientStockSetupModel
+				{
+					IngredientId = ing.IngredientId,
+					IngredientName = ing.Name,
+					Unit = ing.Unit,
+					IsStockTracked = stockLookup.ContainsKey(ing.IngredientId)
+				});
+			}
+
+			IsIngredientLoading = false;
+		}
+		private async Task ToggleIngredientStockAsync(IngredientStockSetupModel ingredient)
+		{
+			if (ingredient == null)
+				return;
+
+			IsIngredientLoading = true;
+
+			if (!ingredient.IsStockTracked)
+			{
+				await _stockService.ActivateStockItemAsync(
+					StockItemType.INGREDIENT,
+					ingredient.IngredientId);
+
+				ingredient.IsStockTracked = true;
+			}
+			else
+			{
+				await _stockService.DeactivateStockItemAsync(
+					StockItemType.INGREDIENT,
+					ingredient.IngredientId);
+
+				ingredient.IsStockTracked = false;
+			}
+
+			IsIngredientLoading = false;
 		}
 
 	}
