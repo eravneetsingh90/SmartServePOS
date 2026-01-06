@@ -6,10 +6,5 @@
 		UPI,
 		Part
 	}
-	public enum StockMode
-	{
-		NONE,
-		SEALED,
-		INGREDIENT
-	}
+	
 }

@@ -1,4 +1,5 @@
-﻿using SmartServe.Domain.Models;
+﻿using SmartServe.Domain.Constants;
+using SmartServe.Domain.Models;
 using SmartServe.Domain.Services;
 using SmartServePOS.Command;
 using SmartServePOS.Models;
@@ -55,8 +56,8 @@ namespace SmartServePOS.ViewModels
 			_catalogService = catalogService;
 			_stockService = stockService;
 
-			//ToggleStockCommand = new RelayCommand<LinkInventoryModel>(
-				//async v => await ToggleStockAsync(v));
+			ToggleStockCommand = new RelayCommand<LinkInventoryModel>(
+				async v => await ToggleStockAsync(v));
 
 			LoadCategories();
 		}
@@ -102,7 +103,7 @@ namespace SmartServePOS.ViewModels
 			if (SelectedProduct == null)
 				SelectedProduct = Products.FirstOrDefault();
 		}
-		private void LoadVariants()
+		private async void LoadVariants()
 		{
 			if (SelectedProduct == null)
 				return;
@@ -110,15 +111,56 @@ namespace SmartServePOS.ViewModels
 			Variants.Clear();
 			var variants = _catalogService.GetVariantsByProduct(SelectedProduct.ProductId);
 
+			var stockItems = await _stockService.GetStockItemAsync(StockItemType.VARIANT);
+
+			var stockLookup = stockItems.ToDictionary(x => x.ReferenceId, x => x);
+
 			foreach (var variant in variants)
 			{
 				Variants.Add(new LinkInventoryModel
 				{
 					VariantId = variant.VariantId,
 					Price = variant.Price,
-					VariantName = variant.VariantName
+					VariantName = variant.VariantName,
+					ProductName = SelectedProduct.Name,
+					CategoryName = SelectedCategory.Name,
+					IsStockTracked = stockLookup.ContainsKey(variant.VariantId)
 				});
 			}
 		}
+		private async Task ToggleStockAsync(LinkInventoryModel variant)
+		{
+			if (variant == null)
+				return;
+
+			IsLoading = true;
+
+			if (!variant.IsStockTracked)
+			{
+				// ADD TO STOCK
+				await _stockService.CreateStockItemAsync(
+					itemType: StockItemType.VARIANT,
+					referenceId: variant.VariantId,
+					unit: "PCS",
+					minStockLevel: 0);
+
+				variant.IsStockTracked = true;
+			}
+			else
+			{
+				// REMOVE FROM STOCK (deactivate)
+				await _stockService.DeactivateStockItemAsync(
+					StockItemType.VARIANT,
+					variant.VariantId);
+
+				variant.IsStockTracked = false;
+			}
+
+			// Force UI refresh
+			OnPropertyChanged(nameof(Variants));
+
+			IsLoading = false;
+		}
+
 	}
 }

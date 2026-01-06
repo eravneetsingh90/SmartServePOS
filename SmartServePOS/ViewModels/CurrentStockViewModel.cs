@@ -8,7 +8,7 @@ namespace SmartServePOS.ViewModels
 {
 	public class CurrentStockViewModel : BaseViewModel
 	{
-		private readonly IStockStore _stockStore;
+		private readonly IStockItemStore _stockStore;
 		public IEnumerable<CurrentStockDto> LowStockItems => _allStocks.Where(x => x.IsLowStock);
 
 		public ObservableCollection<CurrentStockDto> Stocks { get; private set; }
@@ -35,7 +35,7 @@ namespace SmartServePOS.ViewModels
 
 		private List<CurrentStockDto> _allStocks;
 
-		public CurrentStockViewModel(IStockStore stockStore)
+		public CurrentStockViewModel(IStockItemStore stockStore)
 		{
 			_stockStore = stockStore;
 

@@ -33,7 +33,6 @@ namespace SmartServePOS.ViewModels
 		public ObservableCollection<CategoryDto> Categories { get; }
 		public ObservableCollection<ProductDto> Products { get; }
 		public ObservableCollection<ProductVariantDto> Variants { get; }
-		public IEnumerable<StockMode> StockModes { get; } = Enum.GetValues(typeof(StockMode)).Cast<StockMode>();
 		public ObservableCollection<BrandModel> Brands { get; }
 		private CategoryDto? _selectedCategory;
 		public CategoryDto? SelectedCategory
