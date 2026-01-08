@@ -20,7 +20,7 @@
 			Text="Stock Item Setup" />
 
 		<!--  ================= TAB CONTROL =================  -->
-		<TabControl>
+		<TabControl SelectedIndex="{Binding SelectedTabIndex}">
 
 			<!--  ================= VARIANTS TAB =================  -->
 			<TabItem Header="Variants">

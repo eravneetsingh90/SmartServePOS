@@ -79,6 +79,33 @@ namespace SmartServePOS.ViewModels
 			set => SetProperty(ref _isIngredientLoading, value);
 		}
 
+		private int _selectedTabIndex;
+		public int SelectedTabIndex
+		{
+			get => _selectedTabIndex;
+			set
+			{
+				if (SetProperty(ref _selectedTabIndex, value))
+				{
+					if (value == 1) // Ingredients tab index
+					{
+						_ = LoadIngredientsOnceAsync();
+					}
+				}
+			}
+		}
+
+		private bool _ingredientsLoaded;
+
+		private async Task LoadIngredientsOnceAsync()
+		{
+			if (_ingredientsLoaded)
+				return;
+
+			_ingredientsLoaded = true;
+			await LoadIngredientsAsync();
+		}
+
 		#endregion
 
 		#region Commands
@@ -115,8 +142,7 @@ namespace SmartServePOS.ViewModels
 			IsLoading = true;
 
 			await LoadCategoriesAsync();
-			//await LoadIngredientsAsync();
-
+			
 			IsLoading = false;
 		}
 

@@ -9,7 +9,7 @@ namespace SmartServePOS.ViewModels
 {
 	public class AddStockViewModel : BaseViewModel
 	{
-		private readonly IStockItemStore _stockStore;
+		private readonly IStockStore _stockStore;
 		private readonly IStockService _stockService;
 
 		public ObservableCollection<StockItemLookupModel> StockItems { get; }
@@ -48,7 +48,7 @@ namespace SmartServePOS.ViewModels
 		public ICommand ResetCommand { get; }
 
 		public AddStockViewModel(
-			IStockItemStore stockStore,
+			IStockStore stockStore,
 			IStockService stockService)
 		{
 			_stockStore = stockStore;
@@ -70,7 +70,7 @@ namespace SmartServePOS.ViewModels
 		}
 		private async Task LoadStockItemsAsync()
 		{
-			var items = await _stockStore.GetStockItemsAsync();
+			var items = await _stockStore.GetStockAsync();
 
 			StockItems.Clear();
 
@@ -78,7 +78,7 @@ namespace SmartServePOS.ViewModels
 			{
 				StockItems.Add(new StockItemLookupModel
 				{
-					StockItemId = item.StockItemId,
+					StockItemId = item.Id,
 					ItemType = item.ItemType,
 					ReferenceId = item.ReferenceId,
 					Unit = item.Unit,
