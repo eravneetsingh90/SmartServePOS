@@ -9,7 +9,7 @@ namespace SmartServePOS.Mapping
 		public MappingProfile()
 		{
 			CreateMap<BrandDto, BrandModel>().ReverseMap();
-			
+			CreateMap<AddStockDto, AddStockModel>().ReverseMap();
 		}
 	}
 }

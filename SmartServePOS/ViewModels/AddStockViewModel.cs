@@ -1,5 +1,7 @@
-﻿using SmartServe.Domain.Services;
-using SmartServe.Domain.Stores;
+﻿using AutoMapper;
+using SmartServe.Domain.Constants;
+using SmartServe.Domain.Models;
+using SmartServe.Domain.Services;
 using SmartServePOS.Command;
 using SmartServePOS.Models;
 using System.Collections.ObjectModel;
@@ -9,118 +11,120 @@ namespace SmartServePOS.ViewModels
 {
 	public class AddStockViewModel : BaseViewModel
 	{
-		private readonly IStockStore _stockStore;
+		private readonly IMapper _mapper;
+		private readonly ICatalogService _catalogService;
 		private readonly IStockService _stockService;
 
-		public ObservableCollection<StockItemLookupModel> StockItems { get; }
+		public ObservableCollection<BrandDto> Brands { get; } = new();
+		public ObservableCollection<ProductVariantDto> Variants { get; } = new();
+		public ObservableCollection<IngredientDto> Ingredients { get; } = new();
 
-		private StockItemLookupModel _selectedStockItem;
-		public StockItemLookupModel SelectedStockItem
+		public ObservableCollection<AddStockModel> StockRows { get; } = new();
+
+		#region Mode
+
+		private Helper.StockItemType _selectedMode = Helper.StockItemType.VARIANT;
+		public Helper.StockItemType SelectedMode
 		{
-			get => _selectedStockItem;
-			set => SetProperty(ref _selectedStockItem, value);
+			get => _selectedMode;
+			set
+			{
+				if (SetProperty(ref _selectedMode, value))
+				{
+					LoadModeData();
+				}
+			}
 		}
 
-		private decimal _quantity;
-		public decimal Quantity
-		{
-			get => _quantity;
-			set => SetProperty(ref _quantity, value);
-		}
+		#endregion
 
-		private string _selectedReason;
-		public string SelectedReason
-		{
-			get => _selectedReason;
-			set => SetProperty(ref _selectedReason, value);
-		}
-
-		public List<string> Reasons { get; }
-
-		private bool _isSaving;
-		public bool IsSaving
-		{
-			get => _isSaving;
-			set => SetProperty(ref _isSaving, value);
-		}
-
-		public ICommand SaveCommand { get; }
-		public ICommand ResetCommand { get; }
+		public ICommand AddVariantCommand { get; }
+		public ICommand AddIngredientCommand { get; }
+		public ICommand RemoveRowCommand { get; }
+		public ICommand SaveStockCommand { get; }
 
 		public AddStockViewModel(
-			IStockStore stockStore,
+			IMapper mapper,
+			ICatalogService catalogService,
 			IStockService stockService)
 		{
-			_stockStore = stockStore;
+			_mapper = mapper;
+			_catalogService = catalogService;
 			_stockService = stockService;
 
-			StockItems = new ObservableCollection<StockItemLookupModel>();
+			AddVariantCommand = new RelayCommand<ProductVariantDto>(AddVariant);
+			AddIngredientCommand = new RelayCommand<IngredientDto>(AddIngredient);
+			RemoveRowCommand = new RelayCommand<AddStockModel>(r => StockRows.Remove(r));
+			SaveStockCommand = new RelayCommand(async _ => await SaveStockAsync());
 
-			Reasons = new List<string>
-		{
-			"PURCHASE",
-			"OPENING",
-			"MANUAL"
-		};
-
-			SaveCommand = new RelayCommand(async _ => await SaveAsync(), CanSave);
-			ResetCommand = new RelayCommand(Reset);
-
-			_ = LoadStockItemsAsync();
+			LoadInitialData();
 		}
-		private async Task LoadStockItemsAsync()
+
+		private void LoadInitialData()
 		{
-			var items = await _stockStore.GetStockAsync();
-
-			StockItems.Clear();
-
-			foreach (var item in items)
-			{
-				StockItems.Add(new StockItemLookupModel
-				{
-					StockItemId = item.Id,
-					ItemType = item.ItemType,
-					ReferenceId = item.ReferenceId,
-					Unit = item.Unit,
-					DisplayName = $"{item.ItemType} - {item.ReferenceId}"
-				});
-			}
+			foreach (var brand in _catalogService.GetBrands())
+				Brands.Add(brand);
 		}
-		private async Task SaveAsync()
+
+		private void LoadModeData()
 		{
-			if (SelectedStockItem == null)
+			StockRows.Clear();
+		}
+
+		#region Add Row
+
+		private void AddVariant(ProductVariantDto variant)
+		{
+			if (StockRows.Any(x =>
+				x.ItemType == StockItemType.VARIANT &&
+				x.ReferenceId == variant.VariantId))
 				return;
 
-			try
+			StockRows.Add(new AddStockModel
 			{
-				IsSaving = true;
+				ItemType = StockItemType.VARIANT,
+				ReferenceId = variant.VariantId,
+				DisplayName = $"{variant.VariantName} ({variant.Brand.Name})",
+				Unit = "LTR"
+			});
+		}
 
-				//await _stockService.AddStockAsync(
-				//	SelectedStockItem.ItemType,
-				//	SelectedStockItem.ReferenceId,
-				//	Quantity,
-				//	SelectedReason);
+		private void AddIngredient(IngredientDto ing)
+		{
+			if (StockRows.Any(x =>
+				x.ItemType == StockItemType.INGREDIENT &&
+				x.ReferenceId == ing.IngredientId))
+				return;
 
-				Reset(null);
-			}
-			finally
+			StockRows.Add(new AddStockModel
 			{
-				IsSaving = false;
-			}
-		}
-		private bool CanSave(object? obj)
-		{
-			return SelectedStockItem != null
-				&& Quantity > 0
-				&& !string.IsNullOrWhiteSpace(SelectedReason)
-				&& !IsSaving;
-		}
-		private void Reset(object? obj)
-		{
-			SelectedStockItem = null;
-			Quantity = 0;
-			SelectedReason = null;
+				ItemType = StockItemType.INGREDIENT,
+				ReferenceId = ing.IngredientId,
+				DisplayName = ing.Name,
+				Unit = ing.Unit
+			});
 		}
 
+		#endregion
+
+		#region Save
+
+		private async Task SaveStockAsync()
+		{
+			if (!StockRows.Any())
+				return;
+
+			foreach (var row in StockRows)
+			{
+				if (row.Quantity <= 0)
+					throw new InvalidOperationException("Quantity must be greater than zero.");
+			}
+			var stocks = _mapper.Map<List<AddStockDto>>(StockRows.ToList());
+			await _stockService.AddStockAsync(stocks);
+
+			StockRows.Clear();
+		}
+
+		#endregion
 	}
 }

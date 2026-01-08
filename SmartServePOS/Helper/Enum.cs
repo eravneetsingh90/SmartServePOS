@@ -6,5 +6,9 @@
 		UPI,
 		Part
 	}
-	
+	public enum StockItemType
+	{
+		VARIANT,
+		INGREDIENT
+	}
 }
