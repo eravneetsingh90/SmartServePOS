@@ -10,13 +10,13 @@ namespace SmartServePOS.Views
 		{
 			InitializeComponent();
 
-			//if (DataContext == null)
-			//{
-			//	if (App.Services is not null)
-			//	{
-			//		DataContext = App.Services.GetService<TableViewModel>();
-			//	}
-			//}
+			if (DataContext == null)
+			{
+				if (App.Services is not null)
+				{
+					DataContext = App.Services.GetService<TableViewModel>();
+				}
+			}
 		}
 	}
 }

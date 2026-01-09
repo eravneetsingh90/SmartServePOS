@@ -85,7 +85,6 @@
 				Grid.Column="0"
 				Padding="6"
 				Background="#262626"
-				CornerRadius="6"
 				IsHitTestVisible="{Binding IsSearchActive, Converter={StaticResource BoolToHitTestConverter}}"
 				Opacity="{Binding IsSearchActive, Converter={StaticResource BoolToOpacityConverter}}">
 
@@ -127,7 +126,6 @@
 										x:Name="Accent"
 										Grid.Column="0"
 										Background="#C62828"
-										CornerRadius="6,0,0,6"
 										Visibility="Collapsed" />
 
 									<!--  Text  -->

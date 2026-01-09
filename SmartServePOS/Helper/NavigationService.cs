@@ -38,23 +38,23 @@ namespace SmartServePOS.Helper
 
 		public async void NavigateToTable()
 		{
-			TableViewModel tableViewModel = null;
-			if (App.Services is not null)
-			{
-				tableViewModel = App.Services.GetService<TableViewModel>();
-			}
-			else
-			{
-				throw new InvalidOperationException("TableViewModel dependencies must be provided via DI.");
-			}
+			//TableViewModel tableViewModel = null;
+			//if (App.Services is not null)
+			//{
+			//	tableViewModel = App.Services.GetService<TableViewModel>();
+			//}
+			//else
+			//{
+			//	throw new InvalidOperationException("TableViewModel dependencies must be provided via DI.");
+			//}
 
 			var tableView = new TableView();
-			tableView.DataContext = tableViewModel;
+			//tableView.DataContext = tableViewModel;
 			if (Application.Current.MainWindow is MainWindow mw)
 			{
 				mw.MainFrame.Navigate(tableView);
 			}
-			
+
 		}
 	}
 

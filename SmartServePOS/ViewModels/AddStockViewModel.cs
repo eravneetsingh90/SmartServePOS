@@ -11,70 +11,128 @@ namespace SmartServePOS.ViewModels
 {
 	public class AddStockViewModel : BaseViewModel
 	{
+		#region fields
 		private readonly IMapper _mapper;
-		private readonly ICatalogService _catalogService;
+		private readonly IProductService _productService;
 		private readonly IStockService _stockService;
-
 		public ObservableCollection<BrandDto> Brands { get; } = new();
 		public ObservableCollection<ProductVariantDto> Variants { get; } = new();
 		public ObservableCollection<IngredientDto> Ingredients { get; } = new();
-
 		public ObservableCollection<AddStockModel> StockRows { get; } = new();
+		#endregion
 
-		#region Mode
+		#region Selected Items (Variant Flow)
 
-		private Helper.StockItemType _selectedMode = Helper.StockItemType.VARIANT;
-		public Helper.StockItemType SelectedMode
+		private BrandDto _selectedBrand;
+		public BrandDto SelectedBrand
 		{
-			get => _selectedMode;
+			get => _selectedBrand;
 			set
 			{
-				if (SetProperty(ref _selectedMode, value))
+				if (SetProperty(ref _selectedBrand, value))
 				{
-					LoadModeData();
+					_ = LoadVariantsAsync();
 				}
 			}
 		}
-
 		#endregion
 
+		#region Commands
 		public ICommand AddVariantCommand { get; }
 		public ICommand AddIngredientCommand { get; }
 		public ICommand RemoveRowCommand { get; }
 		public ICommand SaveStockCommand { get; }
+		public ICommand ReloadCommand { get; }
+		public ICommand ClearCommand { get; }
+		#endregion
 
 		public AddStockViewModel(
 			IMapper mapper,
-			ICatalogService catalogService,
+			IProductService productService,
 			IStockService stockService)
 		{
 			_mapper = mapper;
-			_catalogService = catalogService;
+			_productService = productService;
 			_stockService = stockService;
 
 			AddVariantCommand = new RelayCommand<ProductVariantDto>(AddVariant);
 			AddIngredientCommand = new RelayCommand<IngredientDto>(AddIngredient);
 			RemoveRowCommand = new RelayCommand<AddStockModel>(r => StockRows.Remove(r));
 			SaveStockCommand = new RelayCommand(async _ => await SaveStockAsync());
+			ReloadCommand = new RelayCommand(async _ => await ReloadAsync());
+			ClearCommand = new RelayCommand(ClearStockRows);
 
-			LoadInitialData();
+			_ = InitializeAsync();
 		}
 
-		private void LoadInitialData()
+		#region Initialization
+		private async Task InitializeAsync()
 		{
-			foreach (var brand in _catalogService.GetBrands())
-				Brands.Add(brand);
+			await LoadBrandsAsync();
+			await LoadIngredientsAsync();
 		}
-
-		private void LoadModeData()
+		private async Task ReloadAsync()
 		{
+			Brands.Clear();
+			Variants.Clear();
+			Ingredients.Clear();
 			StockRows.Clear();
+
+			await InitializeAsync();
+		}
+		#endregion
+
+		#region Load Data (Variant Flow)
+		private async Task LoadBrandsAsync()
+		{
+			var brands = await Task.Run(() => _productService.GetBrandsAsync());
+
+			foreach (var brand in brands)
+			{
+				if (brand.IsActive == true)
+					Brands.Add(brand);
+			}
+
+			SelectedBrand = Brands.FirstOrDefault();
 		}
 
-		#region Add Row
+		private async Task LoadVariantsAsync()
+		{
+			Variants.Clear();
+
+			if (SelectedBrand == null)
+				return;
+
+			var variants = await Task.Run(() =>
+				_productService.GetVariantsByBrandIdAsync(SelectedBrand.BrandId));
+
+			foreach (var v in variants)
+			{
+				v.VariantName = $"{v.Product.Name} - {v.VariantName}";
+				Variants.Add(v);
+			}
+		}
+		#endregion
+
+		#region Load Ingredients (Ingredient Tab)
+
+		private async Task LoadIngredientsAsync()
+		{
+			var ingredients = await _stockService.GetIngredients();
+
+			foreach (var ing in ingredients)
+				Ingredients.Add(ing);
+		}
+
+		#endregion
+
+		#region Add Stock Rows
 
 		private void AddVariant(ProductVariantDto variant)
 		{
+			if (variant == null)
+				return;
+
 			if (StockRows.Any(x =>
 				x.ItemType == StockItemType.VARIANT &&
 				x.ReferenceId == variant.VariantId))
@@ -84,25 +142,46 @@ namespace SmartServePOS.ViewModels
 			{
 				ItemType = StockItemType.VARIANT,
 				ReferenceId = variant.VariantId,
-				DisplayName = $"{variant.VariantName} ({variant.Brand.Name})",
-				Unit = "LTR"
+				DisplayName = $"{variant.Product.Name} - {variant.VariantName}",
+				//Unit = variant.Unit ?? "PCS",
+				Unit = "PCS",
+				Quantity = 1,
+				Reason = "PURCHASE"
 			});
 		}
 
-		private void AddIngredient(IngredientDto ing)
+		private void AddIngredient(IngredientDto ingredient)
 		{
+			if (ingredient == null)
+				return;
+
 			if (StockRows.Any(x =>
 				x.ItemType == StockItemType.INGREDIENT &&
-				x.ReferenceId == ing.IngredientId))
+				x.ReferenceId == ingredient.IngredientId))
 				return;
 
 			StockRows.Add(new AddStockModel
 			{
 				ItemType = StockItemType.INGREDIENT,
-				ReferenceId = ing.IngredientId,
-				DisplayName = ing.Name,
-				Unit = ing.Unit
+				ReferenceId = ingredient.IngredientId,
+				DisplayName = ingredient.Name,
+				Unit = ingredient.Unit,
+				Quantity = 1,
+				Reason = "PURCHASE"
 			});
+		}
+
+		private void RemoveRow(AddStockModel row)
+		{
+			if (row == null)
+				return;
+
+			StockRows.Remove(row);
+		}
+
+		private void ClearStockRows(object? obj)
+		{
+			StockRows.Clear();
 		}
 
 		#endregion
