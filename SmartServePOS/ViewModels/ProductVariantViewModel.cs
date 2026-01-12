@@ -1,13 +1,12 @@
 ﻿using AutoMapper;
+using SmartServe.Domain.Constants;
 using SmartServe.Domain.Models;
 using SmartServe.Domain.Services;
-using SmartServe.Domain.Stores;
 using SmartServe.EFCore.Models;
 using SmartServePOS.Command;
+using SmartServePOS.Constant;
 using SmartServePOS.Helper;
-using SmartServePOS.Models;
 using System.Collections.ObjectModel;
-using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace SmartServePOS.ViewModels
@@ -15,7 +14,6 @@ namespace SmartServePOS.ViewModels
 	public class ProductVariantViewModel : BaseViewModel
 	{
 		#region services
-		private readonly ICatalogService _catalogService;
 		private readonly IProductService _productService;
 		private readonly INotificationService _notificationService;
 		private readonly IDialogService _dialogService;
@@ -33,7 +31,6 @@ namespace SmartServePOS.ViewModels
 		public ObservableCollection<CategoryDto> Categories { get; }
 		public ObservableCollection<ProductDto> Products { get; }
 		public ObservableCollection<ProductVariantDto> Variants { get; }
-		public ObservableCollection<BrandModel> Brands { get; }
 		private CategoryDto? _selectedCategory;
 		public CategoryDto? SelectedCategory
 		{
@@ -63,48 +60,26 @@ namespace SmartServePOS.ViewModels
 			IMapper mapper,
 			INotificationService notificationService,
 			IDialogService dialogService,
-			ICatalogService catalogService,
 			IProductService productService)
 		{
 			_mapper = mapper;
 			_notificationService = notificationService;
 			_dialogService = dialogService;
-			_catalogService = catalogService;
 			_productService = productService;
 			Categories = new ObservableCollection<CategoryDto>();
 			Products = new ObservableCollection<ProductDto>();
 			Variants = new ObservableCollection<ProductVariantDto>();
-			Brands = new ObservableCollection<BrandModel>();
-
+			
 			AddVariantCommand = new RelayCommand(_ => AddVariant());
 			SaveCommand = new RelayCommand(async _ => await SaveAsync());
 			DeleteCommand = new RelayCommand<ProductVariantDto>(DeleteVariant);
 			RefreshCommand = new RelayCommand(async _ => await LoadVariantsAsync());
-			_ = LoadBrandAsync();
 			_ = LoadCategoriesAsync();
 			
 		}
 		#endregion
 
 		#region methods
-		private async Task LoadBrandAsync()
-		{
-			Brands.Clear();
-			var brandsdb = _catalogService.GetBrands();
-			var brands = _mapper.Map<List<BrandModel>>(brandsdb);
-			
-			Brands.Add(new BrandModel
-			{
-				BrandId = null,          
-				Name = "—Select—"
-			});
-			
-			foreach (var v in brands)
-			{
-				Brands.Add(v);
-			}
-			
-		}
 		private async Task LoadCategoriesAsync()
 		{
 			Categories.Clear();
@@ -183,10 +158,17 @@ namespace SmartServePOS.ViewModels
 			if (!result)
 				return;
 
-			Variants.Remove(variant);
-
 			if (variant.VariantId != 0)
-				_ = _productService.DeleteVariantAsync(variant.VariantId);
+			{
+				var response = await _productService.DeleteVariantAsync(variant.VariantId);
+				if (response.MetaData.ResultCode == ResultCodes.Success)
+				{
+					Variants.Remove(variant);
+					_notificationService.Success(UIConstants.DeletedSuccessfully);
+				}
+				else
+					_notificationService.Error(UIConstants.Error);
+			}
 		}
 
 		private async Task SaveAsync()

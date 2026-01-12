@@ -332,21 +332,6 @@
 							</DataGridTextColumn.EditingElementStyle>
 						</DataGridTextColumn>
 
-						<DataGridTemplateColumn Width="120" Header="Brand">
-							<DataGridTemplateColumn.CellTemplate>
-								<DataTemplate>
-									<ComboBox
-										Height="28"
-										Margin="4"
-										VerticalContentAlignment="Center"
-										DisplayMemberPath="Name"
-										ItemsSource="{Binding DataContext.Brands, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-										SelectedValue="{Binding BrandId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-										SelectedValuePath="BrandId" />
-								</DataTemplate>
-							</DataGridTemplateColumn.CellTemplate>
-						</DataGridTemplateColumn>
-
 						<DataGridCheckBoxColumn
 							Width="55"
 							Binding="{Binding IsActive, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"

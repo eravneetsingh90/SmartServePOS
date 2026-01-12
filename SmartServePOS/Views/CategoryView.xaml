@@ -70,40 +70,6 @@
 					ItemsSource="{Binding Categories}"
 					RowHeight="38"
 					SelectionMode="Single">
-
-					<!--  HEADER STYLE  -->
-					<DataGrid.ColumnHeaderStyle>
-						<Style TargetType="DataGridColumnHeader">
-							<Setter Property="Background" Value="#F7F7F7" />
-							<Setter Property="Foreground" Value="#555" />
-							<Setter Property="FontWeight" Value="SemiBold" />
-							<Setter Property="Padding" Value="12,8" />
-							<Setter Property="BorderThickness" Value="0,0,0,1" />
-							<Setter Property="BorderBrush" Value="#DDD" />
-						</Style>
-					</DataGrid.ColumnHeaderStyle>
-
-					<!--  ROW STYLE  -->
-					<DataGrid.RowStyle>
-						<Style TargetType="DataGridRow">
-							<Setter Property="Background" Value="White" />
-							<Setter Property="BorderThickness" Value="0,0,0,1" />
-							<Setter Property="BorderBrush" Value="#EEE" />
-
-							<Style.Triggers>
-								<Trigger Property="IsSelected" Value="True">
-									<Setter Property="Background" Value="#0096FF" />
-									<Setter Property="Foreground" Value="Black" />
-								</Trigger>
-								<Trigger Property="IsMouseOver" Value="True">
-									<Setter Property="Background" Value="#0096FF" />
-									<Setter Property="Foreground" Value="Black" />
-								</Trigger>
-							</Style.Triggers>
-						</Style>
-					</DataGrid.RowStyle>
-
-					<!--  COLUMNS  -->
 					<DataGrid.Columns>
 						<DataGridTextColumn
 							Width="80"
@@ -122,7 +88,6 @@
 								</Style>
 							</DataGridTextColumn.EditingElementStyle>
 						</DataGridTextColumn>
-						<!--  CATEGORY NAME  -->
 						<DataGridTextColumn
 							Width="*"
 							Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
@@ -141,8 +106,17 @@
 								</Style>
 							</DataGridTextColumn.EditingElementStyle>
 						</DataGridTextColumn>
-
-						<!--  ACTIVE  -->
+						<DataGridCheckBoxColumn
+							Width="65"
+							Binding="{Binding IsStock, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+							Header="Is Stock">
+							<DataGridCheckBoxColumn.ElementStyle>
+								<Style TargetType="CheckBox">
+									<Setter Property="HorizontalAlignment" Value="Center" />
+									<Setter Property="VerticalAlignment" Value="Center" />
+								</Style>
+							</DataGridCheckBoxColumn.ElementStyle>
+						</DataGridCheckBoxColumn>
 						<DataGridCheckBoxColumn
 							Width="60"
 							Binding="{Binding IsActive, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -154,8 +128,6 @@
 								</Style>
 							</DataGridCheckBoxColumn.ElementStyle>
 						</DataGridCheckBoxColumn>
-
-						<!--  DELETE  -->
 						<DataGridTemplateColumn Width="60" Header="Delete">
 							<DataGridTemplateColumn.CellTemplate>
 								<DataTemplate>
@@ -171,12 +143,9 @@
 								</DataTemplate>
 							</DataGridTemplateColumn.CellTemplate>
 						</DataGridTemplateColumn>
-
 					</DataGrid.Columns>
 				</DataGrid>
-
 			</Grid>
 		</Border>
-
 	</Grid>
 </Page>
