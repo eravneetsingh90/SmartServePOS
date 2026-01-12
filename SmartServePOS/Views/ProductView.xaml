@@ -20,7 +20,6 @@
 			Grid.Column="0"
 			Padding="6"
 			Background="White"
-			CornerRadius="6"
 			IsHitTestVisible="{Binding IsSearchActive, Converter={StaticResource BoolToHitTestConverter}}"
 			Opacity="{Binding IsSearchActive, Converter={StaticResource BoolToOpacityConverter}}">
 
@@ -51,8 +50,7 @@
 							<Border
 								x:Name="Root"
 								Height="46"
-								Background="#333333"
-								CornerRadius="6">
+								Background="#333333">
 
 								<Grid>
 									<Grid.ColumnDefinitions>
@@ -65,7 +63,6 @@
 										x:Name="Accent"
 										Grid.Column="0"
 										Background="#C62828"
-										CornerRadius="6,0,0,6"
 										Visibility="Collapsed" />
 
 									<!--  Text  -->
@@ -106,8 +103,7 @@
 			Padding="16"
 			Background="White"
 			BorderBrush="#E0E0E0"
-			BorderThickness="1"
-			CornerRadius="8">
+			BorderThickness="1">
 
 			<Grid>
 				<Grid.RowDefinitions>
@@ -175,23 +171,6 @@
 						</Style>
 					</DataGrid.ColumnHeaderStyle>
 
-					<!--  ROW STYLE  -->
-					<DataGrid.RowStyle>
-						<Style TargetType="DataGridRow">
-							<Setter Property="BorderBrush" Value="#EEE" />
-							<Setter Property="BorderThickness" Value="0,0,0,1" />
-							<Style.Triggers>
-								<Trigger Property="IsSelected" Value="True">
-									<Setter Property="Background" Value="#0096FF" />
-									<Setter Property="Foreground" Value="Black" />
-								</Trigger>
-								<Trigger Property="IsMouseOver" Value="True">
-									<Setter Property="Background" Value="#0096FF" />
-									<Setter Property="Foreground" Value="Black" />
-								</Trigger>
-							</Style.Triggers>
-						</Style>
-					</DataGrid.RowStyle>
 
 					<!--  COLUMNS  -->
 					<DataGrid.Columns>

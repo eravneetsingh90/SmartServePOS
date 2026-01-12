@@ -113,7 +113,6 @@
 								x:Name="Root"
 								Height="46"
 								Background="#333333"
-								CornerRadius="6"
 								Cursor="Hand">
 								<Grid>
 									<Grid.ColumnDefinitions>

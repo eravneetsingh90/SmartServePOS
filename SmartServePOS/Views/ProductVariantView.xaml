@@ -21,7 +21,6 @@
 			Grid.Column="0"
 			Padding="6"
 			Background="White"
-			CornerRadius="6"
 			IsHitTestVisible="{Binding IsSearchActive, Converter={StaticResource BoolToHitTestConverter}}"
 			Opacity="{Binding IsSearchActive, Converter={StaticResource BoolToOpacityConverter}}">
 
@@ -52,8 +51,7 @@
 							<Border
 								x:Name="Root"
 								Height="46"
-								Background="#333333"
-								CornerRadius="6">
+								Background="#333333">
 
 								<Grid>
 									<Grid.ColumnDefinitions>
@@ -66,7 +64,6 @@
 										x:Name="Accent"
 										Grid.Column="0"
 										Background="#C62828"
-										CornerRadius="6,0,0,6"
 										Visibility="Collapsed" />
 
 									<!--  Text  -->
@@ -111,7 +108,7 @@
 			Background="White"
 			BorderBrush="#F3F4F6"
 			BorderThickness="1"
-			CornerRadius="8">
+			>
 
 			<GroupBox
 				Background="White"
@@ -141,7 +138,7 @@
 								x:Name="Root"
 								Height="46"
 								Background="#eaeaea"
-								CornerRadius="6">
+								>
 
 								<Grid>
 									<Grid.ColumnDefinitions>
@@ -154,7 +151,6 @@
 										x:Name="Accent"
 										Grid.Column="0"
 										Background="#C62828"
-										CornerRadius="6,0,0,6"
 										Visibility="Collapsed" />
 
 									<!--  Text  -->
@@ -194,7 +190,7 @@
 		<Border
 			Grid.Column="2"
 			Background="White"
-			CornerRadius="8">
+			>
 
 			<StackPanel>
 				<DockPanel Margin="0,0,0,12">

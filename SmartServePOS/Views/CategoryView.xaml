@@ -62,7 +62,6 @@
 				<DataGrid
 					Grid.Row="1"
 					AutoGenerateColumns="False"
-					Background="White"
 					BorderThickness="0"
 					CanUserAddRows="False"
 					GridLinesVisibility="None"
@@ -70,6 +69,16 @@
 					ItemsSource="{Binding Categories}"
 					RowHeight="38"
 					SelectionMode="Single">
+					<DataGrid.ColumnHeaderStyle>
+						<Style TargetType="DataGridColumnHeader">
+							<Setter Property="Background" Value="#F7F7F7" />
+							<Setter Property="Foreground" Value="#555" />
+							<Setter Property="FontWeight" Value="SemiBold" />
+							<Setter Property="Padding" Value="12,8" />
+							<Setter Property="BorderThickness" Value="0,0,0,1" />
+							<Setter Property="BorderBrush" Value="#DDD" />
+						</Style>
+					</DataGrid.ColumnHeaderStyle>
 					<DataGrid.Columns>
 						<DataGridTextColumn
 							Width="80"
