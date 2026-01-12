@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SmartServe.Domain.Services;
 using SmartServe.EFCore.Models;
+using SmartServePOS.Models;
 using SmartServePOS.ViewModels;
 using SmartServePOS.Views;
 using System.Windows;
@@ -15,7 +16,26 @@ namespace SmartServePOS.Helper
 		{
 			_serviceProvider = serviceProvider;
 		}
+		public async void NavigateToAddStockView()
+		{
+			AddStockViewModel viewModel = null;
+			if (App.Services is not null)
+			{
+				viewModel = App.Services.GetService<AddStockViewModel>();
+			}
+			else
+			{
+				throw new InvalidOperationException("AddStockViewModel dependencies must be provided via DI.");
+			}
 
+			var view = new AddStockView();
+			view.DataContext = viewModel;
+			if (Application.Current.MainWindow is MainWindow mw)
+			{
+				mw.MainFrame.Navigate(view);
+			}
+			await viewModel.InitializeAsync();
+		}
 		public async void NavigateToBillingView(int orderId,int tableId)
 		{
 			BillingViewModel billingViewModel = null;
@@ -121,6 +141,14 @@ namespace SmartServePOS.Helper
 		public void NavigateToMenuManagementView()
 		{
 			var view = _serviceProvider.GetService<MenuManagementView>();
+			if (Application.Current.MainWindow is MainWindow mw)
+			{
+				mw.MainFrame.Navigate(view);
+			}
+		}
+		public void NavigateToStockManagementView()
+		{
+			var view = _serviceProvider.GetService<StockManagementView>();
 			if (Application.Current.MainWindow is MainWindow mw)
 			{
 				mw.MainFrame.Navigate(view);

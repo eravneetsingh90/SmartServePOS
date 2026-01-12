@@ -5,7 +5,6 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:viewmodels="clr-namespace:SmartServePOS.ViewModels"
-	d:DataContext="{d:DesignInstance Type=viewmodels:AddStockViewModel}"
 	Background="#F5F5F5"
 	mc:Ignorable="d">
 
@@ -49,11 +48,12 @@
 				<Grid>
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="180" />
+						<ColumnDefinition Width="200" />
 						<ColumnDefinition Width="340" />
 						<ColumnDefinition Width="*" />
 					</Grid.ColumnDefinitions>
 
-					<!--  ================= BRANDS =================  -->
+					<!--  ================= CATEGORIES =================  -->
 					<Border
 						Grid.Column="0"
 						Padding="6"
@@ -62,9 +62,9 @@
 						<ListBox
 							Background="Transparent"
 							BorderThickness="0"
-							ItemsSource="{Binding Brands}"
+							ItemsSource="{Binding Categories}"
 							ScrollViewer.VerticalScrollBarVisibility="Auto"
-							SelectedItem="{Binding SelectedBrand}">
+							SelectedItem="{Binding SelectedCategory}">
 
 							<ListBox.ItemContainerStyle>
 								<Style TargetType="ListBoxItem">
@@ -121,9 +121,88 @@
 						</ListBox>
 					</Border>
 
-					<!--  ================= VARIANTS =================  -->
+					<!--  ================= products =================  -->
 					<Border
 						Grid.Column="1"
+						Margin="0,0,12,0"
+						Background="White"
+						BorderBrush="#F3F4F6"
+						BorderThickness="1">
+
+
+						<ListBox
+							Background="Transparent"
+							BorderThickness="0"
+							ItemsSource="{Binding Products}"
+							ScrollViewer.VerticalScrollBarVisibility="Auto"
+							SelectedItem="{Binding SelectedProduct}">
+
+							<!--  Remove default selection visuals  -->
+							<ListBox.ItemContainerStyle>
+								<Style TargetType="ListBoxItem">
+									<Setter Property="Padding" Value="0" />
+									<Setter Property="Margin" Value="2" />
+									<Setter Property="Background" Value="Transparent" />
+									<Setter Property="BorderThickness" Value="0" />
+									<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+								</Style>
+							</ListBox.ItemContainerStyle>
+
+							<ListBox.ItemTemplate>
+								<DataTemplate>
+									<Border
+										x:Name="Root"
+										Height="46"
+										Background="#eaeaea">
+
+										<Grid>
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition Width="6" />
+												<ColumnDefinition Width="*" />
+											</Grid.ColumnDefinitions>
+
+											<!--  Accent Bar  -->
+											<Border
+												x:Name="Accent"
+												Grid.Column="0"
+												Background="#C62828"
+												Visibility="Collapsed" />
+
+											<!--  Text  -->
+											<TextBlock
+												Grid.Column="1"
+												Margin="12,0"
+												VerticalAlignment="Center"
+												FontSize="12"
+												FontWeight="SemiBold"
+												Foreground="Black"
+												Text="{Binding Name}" />
+										</Grid>
+									</Border>
+
+									<!--  STATES  -->
+									<DataTemplate.Triggers>
+
+										<!--  Selected  -->
+										<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}" Value="True">
+											<Setter TargetName="Root" Property="Background" Value="#D1D5DB" />
+											<Setter TargetName="Accent" Property="Visibility" Value="Visible" />
+										</DataTrigger>
+
+										<!--  Hover  -->
+										<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsMouseOver}" Value="True">
+											<Setter TargetName="Root" Property="Background" Value="#E5E7EB" />
+										</DataTrigger>
+
+									</DataTemplate.Triggers>
+								</DataTemplate>
+							</ListBox.ItemTemplate>
+						</ListBox>
+					</Border>
+
+					<!--  ================= VARIANTS =================  -->
+					<Border
+						Grid.Column="2"
 						Padding="6"
 						Background="#FAFAFA"
 						CornerRadius="6">
@@ -177,7 +256,7 @@
 
 					<!--  ================= STOCK ENTRY PANEL =================  -->
 					<Border
-						Grid.Column="2"
+						Grid.Column="3"
 						Padding="8"
 						Background="White"
 						CornerRadius="6">

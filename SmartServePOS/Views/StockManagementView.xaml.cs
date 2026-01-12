@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using SmartServePOS.Helper;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace SmartServePOS.Views
@@ -8,9 +9,11 @@ namespace SmartServePOS.Views
 	/// </summary>
 	public partial class StockManagementView : Page
 	{
-		public StockManagementView()
+		private readonly INavigationService _navigationService;
+		public StockManagementView(INavigationService navigationService)
 		{
 			InitializeComponent();
+			_navigationService = navigationService;
 		}
 		private void OpenIceCreamStock_Click(object sender, MouseButtonEventArgs e)
 		{
@@ -19,7 +22,7 @@ namespace SmartServePOS.Views
 
 		private void OpenAddStock_Click(object sender, MouseButtonEventArgs e)
 		{
-			NavigationService?.Navigate(new AddStockView());
+			_navigationService.NavigateToAddStockView();
 		}
 
 		private void OpenStockTransactions_Click(object sender, MouseButtonEventArgs e)

@@ -1,6 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using SmartServe.Domain.Models;
 using SmartServePOS.ViewModels;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace SmartServePOS.Views
 {
@@ -12,12 +13,15 @@ namespace SmartServePOS.Views
 		public AddStockView()
 		{
 			InitializeComponent();
-			if (DataContext == null)
+		}
+		private void VariantClicked(object sender, MouseButtonEventArgs e)
+		{
+			if (sender is ListBoxItem item &&
+				item.DataContext is ProductVariantDto variant &&
+				DataContext is AddStockViewModel vm &&
+				vm.AddVariantCommand.CanExecute(variant))
 			{
-				if (App.Services is not null)
-				{
-					DataContext = App.Services.GetService<AddStockViewModel>();
-				}
+				vm.AddVariantCommand.Execute(variant);
 			}
 		}
 	}

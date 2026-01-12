@@ -31,6 +31,7 @@ namespace SmartServePOS.ViewModels
 		public ObservableCollection<CategoryDto> Categories { get; }
 		public ObservableCollection<ProductDto> Products { get; }
 		public ObservableCollection<ProductVariantDto> Variants { get; }
+		
 		private CategoryDto? _selectedCategory;
 		public CategoryDto? SelectedCategory
 		{

@@ -15,7 +15,8 @@ namespace SmartServePOS.ViewModels
 		private readonly IMapper _mapper;
 		private readonly IProductService _productService;
 		private readonly IStockService _stockService;
-		public ObservableCollection<BrandDto> Brands { get; } = new();
+		public ObservableCollection<CategoryDto> Categories { get; } = new();
+		public ObservableCollection<ProductDto> Products { get; }
 		public ObservableCollection<ProductVariantDto> Variants { get; } = new();
 		public ObservableCollection<IngredientDto> Ingredients { get; } = new();
 		public ObservableCollection<AddStockModel> StockRows { get; } = new();
@@ -23,16 +24,26 @@ namespace SmartServePOS.ViewModels
 
 		#region Selected Items (Variant Flow)
 
-		private BrandDto _selectedBrand;
-		public BrandDto SelectedBrand
+		private CategoryDto? _selectedCategory;
+		public CategoryDto? SelectedCategory
 		{
-			get => _selectedBrand;
+			get => _selectedCategory;
 			set
 			{
-				if (SetProperty(ref _selectedBrand, value))
-				{
-					_ = LoadVariantsAsync();
-				}
+				_selectedCategory = value;
+				OnPropertyChanged();
+				_ = LoadProductsAsync();
+			}
+		}
+		private ProductDto? _selectedProduct;
+		public ProductDto? SelectedProduct
+		{
+			get => _selectedProduct;
+			set
+			{
+				_selectedProduct = value;
+				OnPropertyChanged();
+				_ = LoadVariantsAsync();
 			}
 		}
 		#endregion
@@ -54,67 +65,75 @@ namespace SmartServePOS.ViewModels
 			_mapper = mapper;
 			_productService = productService;
 			_stockService = stockService;
-
+			Categories = new ObservableCollection<CategoryDto>();
+			Products = new ObservableCollection<ProductDto>();
+			Variants = new ObservableCollection<ProductVariantDto>();
 			AddVariantCommand = new RelayCommand<ProductVariantDto>(AddVariant);
 			AddIngredientCommand = new RelayCommand<IngredientDto>(AddIngredient);
 			RemoveRowCommand = new RelayCommand<AddStockModel>(r => StockRows.Remove(r));
 			SaveStockCommand = new RelayCommand(async _ => await SaveStockAsync());
 			ReloadCommand = new RelayCommand(async _ => await ReloadAsync());
 			ClearCommand = new RelayCommand(ClearStockRows);
-
-			_ = InitializeAsync();
 		}
 
-		#region Initialization
-		private async Task InitializeAsync()
+		#region Methods
+
+		public async Task InitializeAsync()
 		{
-			await LoadBrandsAsync();
-			await LoadIngredientsAsync();
+			await LoadCategoriesAsync();
 		}
-		private async Task ReloadAsync()
+		private async Task LoadCategoriesAsync()
 		{
-			Brands.Clear();
-			Variants.Clear();
-			Ingredients.Clear();
-			StockRows.Clear();
-
-			await InitializeAsync();
-		}
-		#endregion
-
-		#region Load Data (Variant Flow)
-		private async Task LoadBrandsAsync()
-		{
-			var brands = await Task.Run(() => _productService.GetBrandsAsync());
-
-			foreach (var brand in brands)
+			Categories.Clear();
+			var items = await _productService.GetIsStockCategoriesAsync();
+			var categoryModels = _mapper.Map<List<CategoryDto>>(items);
+			foreach (var c in categoryModels)
 			{
-				if (brand.IsActive == true)
-					Brands.Add(brand);
+				Categories.Add(c);
 			}
+			if (SelectedCategory == null)
+				SelectedCategory = Categories.FirstOrDefault();
+		}
+		private async Task LoadProductsAsync()
+		{
+			Products.Clear();
+			Variants.Clear();
 
-			SelectedBrand = Brands.FirstOrDefault();
+			if (SelectedCategory == null)
+				return;
+
+			var products = await _productService.GetIsStockProductByCategoryIdAsync(SelectedCategory.CategoryId);
+			var productModels = _mapper.Map<List<ProductDto>>(products);
+			foreach (var p in productModels)
+			{
+				Products.Add(p);
+			}
+			if (SelectedProduct == null)
+				SelectedProduct = Products.FirstOrDefault();
 		}
 
 		private async Task LoadVariantsAsync()
 		{
 			Variants.Clear();
 
-			if (SelectedBrand == null)
+			if (SelectedProduct == null)
 				return;
 
-			var variants = await Task.Run(() =>
-				_productService.GetVariantsByBrandIdAsync(SelectedBrand.BrandId));
-
-			foreach (var v in variants)
+			var variants = await _productService.GetVariantByProductIdAsync(SelectedProduct.ProductId);
+			var variantModels = _mapper.Map<List<ProductVariantDto>>(variants);
+			foreach (var v in variantModels)
 			{
-				v.VariantName = $"{v.Product.Name} - {v.VariantName}";
 				Variants.Add(v);
 			}
 		}
-		#endregion
+		private async Task ReloadAsync()
+		{
+			Variants.Clear();
+			Ingredients.Clear();
+			StockRows.Clear();
 
-		#region Load Ingredients (Ingredient Tab)
+			await InitializeAsync();
+		}
 
 		private async Task LoadIngredientsAsync()
 		{
