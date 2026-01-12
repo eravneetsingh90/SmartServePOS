@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SmartServe.Domain.Services;
+using SmartServe.EFCore.Models;
 using SmartServePOS.ViewModels;
 using SmartServePOS.Views;
 using System.Windows;
@@ -15,7 +16,7 @@ namespace SmartServePOS.Helper
 			_serviceProvider = serviceProvider;
 		}
 
-		public async void NavigateToBilling(int orderId,int tableId)
+		public async void NavigateToBillingView(int orderId,int tableId)
 		{
 			BillingViewModel billingViewModel = null;
 			if (App.Services is not null)
@@ -36,25 +37,94 @@ namespace SmartServePOS.Helper
 			await billingViewModel.LoadOrderAsync(orderId, tableId);
 		}
 
-		public async void NavigateToTable()
+		public async void NavigateToTableView()
 		{
-			//TableViewModel tableViewModel = null;
-			//if (App.Services is not null)
-			//{
-			//	tableViewModel = App.Services.GetService<TableViewModel>();
-			//}
-			//else
-			//{
-			//	throw new InvalidOperationException("TableViewModel dependencies must be provided via DI.");
-			//}
+			TableViewModel tableViewModel = null;
+			if (App.Services is not null)
+			{
+				tableViewModel = App.Services.GetService<TableViewModel>();
+			}
+			else
+			{
+				throw new InvalidOperationException("TableViewModel dependencies must be provided via DI.");
+			}
 
 			var tableView = new TableView();
-			//tableView.DataContext = tableViewModel;
+			tableView.DataContext = tableViewModel;
 			if (Application.Current.MainWindow is MainWindow mw)
 			{
 				mw.MainFrame.Navigate(tableView);
 			}
 
+		}
+		public async void NavigateToCategoryView()
+		{
+			CategoryViewModel viewModel = null;
+			if (App.Services is not null)
+			{
+				viewModel = App.Services.GetService<CategoryViewModel>();
+			}
+			else
+			{
+				throw new InvalidOperationException("CategoryViewModel dependencies must be provided via DI.");
+			}
+
+			var view = new CategoryView();
+			view.DataContext = viewModel;
+			if (Application.Current.MainWindow is MainWindow mw)
+			{
+				mw.MainFrame.Navigate(view);
+			}
+			await viewModel.Initialize();
+		}
+		public async void NavigateToProductView()
+		{
+			ProductViewModel viewModel = null;
+			if (App.Services is not null)
+			{
+				viewModel = App.Services.GetService<ProductViewModel>();
+			}
+			else
+			{
+				throw new InvalidOperationException("ProductViewModel dependencies must be provided via DI.");
+			}
+
+			var view = new ProductView();
+			view.DataContext = viewModel;
+			if (Application.Current.MainWindow is MainWindow mw)
+			{
+				mw.MainFrame.Navigate(view);
+			}
+			await viewModel.Initialize();
+		}
+		public async void NavigateToProductVariantView()
+		{
+			ProductVariantViewModel viewModel = null;
+			if (App.Services is not null)
+			{
+				viewModel = App.Services.GetService<ProductVariantViewModel>();
+			}
+			else
+			{
+				throw new InvalidOperationException("ProductVariantViewModel dependencies must be provided via DI.");
+			}
+
+			var view = new ProductVariantView();
+			view.DataContext = viewModel;
+			if (Application.Current.MainWindow is MainWindow mw)
+			{
+				mw.MainFrame.Navigate(view);
+			}
+			await viewModel.Initialize();
+		}
+
+		public void NavigateToMenuManagementView()
+		{
+			var view = _serviceProvider.GetService<MenuManagementView>();
+			if (Application.Current.MainWindow is MainWindow mw)
+			{
+				mw.MainFrame.Navigate(view);
+			}
 		}
 	}
 

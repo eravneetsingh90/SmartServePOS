@@ -74,10 +74,14 @@ namespace SmartServePOS.ViewModels
 			SaveCommand = new RelayCommand(async _ => await SaveAsync());
 			DeleteCommand = new RelayCommand<ProductVariantDto>(DeleteVariant);
 			RefreshCommand = new RelayCommand(async _ => await LoadVariantsAsync());
-			_ = LoadCategoriesAsync();
-
 		}
 		#endregion
+
+		public async Task Initialize()
+		{
+			await LoadCategoriesAsync();
+		}
+
 
 		#region methods
 		private async Task LoadCategoriesAsync()

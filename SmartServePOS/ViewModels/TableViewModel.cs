@@ -114,7 +114,7 @@ namespace SmartServePOS.ViewModels
 			if (table == null)
 				return;
 
-			_navigationService.NavigateToBilling(table.OrderId ?? 0, table.TableId);
+			_navigationService.NavigateToBillingView(table.OrderId ?? 0, table.TableId);
 		}
 
 		public event PropertyChangedEventHandler? PropertyChanged;

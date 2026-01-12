@@ -361,7 +361,7 @@ namespace SmartServePOS.ViewModels
 			// optional: clear bill after save
 			BillItems.Clear();
 			OnPropertyChanged(nameof(GrandTotal));
-			_navigationService.NavigateToTable();
+			_navigationService.NavigateToTableView();
 		}
 		public async Task LoadOrderAsync(int orderId, int tableId)
 		{

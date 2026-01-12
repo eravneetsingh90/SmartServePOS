@@ -2,7 +2,11 @@
 {
 	public interface INavigationService
 	{
-		void NavigateToBilling(int orderId,int tableId);
-		void NavigateToTable();
+		void NavigateToBillingView(int orderId,int tableId);
+		void NavigateToTableView();
+		void NavigateToCategoryView();
+		void NavigateToProductView();
+		void NavigateToProductVariantView();
+		void NavigateToMenuManagementView();
 	}
 }

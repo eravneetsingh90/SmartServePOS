@@ -1,28 +1,32 @@
-﻿using System.Windows.Controls;
+﻿using SmartServePOS.Helper;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace SmartServePOS.Views
 {
 	public partial class MenuManagementView : Page
 	{
-		public MenuManagementView()
+		private readonly INavigationService _navigationService;
+		public MenuManagementView(INavigationService navigationService)
 		{
 			InitializeComponent();
+			_navigationService = navigationService;
 		}
 
 		private void OpenCategories_Click(object sender, MouseButtonEventArgs e)
 		{
-			NavigationService?.Navigate(new CategoryView());
+			_navigationService.NavigateToCategoryView();
 		}
 
 		private void OpenProducts_Click(object sender, MouseButtonEventArgs e)
 		{
-			NavigationService?.Navigate(new ProductView());
+			_navigationService.NavigateToProductView();
 		}
 
 		private void OpenVariants_Click(object sender, MouseButtonEventArgs e)
 		{
-			NavigationService?.Navigate(new ProductVariantView());
+			_navigationService.NavigateToProductVariantView();
+			
 		}
 	}
 }

@@ -93,7 +93,7 @@ namespace SmartServePOS.ViewModels
 
 				// Success
 				_mainWindowVm.IsLoggedIn = true;
-				_navigationService.NavigateToTable();
+				_navigationService.NavigateToTableView();
 			}
 			catch
 			{

@@ -24,13 +24,7 @@ namespace SmartServePOS.Views
 		public ProductVariantView()
 		{
 			InitializeComponent();
-			if (DataContext == null)
-			{
-				if (App.Services is not null)
-				{
-					DataContext = App.Services.GetService<ProductVariantViewModel>();
-				}
-			}
+			
 		}
 	}
 }

@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using SmartServePOS.ViewModels;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 
 namespace SmartServePOS.Views
 {
@@ -9,14 +7,6 @@ namespace SmartServePOS.Views
 		public TableView()
 		{
 			InitializeComponent();
-
-			if (DataContext == null)
-			{
-				if (App.Services is not null)
-				{
-					DataContext = App.Services.GetService<TableViewModel>();
-				}
-			}
 		}
 	}
 }
