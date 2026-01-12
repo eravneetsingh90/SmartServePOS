@@ -69,17 +69,14 @@ namespace SmartServePOS.ViewModels
 
 		private async Task SaveAsync()
 		{
-			try
-			{
-				await _productService.SaveBulkCategoriesAsync(Categories);
-				_notificationService.Success("Saved Successfully");
-				await LoadAsync();
-			}
-			catch (Exception ex)
-			{
-				await _dialogService.ShowWarningAsync(string.Empty,ex.Message);
-				return;
-			}
+			var response = await _productService.SaveBulkCategoriesAsync(Categories);
+			if (response.MetaData.ResultCode == ResultCodes.Success)
+				_notificationService.Success(UIConstants.SavedSuccessfully);
+			else if (response.MetaData.ResultCode == ResultCodes.DuplicateNotAllowed)
+				_notificationService.Warning(response.MetaData.ResultMessage);
+			else
+				_notificationService.Error(UIConstants.Error);
+			await LoadAsync();
 		}
 
 		private async void DeleteCategory(object? parameter)

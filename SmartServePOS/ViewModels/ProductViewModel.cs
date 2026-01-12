@@ -1,6 +1,11 @@
-﻿using SmartServe.Domain.Stores;
+﻿using AutoMapper;
+using SmartServe.Domain.Constants;
+using SmartServe.Domain.Models;
+using SmartServe.Domain.Services;
+using SmartServe.Domain.Stores;
 using SmartServe.EFCore.Models;
 using SmartServePOS.Command;
+using SmartServePOS.Constant;
 using SmartServePOS.Helper;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -10,15 +15,16 @@ namespace SmartServePOS.ViewModels
 {
 	public class ProductViewModel : BaseViewModel
 	{
-		private readonly ICategoryStore _categoryStore;
-		private readonly IProductStore _productStore;
+		#region fields
+		private readonly IMapper _mapper;
+		private readonly IProductService _productService;
 		private readonly INotificationService _notificationService;
 		private readonly IDialogService _dialogService;
-		public ObservableCollection<Category> Categories { get; } = new();
-		public ObservableCollection<Product> Products { get; } = new();
+		public ObservableCollection<CategoryDto> Categories { get; } = new();
+		public ObservableCollection<ProductDto> Products { get; } = new();
 
-		private Category? _selectedCategory;
-		public Category? SelectedCategory
+		private CategoryDto? _selectedCategory;
+		public CategoryDto? SelectedCategory
 		{
 			get => _selectedCategory;
 			set
@@ -33,36 +39,36 @@ namespace SmartServePOS.ViewModels
 		public ICommand SaveCommand { get; }
 		public ICommand DeleteProductCommand { get; }
 		public ICommand RefreshCommand { get; }
+		#endregion
+
 		public ProductViewModel(
-			ICategoryStore categoryStore,
-			IProductStore productStore,
-			INotificationService notificationService, 
+			IMapper mapper,
+			IProductService productService,
+			INotificationService notificationService,
 			IDialogService dialogService)
 		{
-			_categoryStore = categoryStore;
-			_productStore = productStore;
+			_mapper = mapper;
+			_productService = productService;
 			_notificationService = notificationService;
 			_dialogService = dialogService;
 			AddProductCommand = new RelayCommand(_ => AddProduct());
 			SaveCommand = new RelayCommand(async _ => await SaveAsync());
-			DeleteProductCommand = new RelayCommand(DeleteProduct);
+			DeleteProductCommand = new RelayCommand<ProductDto>(DeleteProduct);
 			RefreshCommand = new RelayCommand(async _ => await LoadProductsAsync());
 			_ = LoadCategoriesAsync();
 		}
-
 		private async Task LoadCategoriesAsync()
 		{
 			Categories.Clear();
-
-			var data = await _categoryStore.GetAllAsync();
-
-			foreach (var c in data)
+			var items = await _productService.GetCategoriesAsync();
+			var categoryModels = _mapper.Map<List<CategoryDto>>(items);
+			foreach (var c in categoryModels)
+			{
 				Categories.Add(c);
-
-			if(SelectedCategory == null)
+			}
+			if (SelectedCategory == null)
 				SelectedCategory = Categories.FirstOrDefault();
 		}
-
 		private async Task LoadProductsAsync()
 		{
 			Products.Clear();
@@ -70,7 +76,7 @@ namespace SmartServePOS.ViewModels
 			if (SelectedCategory == null)
 				return;
 
-			var data = await _productStore.GetByCategoryIdAsync(SelectedCategory.CategoryId);
+			var data = await _productService.GetProductByCategoryIdAsync(SelectedCategory.CategoryId);
 			foreach (var p in data)
 			{
 				Products.Add(p);
@@ -86,11 +92,12 @@ namespace SmartServePOS.ViewModels
 				? Products.Max(p => p.DisplayOrder) + 1
 				: 1;
 
-			Products.Add(new Product
+			Products.Add(new ProductDto
 			{
 				CategoryId = SelectedCategory.CategoryId,
 				Name = "New Product",
 				IsActive = true,
+				IsStock = false,
 				DisplayOrder = nextOrder
 			});
 		}
@@ -99,21 +106,19 @@ namespace SmartServePOS.ViewModels
 		{
 			if (SelectedCategory == null)
 				return;
-			try
-			{
-				await _productStore.SaveBulkAsync(Products);
-				_notificationService.Success("Saved Successfully");
-				await LoadProductsAsync();
-			}
-			catch (Exception ex)
-			{
-				await _dialogService.ShowWarningAsync(string.Empty, ex.Message);
-				return;
-			}
+			var products = _mapper.Map<List<ProductDto>>(Products);
+			var response = await _productService.SaveBulkProductsAsync(Products);
+			if (response.MetaData.ResultCode == ResultCodes.Success)
+				_notificationService.Success(UIConstants.SavedSuccessfully);
+			else if (response.MetaData.ResultCode == ResultCodes.DuplicateNotAllowed)
+				_notificationService.Warning(response.MetaData.ResultMessage);
+			else
+				_notificationService.Error(UIConstants.Error);
+			await LoadProductsAsync();
 		}
-		private async void DeleteProduct(object? parameter)
+		private async void DeleteProduct(ProductDto? product)
 		{
-			if (parameter is not Product product)
+			if (product == null)
 				return;
 
 			var result = await _dialogService.ShowConfirmAsync("Confirm Delete", $"Are you sure you want to delete product \"{product.Name}\"?");
@@ -121,10 +126,17 @@ namespace SmartServePOS.ViewModels
 			if (!result)
 				return;
 
-			Products.Remove(product);
-
 			if (product.ProductId != 0)
-				await _productStore.DeleteAsync(product.ProductId);
+			{
+				var response = await _productService.DeleteProductAsync(product.ProductId);
+				if (response.MetaData.ResultCode == ResultCodes.Success)
+				{
+					Products.Remove(product);
+					_notificationService.Success(UIConstants.DeletedSuccessfully);
+				}
+				else
+					_notificationService.Error(UIConstants.Error);
+			}
 		}
 	}
 }

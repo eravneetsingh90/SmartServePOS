@@ -69,13 +69,13 @@ namespace SmartServePOS.ViewModels
 			Categories = new ObservableCollection<CategoryDto>();
 			Products = new ObservableCollection<ProductDto>();
 			Variants = new ObservableCollection<ProductVariantDto>();
-			
+
 			AddVariantCommand = new RelayCommand(_ => AddVariant());
 			SaveCommand = new RelayCommand(async _ => await SaveAsync());
 			DeleteCommand = new RelayCommand<ProductVariantDto>(DeleteVariant);
 			RefreshCommand = new RelayCommand(async _ => await LoadVariantsAsync());
 			_ = LoadCategoriesAsync();
-			
+
 		}
 		#endregion
 
@@ -141,6 +141,7 @@ namespace SmartServePOS.ViewModels
 				VariantName = "New Variant",
 				Price = 0,
 				IsActive = true,
+				IsStock = false,
 				DisplayOrder = nextOrder
 			};
 
@@ -173,18 +174,15 @@ namespace SmartServePOS.ViewModels
 
 		private async Task SaveAsync()
 		{
-			try
-			{
-				var productVariants = _mapper.Map<List<ProductVariantDto>>(Variants);
-				await _productService.SaveBulkVariantAsync(productVariants);
-				_notificationService.Success("Saved Successfully");
-				await LoadVariantsAsync();
-			}
-			catch (Exception ex)
-			{
-				await _dialogService.ShowWarningAsync(string.Empty, ex.Message);
-				return;
-			}
+			var productVariants = _mapper.Map<List<ProductVariantDto>>(Variants);
+			var response = await _productService.SaveBulkVariantAsync(productVariants);
+			if (response.MetaData.ResultCode == ResultCodes.Success)
+				_notificationService.Success(UIConstants.SavedSuccessfully);
+			else if (response.MetaData.ResultCode == ResultCodes.DuplicateNotAllowed)
+				_notificationService.Warning(response.MetaData.ResultMessage);
+			else
+				_notificationService.Error(UIConstants.Error);
+			await LoadVariantsAsync();
 		}
 		#endregion
 	}

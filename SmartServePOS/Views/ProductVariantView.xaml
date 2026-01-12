@@ -107,8 +107,7 @@
 			Padding="12"
 			Background="White"
 			BorderBrush="#F3F4F6"
-			BorderThickness="1"
-			>
+			BorderThickness="1">
 
 			<GroupBox
 				Background="White"
@@ -137,8 +136,7 @@
 							<Border
 								x:Name="Root"
 								Height="46"
-								Background="#eaeaea"
-								>
+								Background="#eaeaea">
 
 								<Grid>
 									<Grid.ColumnDefinitions>
@@ -187,10 +185,7 @@
 		</Border>
 
 		<!--  ================= VARIANTS =================  -->
-		<Border
-			Grid.Column="2"
-			Background="White"
-			>
+		<Border Grid.Column="2" Background="White">
 
 			<StackPanel>
 				<DockPanel Margin="0,0,0,12">
@@ -327,6 +322,18 @@
 								</Style>
 							</DataGridTextColumn.EditingElementStyle>
 						</DataGridTextColumn>
+
+						<DataGridCheckBoxColumn
+							Width="65"
+							Binding="{Binding IsStock, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+							Header="Is Stock">
+							<DataGridCheckBoxColumn.ElementStyle>
+								<Style TargetType="CheckBox">
+									<Setter Property="HorizontalAlignment" Value="Center" />
+									<Setter Property="VerticalAlignment" Value="Center" />
+								</Style>
+							</DataGridCheckBoxColumn.ElementStyle>
+						</DataGridCheckBoxColumn>
 
 						<DataGridCheckBoxColumn
 							Width="55"
