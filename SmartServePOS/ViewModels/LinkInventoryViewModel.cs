@@ -13,7 +13,7 @@ namespace SmartServePOS.ViewModels
 	{
 		#region Fields
 
-		private readonly ICatalogService _catalogService;
+		private readonly IProductService _productService;
 		private readonly IStockService _stockService;
 
 		private readonly SemaphoreSlim _ingredientLock = new(1, 1);
@@ -118,10 +118,10 @@ namespace SmartServePOS.ViewModels
 		#region Constructor
 
 		public LinkInventoryViewModel(
-			ICatalogService catalogService,
+			IProductService productService,
 			IStockService stockService)
 		{
-			_catalogService = catalogService;
+			_productService = productService;
 			_stockService = stockService;
 
 			ToggleStockCommand = new RelayCommand<LinkInventoryModel>(
@@ -154,7 +154,7 @@ namespace SmartServePOS.ViewModels
 		{
 			Categories.Clear();
 
-			var categories =_catalogService.GetCategories();
+			var categories = await _productService.GetCategoriesAsync();
 
 			foreach (var category in categories)
 			{
@@ -176,7 +176,7 @@ namespace SmartServePOS.ViewModels
 			if (SelectedCategory == null)
 				return;
 
-			var products = _catalogService.GetProductsByCategory(SelectedCategory.CategoryId);
+			var products = await _productService.GetProductByCategoryIdAsync(SelectedCategory.CategoryId);
 
 			foreach (var product in products)
 			{
@@ -199,7 +199,7 @@ namespace SmartServePOS.ViewModels
 			IsLoading = true;
 			Variants.Clear();
 
-			var variants = _catalogService.GetVariantsByProduct(SelectedProduct.ProductId);
+			var variants = await _productService.GetVariantByProductIdAsync(SelectedProduct.ProductId);
 
 			var stockItems = await _stockService.GetStockItemAsync(StockItemType.VARIANT);
 			var stockLookup = stockItems.ToDictionary(x => x.ReferenceId);

@@ -80,7 +80,9 @@ namespace SmartServePOS.ViewModels
 
 		public async Task InitializeAsync()
 		{
-			await LoadCategoriesAsync();
+			//await LoadCategoriesAsync();
+			var items = await _productService.GetAllStockAsync();
+
 		}
 		private async Task LoadCategoriesAsync()
 		{

@@ -17,18 +17,28 @@
 		<!--  ================= TOP BAR =================  -->
 		<Grid Grid.Row="0" Margin="6">
 			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="100" />
 				<ColumnDefinition Width="*" />
 				<ColumnDefinition Width="Auto" />
 			</Grid.ColumnDefinitions>
 
 			<TextBlock
+				Grid.Column="0"
 				VerticalAlignment="Center"
 				FontSize="18"
 				FontWeight="SemiBold"
 				Text="Add Stock" />
 
-			<Button
+			<TextBox
 				Grid.Column="1"
+				Height="36"
+				Padding="8"
+				BorderBrush="#CCCCCC"
+				FontSize="14"
+				Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
+
+			<Button
+				Grid.Column="2"
 				Width="100"
 				Margin="6,4"
 				Background="#555"
@@ -36,341 +46,296 @@
 				Content="Refresh"
 				Foreground="White" />
 		</Grid>
-
 		<!--  ================= MAIN =================  -->
-		<TabControl Grid.Row="1" Margin="6">
+		<Grid Grid.Row="1" Margin="6">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="180" />
+				<!--  Categories  -->
+				<ColumnDefinition Width="200" />
+				<!--  Products  -->
+				<ColumnDefinition Width="220" />
+				<!--  Variants  -->
+				<ColumnDefinition Width="*" />
+				<!--  Bill  -->
+			</Grid.ColumnDefinitions>
+			<!--  ================= CATEGORIES =================  -->
+			<Border
+				Grid.Column="0"
+				Padding="6"
+				Background="#262626">
 
-			<!--  =====================================================  -->
-			<!--  ================= VARIANT TAB =======================  -->
-			<!--  =====================================================  -->
-			<TabItem Header="Variants">
+				<ListBox
+					Background="Transparent"
+					BorderThickness="0"
+					ItemsSource="{Binding Categories}"
+					ScrollViewer.VerticalScrollBarVisibility="Auto"
+					SelectedItem="{Binding SelectedCategory}">
 
-				<Grid>
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="180" />
-						<ColumnDefinition Width="200" />
-						<ColumnDefinition Width="340" />
-						<ColumnDefinition Width="*" />
-					</Grid.ColumnDefinitions>
+					<ListBox.ItemContainerStyle>
+						<Style TargetType="ListBoxItem">
+							<Setter Property="Padding" Value="0" />
+							<Setter Property="Margin" Value="2" />
+							<Setter Property="BorderThickness" Value="0" />
+							<Setter Property="Background" Value="Transparent" />
+							<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+						</Style>
+					</ListBox.ItemContainerStyle>
 
-					<!--  ================= CATEGORIES =================  -->
-					<Border
-						Grid.Column="0"
-						Padding="6"
-						Background="#262626">
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+							<Border
+								x:Name="Root"
+								Height="46"
+								Background="#333"
+								Cursor="Hand">
+								<Grid>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="6" />
+										<ColumnDefinition Width="*" />
+									</Grid.ColumnDefinitions>
 
-						<ListBox
-							Background="Transparent"
-							BorderThickness="0"
-							ItemsSource="{Binding Categories}"
-							ScrollViewer.VerticalScrollBarVisibility="Auto"
-							SelectedItem="{Binding SelectedCategory}">
-
-							<ListBox.ItemContainerStyle>
-								<Style TargetType="ListBoxItem">
-									<Setter Property="Padding" Value="0" />
-									<Setter Property="Margin" Value="2" />
-									<Setter Property="BorderThickness" Value="0" />
-									<Setter Property="Background" Value="Transparent" />
-									<Setter Property="HorizontalContentAlignment" Value="Stretch" />
-								</Style>
-							</ListBox.ItemContainerStyle>
-
-							<ListBox.ItemTemplate>
-								<DataTemplate>
 									<Border
-										x:Name="Root"
-										Height="46"
-										Background="#333"
-										Cursor="Hand">
-										<Grid>
-											<Grid.ColumnDefinitions>
-												<ColumnDefinition Width="6" />
-												<ColumnDefinition Width="*" />
-											</Grid.ColumnDefinitions>
+										x:Name="Accent"
+										Grid.Column="0"
+										Background="#C62828"
+										Visibility="Collapsed" />
 
-											<Border
-												x:Name="Accent"
-												Grid.Column="0"
-												Background="#C62828"
-												Visibility="Collapsed" />
+									<TextBlock
+										Grid.Column="1"
+										Margin="12,0"
+										VerticalAlignment="Center"
+										FontSize="13"
+										FontWeight="SemiBold"
+										Foreground="White"
+										Text="{Binding Name}" />
+								</Grid>
+							</Border>
 
-											<TextBlock
-												Grid.Column="1"
-												Margin="12,0"
-												VerticalAlignment="Center"
-												FontSize="13"
-												FontWeight="SemiBold"
-												Foreground="White"
-												Text="{Binding Name}" />
-										</Grid>
-									</Border>
+							<DataTemplate.Triggers>
+								<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}" Value="True">
+									<Setter TargetName="Root" Property="Background" Value="#3E3E3E" />
+									<Setter TargetName="Accent" Property="Visibility" Value="Visible" />
+								</DataTrigger>
+								<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsMouseOver}" Value="True">
+									<Setter TargetName="Root" Property="Background" Value="#444444" />
+								</DataTrigger>
+							</DataTemplate.Triggers>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
 
-									<DataTemplate.Triggers>
-										<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}" Value="True">
-											<Setter TargetName="Root" Property="Background" Value="#3E3E3E" />
-											<Setter TargetName="Accent" Property="Visibility" Value="Visible" />
-										</DataTrigger>
-										<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsMouseOver}" Value="True">
-											<Setter TargetName="Root" Property="Background" Value="#444444" />
-										</DataTrigger>
-									</DataTemplate.Triggers>
-								</DataTemplate>
-							</ListBox.ItemTemplate>
+				</ListBox>
+			</Border>
 
-						</ListBox>
-					</Border>
-
-					<!--  ================= products =================  -->
-					<Border
-						Grid.Column="1"
-						Margin="0,0,12,0"
-						Background="White"
-						BorderBrush="#F3F4F6"
-						BorderThickness="1">
+			<!--  ================= products =================  -->
+			<Border
+				Grid.Column="1"
+				Margin="0,0,12,0"
+				Background="White"
+				BorderBrush="#F3F4F6"
+				BorderThickness="1">
 
 
-						<ListBox
-							Background="Transparent"
-							BorderThickness="0"
-							ItemsSource="{Binding Products}"
-							ScrollViewer.VerticalScrollBarVisibility="Auto"
-							SelectedItem="{Binding SelectedProduct}">
+				<ListBox
+					Background="Transparent"
+					BorderThickness="0"
+					ItemsSource="{Binding Products}"
+					ScrollViewer.VerticalScrollBarVisibility="Auto"
+					SelectedItem="{Binding SelectedProduct}">
 
-							<!--  Remove default selection visuals  -->
-							<ListBox.ItemContainerStyle>
-								<Style TargetType="ListBoxItem">
-									<Setter Property="Padding" Value="0" />
-									<Setter Property="Margin" Value="2" />
-									<Setter Property="Background" Value="Transparent" />
-									<Setter Property="BorderThickness" Value="0" />
-									<Setter Property="HorizontalContentAlignment" Value="Stretch" />
-								</Style>
-							</ListBox.ItemContainerStyle>
+					<!--  Remove default selection visuals  -->
+					<ListBox.ItemContainerStyle>
+						<Style TargetType="ListBoxItem">
+							<Setter Property="Padding" Value="0" />
+							<Setter Property="Margin" Value="2" />
+							<Setter Property="Background" Value="Transparent" />
+							<Setter Property="BorderThickness" Value="0" />
+							<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+						</Style>
+					</ListBox.ItemContainerStyle>
 
-							<ListBox.ItemTemplate>
-								<DataTemplate>
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+							<Border
+								x:Name="Root"
+								Height="46"
+								Background="#eaeaea">
+
+								<Grid>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="6" />
+										<ColumnDefinition Width="*" />
+									</Grid.ColumnDefinitions>
+
+									<!--  Accent Bar  -->
 									<Border
-										x:Name="Root"
-										Height="46"
-										Background="#eaeaea">
+										x:Name="Accent"
+										Grid.Column="0"
+										Background="#C62828"
+										Visibility="Collapsed" />
 
-										<Grid>
-											<Grid.ColumnDefinitions>
-												<ColumnDefinition Width="6" />
-												<ColumnDefinition Width="*" />
-											</Grid.ColumnDefinitions>
+									<!--  Text  -->
+									<TextBlock
+										Grid.Column="1"
+										Margin="12,0"
+										VerticalAlignment="Center"
+										FontSize="12"
+										FontWeight="SemiBold"
+										Foreground="Black"
+										Text="{Binding Name}" />
+								</Grid>
+							</Border>
 
-											<!--  Accent Bar  -->
-											<Border
-												x:Name="Accent"
-												Grid.Column="0"
-												Background="#C62828"
-												Visibility="Collapsed" />
+							<!--  STATES  -->
+							<DataTemplate.Triggers>
 
-											<!--  Text  -->
-											<TextBlock
-												Grid.Column="1"
-												Margin="12,0"
-												VerticalAlignment="Center"
-												FontSize="12"
-												FontWeight="SemiBold"
-												Foreground="Black"
-												Text="{Binding Name}" />
-										</Grid>
-									</Border>
+								<!--  Selected  -->
+								<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}" Value="True">
+									<Setter TargetName="Root" Property="Background" Value="#D1D5DB" />
+									<Setter TargetName="Accent" Property="Visibility" Value="Visible" />
+								</DataTrigger>
 
-									<!--  STATES  -->
-									<DataTemplate.Triggers>
+								<!--  Hover  -->
+								<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsMouseOver}" Value="True">
+									<Setter TargetName="Root" Property="Background" Value="#E5E7EB" />
+								</DataTrigger>
 
-										<!--  Selected  -->
-										<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}" Value="True">
-											<Setter TargetName="Root" Property="Background" Value="#D1D5DB" />
-											<Setter TargetName="Accent" Property="Visibility" Value="Visible" />
-										</DataTrigger>
+							</DataTemplate.Triggers>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
+				</ListBox>
+			</Border>
 
-										<!--  Hover  -->
-										<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsMouseOver}" Value="True">
-											<Setter TargetName="Root" Property="Background" Value="#E5E7EB" />
-										</DataTrigger>
+			<!--  ================= VARIANTS =================  -->
+			<Border
+				Grid.Column="2"
+				Padding="6"
+				Background="#FAFAFA"
+				CornerRadius="6">
 
-									</DataTemplate.Triggers>
-								</DataTemplate>
-							</ListBox.ItemTemplate>
-						</ListBox>
-					</Border>
+				<ListBox
+					Background="Transparent"
+					BorderThickness="0"
+					ItemsSource="{Binding Variants}">
 
-					<!--  ================= VARIANTS =================  -->
-					<Border
-						Grid.Column="2"
-						Padding="6"
-						Background="#FAFAFA"
-						CornerRadius="6">
+					<ListBox.ItemContainerStyle>
+						<Style TargetType="ListBoxItem">
+							<Setter Property="Margin" Value="6" />
+							<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+						</Style>
+					</ListBox.ItemContainerStyle>
 
-						<ListBox
-							Background="Transparent"
-							BorderThickness="0"
-							ItemsSource="{Binding Variants}">
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+							<Border
+								Padding="12"
+								Background="White"
+								BorderBrush="#E53935"
+								BorderThickness="1"
+								CornerRadius="6"
+								Cursor="Hand">
 
-							<ListBox.ItemContainerStyle>
-								<Style TargetType="ListBoxItem">
-									<Setter Property="Margin" Value="6" />
-									<Setter Property="HorizontalContentAlignment" Value="Stretch" />
-								</Style>
-							</ListBox.ItemContainerStyle>
+								<Grid>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="*" />
+										<ColumnDefinition Width="Auto" />
+									</Grid.ColumnDefinitions>
 
-							<ListBox.ItemTemplate>
-								<DataTemplate>
-									<Border
-										Padding="12"
-										Background="White"
-										BorderBrush="#E53935"
-										BorderThickness="1"
-										CornerRadius="6"
-										Cursor="Hand">
+									<TextBlock
+										FontSize="13"
+										FontWeight="SemiBold"
+										Text="{Binding VariantName}" />
 
-										<Grid>
-											<Grid.ColumnDefinitions>
-												<ColumnDefinition Width="*" />
-												<ColumnDefinition Width="Auto" />
-											</Grid.ColumnDefinitions>
-
-											<TextBlock
-												FontSize="13"
-												FontWeight="SemiBold"
-												Text="{Binding VariantName}" />
-
-											<Button
-												Grid.Column="1"
-												Padding="10,2"
-												Command="{Binding DataContext.AddVariantCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
-												CommandParameter="{Binding}"
-												Content="Add" />
-										</Grid>
-									</Border>
-								</DataTemplate>
-							</ListBox.ItemTemplate>
-
-						</ListBox>
-					</Border>
-
-					<!--  ================= STOCK ENTRY PANEL =================  -->
-					<Border
-						Grid.Column="3"
-						Padding="8"
-						Background="White"
-						CornerRadius="6">
-
-						<Grid>
-							<Grid.RowDefinitions>
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="*" />
-								<RowDefinition Height="Auto" />
-							</Grid.RowDefinitions>
-
-							<!--  HEADER  -->
-							<TextBlock
-								FontSize="12"
-								FontWeight="Bold"
-								Text="STOCK ITEMS" />
-
-							<!--  ITEMS  -->
-							<ItemsControl Grid.Row="1" ItemsSource="{Binding StockRows}">
-								<ItemsControl.ItemTemplate>
-									<DataTemplate>
-										<Border
-											Margin="2"
-											Padding="4"
-											BorderBrush="#DDD"
-											BorderThickness="1"
-											CornerRadius="6">
-
-											<Grid>
-												<Grid.ColumnDefinitions>
-													<ColumnDefinition Width="20" />
-													<ColumnDefinition Width="*" />
-													<ColumnDefinition Width="70" />
-													<ColumnDefinition Width="60" />
-												</Grid.ColumnDefinitions>
-
-												<Button
-													Command="{Binding DataContext.RemoveRowCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-													CommandParameter="{Binding}"
-													Content="✕"
-													Foreground="Red" />
-
-												<TextBlock
-													Grid.Column="1"
-													FontSize="12"
-													Text="{Binding DisplayName}"
-													TextWrapping="Wrap" />
-
-												<TextBox
-													Grid.Column="2"
-													HorizontalContentAlignment="Center"
-													Text="{Binding Quantity}" />
-
-												<TextBlock
-													Grid.Column="3"
-													HorizontalAlignment="Right"
-													Text="{Binding Unit}" />
-											</Grid>
-										</Border>
-									</DataTemplate>
-								</ItemsControl.ItemTemplate>
-							</ItemsControl>
-
-							<!--  FOOTER  -->
-							<Button
-								Grid.Row="2"
-								Height="40"
-								Background="#2E7D32"
-								Command="{Binding SaveStockCommand}"
-								Content="Save Stock"
-								Foreground="White" />
-						</Grid>
-					</Border>
-
-				</Grid>
-			</TabItem>
-
-			<!--  =====================================================  -->
-			<!--  ================= INGREDIENT TAB ====================  -->
-			<!--  =====================================================  -->
-			<TabItem Header="Ingredients">
-
-				<Grid>
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="300" />
-						<ColumnDefinition Width="220" />
-						<ColumnDefinition Width="*" />
-					</Grid.ColumnDefinitions>
-
-					<!--  Ingredient List  -->
-					<Border
-						Grid.Column="0"
-						Padding="6"
-						Background="#FAFAFA"
-						CornerRadius="6">
-						<ListBox ItemsSource="{Binding Ingredients}">
-							<ListBox.ItemTemplate>
-								<DataTemplate>
 									<Button
-										Command="{Binding DataContext.AddIngredientCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+										Grid.Column="1"
+										Padding="10,2"
+										Command="{Binding DataContext.AddVariantCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
 										CommandParameter="{Binding}"
-										Content="{Binding Name}" />
-								</DataTemplate>
-							</ListBox.ItemTemplate>
-						</ListBox>
-					</Border>
+										Content="Add" />
+								</Grid>
+							</Border>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
 
-					<!--  Reuse Stock Entry Panel  -->
-					<ContentPresenter Grid.Column="2" />
+				</ListBox>
+			</Border>
+
+			<!--  ================= STOCK ENTRY PANEL =================  -->
+			<Border
+				Grid.Column="3"
+				Padding="8"
+				Background="White"
+				CornerRadius="6">
+
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="*" />
+						<RowDefinition Height="Auto" />
+					</Grid.RowDefinitions>
+
+					<!--  HEADER  -->
+					<TextBlock
+						FontSize="12"
+						FontWeight="Bold"
+						Text="STOCK ITEMS" />
+
+					<!--  ITEMS  -->
+					<ItemsControl Grid.Row="1" ItemsSource="{Binding StockRows}">
+						<ItemsControl.ItemTemplate>
+							<DataTemplate>
+								<Border
+									Margin="2"
+									Padding="4"
+									BorderBrush="#DDD"
+									BorderThickness="1"
+									CornerRadius="6">
+
+									<Grid>
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="20" />
+											<ColumnDefinition Width="*" />
+											<ColumnDefinition Width="70" />
+											<ColumnDefinition Width="60" />
+										</Grid.ColumnDefinitions>
+
+										<Button
+											Command="{Binding DataContext.RemoveRowCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+											CommandParameter="{Binding}"
+											Content="✕"
+											Foreground="Red" />
+
+										<TextBlock
+											Grid.Column="1"
+											FontSize="12"
+											Text="{Binding DisplayName}"
+											TextWrapping="Wrap" />
+
+										<TextBox
+											Grid.Column="2"
+											HorizontalContentAlignment="Center"
+											Text="{Binding Quantity}" />
+
+										<TextBlock
+											Grid.Column="3"
+											HorizontalAlignment="Right"
+											Text="{Binding Unit}" />
+									</Grid>
+								</Border>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+
+					<!--  FOOTER  -->
+					<Button
+						Grid.Row="2"
+						Height="40"
+						Background="#2E7D32"
+						Command="{Binding SaveStockCommand}"
+						Content="Save Stock"
+						Foreground="White" />
 				</Grid>
-
-			</TabItem>
-
-		</TabControl>
+			</Border>
+		</Grid>
 	</Grid>
 </Page>
 
