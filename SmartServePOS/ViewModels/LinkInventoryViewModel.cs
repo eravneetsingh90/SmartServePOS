@@ -202,7 +202,7 @@ namespace SmartServePOS.ViewModels
 			var variants = await _productService.GetVariantByProductIdAsync(SelectedProduct.ProductId);
 
 			var stockItems = await _stockService.GetStockItemAsync(StockItemType.VARIANT);
-			var stockLookup = stockItems.ToDictionary(x => x.ReferenceId);
+			var stockLookup = stockItems.ToDictionary(x => x.VariantId);
 
 			foreach (var variant in variants)
 			{
@@ -253,7 +253,7 @@ namespace SmartServePOS.ViewModels
 				var ingredients = await _stockService.GetIngredients();
 				var stockItems = await _stockService.GetStockItemAsync(StockItemType.INGREDIENT);
 
-				var stockLookup = stockItems.ToDictionary(x => x.ReferenceId);
+				var stockLookup = stockItems.ToDictionary(x => x.VariantId);
 
 				foreach (var ing in ingredients)
 				{
