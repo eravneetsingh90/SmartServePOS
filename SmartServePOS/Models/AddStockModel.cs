@@ -8,7 +8,7 @@ namespace SmartServePOS.Models
 	{
 		public string ItemType { get; set; }
 
-		public int ReferenceId { get; set; }
+		public int VariantId { get; set; }
 
 		public string DisplayName { get; set; }
 
@@ -27,5 +27,6 @@ namespace SmartServePOS.Models
 			get => _reason;
 			set => SetProperty(ref _reason, value);
 		}
+		public string SearchText { get; init; } = string.Empty;
 	}
 }

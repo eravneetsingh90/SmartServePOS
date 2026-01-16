@@ -13,8 +13,11 @@ namespace SmartServePOS.ViewModels
 	{
 		#region fields
 		private readonly IMapper _mapper;
+		private string _searchText;
+		private bool _isSearchActive;
 		private readonly IProductService _productService;
 		private readonly IStockService _stockService;
+		private List<StockDto> _stocks = new();
 		public ObservableCollection<CategoryDto> Categories { get; } = new();
 		public ObservableCollection<ProductDto> Products { get; }
 		public ObservableCollection<ProductVariantDto> Variants { get; } = new();
@@ -46,11 +49,35 @@ namespace SmartServePOS.ViewModels
 				_ = LoadVariantsAsync();
 			}
 		}
+		public string SearchText
+		{
+			get => _searchText;
+			set
+			{
+				if (_searchText == value) return;
+
+				_searchText = value;
+				OnPropertyChanged(nameof(SearchText));
+
+				PerformSearch();
+			}
+		}
+		public bool IsSearchActive
+		{
+			get => _isSearchActive;
+			private set
+			{
+				_isSearchActive = value;
+				OnPropertyChanged(nameof(IsSearchActive));
+			}
+		}
+
 		#endregion
 
 		#region Commands
+		public ICommand IncreaseQtyCommand { get; }
+		public ICommand DecreaseQtyCommand { get; }
 		public ICommand AddVariantCommand { get; }
-		public ICommand AddIngredientCommand { get; }
 		public ICommand RemoveRowCommand { get; }
 		public ICommand SaveStockCommand { get; }
 		public ICommand ReloadCommand { get; }
@@ -68,9 +95,10 @@ namespace SmartServePOS.ViewModels
 			Categories = new ObservableCollection<CategoryDto>();
 			Products = new ObservableCollection<ProductDto>();
 			Variants = new ObservableCollection<ProductVariantDto>();
+			IncreaseQtyCommand = new RelayCommand<AddStockModel>(IncreaseQty);
+			DecreaseQtyCommand = new RelayCommand<AddStockModel>(DecreaseQty);
 			AddVariantCommand = new RelayCommand<ProductVariantDto>(AddVariant);
-			AddIngredientCommand = new RelayCommand<IngredientDto>(AddIngredient);
-			RemoveRowCommand = new RelayCommand<AddStockModel>(r => StockRows.Remove(r));
+			RemoveRowCommand = new RelayCommand<AddStockModel>(RemoveRow);
 			SaveStockCommand = new RelayCommand(async _ => await SaveStockAsync());
 			ReloadCommand = new RelayCommand(async _ => await ReloadAsync());
 			ClearCommand = new RelayCommand(ClearStockRows);
@@ -81,34 +109,39 @@ namespace SmartServePOS.ViewModels
 		public async Task InitializeAsync()
 		{
 			//await LoadCategoriesAsync();
-			var items = await _productService.GetAllStockAsync();
-
+			_stocks = (await _productService.GetAllStockAsync()).ToList();
+			await LoadCategoriesAsync();
 		}
 		private async Task LoadCategoriesAsync()
 		{
+			var uniqueCategories = _stocks
+								.Where(s => s.Variant?.Product?.Category != null)
+								.GroupBy(s => s.Variant.Product.Category.CategoryId)
+								.Select(g => g.First().Variant.Product.Category);
+
 			Categories.Clear();
-			var items = await _productService.GetIsStockCategoriesAsync();
-			var categoryModels = _mapper.Map<List<CategoryDto>>(items);
-			foreach (var c in categoryModels)
+			foreach (var category in uniqueCategories)
 			{
-				Categories.Add(c);
+				Categories.Add(category);
 			}
 			if (SelectedCategory == null)
 				SelectedCategory = Categories.FirstOrDefault();
 		}
 		private async Task LoadProductsAsync()
 		{
+			var uniqueProducts = _stocks
+								.Where(s => s.Variant?.Product != null && s.Variant?.Product.CategoryId == SelectedCategory.CategoryId)
+								.GroupBy(s => s.Variant.Product.ProductId)
+								.Select(g => g.First().Variant.Product);
 			Products.Clear();
 			Variants.Clear();
 
 			if (SelectedCategory == null)
 				return;
 
-			var products = await _productService.GetIsStockProductByCategoryIdAsync(SelectedCategory.CategoryId);
-			var productModels = _mapper.Map<List<ProductDto>>(products);
-			foreach (var p in productModels)
+			foreach (var product in uniqueProducts)
 			{
-				Products.Add(p);
+				Products.Add(product);
 			}
 			if (SelectedProduct == null)
 				SelectedProduct = Products.FirstOrDefault();
@@ -121,11 +154,9 @@ namespace SmartServePOS.ViewModels
 			if (SelectedProduct == null)
 				return;
 
-			var variants = await _productService.GetVariantByProductIdAsync(SelectedProduct.ProductId);
-			var variantModels = _mapper.Map<List<ProductVariantDto>>(variants);
-			foreach (var v in variantModels)
+			foreach (var v in _stocks.Where(a=>a.Variant.ProductId==SelectedProduct.ProductId))
 			{
-				Variants.Add(v);
+				Variants.Add(v.Variant);
 			}
 		}
 		private async Task ReloadAsync()
@@ -145,53 +176,48 @@ namespace SmartServePOS.ViewModels
 				Ingredients.Add(ing);
 		}
 
-		#endregion
-
-		#region Add Stock Rows
-
 		private void AddVariant(ProductVariantDto variant)
 		{
-			if (variant == null)
-				return;
+			var existing = StockRows.FirstOrDefault(x => x.VariantId == variant.VariantId);
 
-			if (StockRows.Any(x =>
-				x.ItemType == StockItemType.VARIANT &&
-				x.ReferenceId == variant.VariantId))
-				return;
-
-			StockRows.Add(new AddStockModel
+			if (existing != null)
 			{
-				ItemType = StockItemType.VARIANT,
-				ReferenceId = variant.VariantId,
-				DisplayName = $"{variant.Product.Name} - {variant.VariantName}",
-				//Unit = variant.Unit ?? "PCS",
-				Unit = "PCS",
-				Quantity = 1,
-				Reason = "PURCHASE"
-			});
+				existing.Quantity++;
+			}
+			else
+			{
+				StockRows.Add(new AddStockModel
+				{
+					VariantId = variant.VariantId,
+					DisplayName = $"{variant.Product.Name} - {variant.VariantName}",
+					SearchText = (variant.Product.Category.Name + " " + variant.Product.Name + " " + variant.VariantName).ToLower(),
+					Unit = "PCS",
+					Quantity = 1,
+					Reason = "PURCHASE"
+				});
+			}
+
 		}
 
-		private void AddIngredient(IngredientDto ingredient)
+		private void IncreaseQty(AddStockModel item)
 		{
-			if (ingredient == null)
-				return;
+			if (item == null) return;
 
-			if (StockRows.Any(x =>
-				x.ItemType == StockItemType.INGREDIENT &&
-				x.ReferenceId == ingredient.IngredientId))
-				return;
-
-			StockRows.Add(new AddStockModel
-			{
-				ItemType = StockItemType.INGREDIENT,
-				ReferenceId = ingredient.IngredientId,
-				DisplayName = ingredient.Name,
-				Unit = ingredient.Unit,
-				Quantity = 1,
-				Reason = "PURCHASE"
-			});
+			item.Quantity++;
 		}
+		private void DecreaseQty(AddStockModel item)
+		{
+			if (item == null) return;
 
+			if (item.Quantity > 1)
+			{
+				item.Quantity--;
+			}
+			else
+			{
+				StockRows.Remove(item);
+			}
+		}
 		private void RemoveRow(AddStockModel row)
 		{
 			if (row == null)
@@ -205,9 +231,6 @@ namespace SmartServePOS.ViewModels
 			StockRows.Clear();
 		}
 
-		#endregion
-
-		#region Save
 
 		private async Task SaveStockAsync()
 		{
@@ -223,6 +246,42 @@ namespace SmartServePOS.ViewModels
 			await _stockService.AddStockAsync(stocks);
 
 			StockRows.Clear();
+		}
+
+		private void PerformSearch()
+		{
+			Variants.Clear();
+
+			if (string.IsNullOrWhiteSpace(SearchText))
+			{
+				IsSearchActive = false;
+
+				// restore normal flow
+				if (SelectedProduct != null)
+					_= LoadVariantsAsync();
+
+				return;
+			}
+
+			IsSearchActive = true;
+
+			var term = SearchText.Trim().ToLower();
+
+			var results = StockRows
+				.Where(x => x.SearchText.Contains(term))
+				.Take(30)
+				.ToList();
+
+			foreach (var item in results)
+			{
+				Variants.Add(new ProductVariantDto
+				{
+					VariantId = item.VariantId,
+					//ProductId = item.ProductId,
+					VariantName = item.DisplayName,
+					//Price = item.Price
+				});
+			}
 		}
 
 		#endregion
