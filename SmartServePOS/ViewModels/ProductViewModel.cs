@@ -79,7 +79,7 @@ namespace SmartServePOS.ViewModels
 			if (SelectedCategory == null)
 				return;
 
-			var data = await _productService.GetProductByCategoryIdAsync(SelectedCategory.CategoryId);
+			var data = await _productService.GetProductByCategoryIdAsync(SelectedCategory.Id);
 			foreach (var p in data)
 			{
 				Products.Add(p);
@@ -97,7 +97,7 @@ namespace SmartServePOS.ViewModels
 
 			Products.Add(new ProductDto
 			{
-				CategoryId = SelectedCategory.CategoryId,
+				CategoryId = SelectedCategory.Id,
 				Name = "New Product",
 				IsActive = true,
 				DisplayOrder = nextOrder
@@ -128,9 +128,9 @@ namespace SmartServePOS.ViewModels
 			if (!result)
 				return;
 
-			if (product.ProductId != 0)
+			if (product.Id != 0)
 			{
-				var response = await _productService.DeleteProductAsync(product.ProductId);
+				var response = await _productService.DeleteProductAsync(product.Id);
 				if (response.MetaData.ResultCode == ResultCodes.Success)
 				{
 					Products.Remove(product);

@@ -89,9 +89,9 @@ namespace SmartServePOS.ViewModels
 			if (!result)
 				return;
 
-			if (category.CategoryId != 0)
+			if (category.Id != 0)
 			{
-				var response = await _productService.DeleteCategoryAsync(category.CategoryId);
+				var response = await _productService.DeleteCategoryAsync(category.Id);
 				if (response.MetaData.ResultCode == ResultCodes.Success)
 				{
 					Categories.Remove(category);

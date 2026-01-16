@@ -160,7 +160,7 @@ namespace SmartServePOS.ViewModels
 			{
 				Categories.Add(new CategoryDto
 				{
-					CategoryId = category.CategoryId,
+					Id = category.Id,
 					Name = category.Name
 				});
 			}
@@ -176,13 +176,13 @@ namespace SmartServePOS.ViewModels
 			if (SelectedCategory == null)
 				return;
 
-			var products = await _productService.GetProductByCategoryIdAsync(SelectedCategory.CategoryId);
+			var products = await _productService.GetProductByCategoryIdAsync(SelectedCategory.Id);
 
 			foreach (var product in products)
 			{
 				Products.Add(new ProductDto
 				{
-					ProductId = product.ProductId,
+					Id = product.Id,
 					CategoryId = product.CategoryId ?? 0,
 					Name = product.Name
 				});
@@ -199,7 +199,7 @@ namespace SmartServePOS.ViewModels
 			IsLoading = true;
 			Variants.Clear();
 
-			var variants = await _productService.GetVariantByProductIdAsync(SelectedProduct.ProductId);
+			var variants = await _productService.GetVariantByProductIdAsync(SelectedProduct.Id);
 
 			var stockItems = await _stockService.GetStockItemAsync(StockItemType.VARIANT);
 			var stockLookup = stockItems.ToDictionary(x => x.VariantId);
@@ -208,12 +208,12 @@ namespace SmartServePOS.ViewModels
 			{
 				Variants.Add(new LinkInventoryModel
 				{
-					VariantId = variant.VariantId,
+					VariantId = variant.Id,
 					VariantName = variant.VariantName,
 					Price = variant.Price,
 					ProductName = SelectedProduct.Name,
 					CategoryName = SelectedCategory?.Name,
-					IsStockTracked = stockLookup.ContainsKey(variant.VariantId)
+					IsStockTracked = stockLookup.ContainsKey(variant.Id)
 				});
 			}
 

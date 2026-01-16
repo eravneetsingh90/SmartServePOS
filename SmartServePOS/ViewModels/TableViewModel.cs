@@ -155,7 +155,7 @@ namespace SmartServePOS.ViewModels
 				};
 
 				_printService.PrintBill(printbill, showPreview: false);
-				order.StatusId = _catalogService.GetTableStatusByCode(TableStatusCodes.PRINTED).StatusId;
+				order.StatusId = _catalogService.GetTableStatusByCode(TableStatusCodes.PRINTED).Id;
 				await _billingService.UpdateOrderAsync(order);
 				_ = InitializeAsync();
 

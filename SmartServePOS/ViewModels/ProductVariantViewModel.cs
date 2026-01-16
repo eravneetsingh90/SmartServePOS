@@ -106,7 +106,7 @@ namespace SmartServePOS.ViewModels
 			if (SelectedCategory == null)
 				return;
 
-			var products = await _productService.GetProductByCategoryIdAsync(SelectedCategory.CategoryId);
+			var products = await _productService.GetProductByCategoryIdAsync(SelectedCategory.Id);
 			var productModels = _mapper.Map<List<ProductDto>>(products);
 			foreach (var p in productModels)
 			{
@@ -123,7 +123,7 @@ namespace SmartServePOS.ViewModels
 			if (SelectedProduct == null)
 				return;
 
-			var variants = await _productService.GetVariantByProductIdAsync(SelectedProduct.ProductId);
+			var variants = await _productService.GetVariantByProductIdAsync(SelectedProduct.Id);
 			var variantModels = _mapper.Map<List<ProductVariantDto>>(variants);
 			foreach (var v in variantModels)
 			{
@@ -142,7 +142,7 @@ namespace SmartServePOS.ViewModels
 
 			var variant = new ProductVariantDto
 			{
-				ProductId = SelectedProduct.ProductId,
+				ProductId = SelectedProduct.Id,
 				VariantName = "New Variant",
 				Price = 0,
 				IsActive = true,
@@ -163,9 +163,9 @@ namespace SmartServePOS.ViewModels
 			if (!result)
 				return;
 
-			if (variant.VariantId != 0)
+			if (variant.Id != 0)
 			{
-				var response = await _productService.DeleteVariantAsync(variant.VariantId);
+				var response = await _productService.DeleteVariantAsync(variant.Id);
 				if (response.MetaData.ResultCode == ResultCodes.Success)
 				{
 					Variants.Remove(variant);

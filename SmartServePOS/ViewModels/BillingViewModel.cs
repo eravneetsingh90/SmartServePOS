@@ -138,7 +138,7 @@ namespace SmartServePOS.ViewModels
 			{
 				Categories.Add(new CategoryDto
 				{
-					CategoryId = category.CategoryId,
+					Id = category.Id,
 					Name = category.Name
 				});
 			}
@@ -153,14 +153,14 @@ namespace SmartServePOS.ViewModels
 			if (SelectedCategory == null)
 				return;
 
-			var products = _catalogService.GetProductsByCategory(SelectedCategory.CategoryId);
+			var products = _catalogService.GetProductsByCategory(SelectedCategory.Id);
 
 			foreach (var product in products)
 			{
 				Products.Add(new ProductDto
 				{
 					CategoryId = product.CategoryId ?? 0,
-					ProductId = product.ProductId,
+					Id = product.Id,
 					Name = product.Name
 				});
 			}
@@ -174,14 +174,14 @@ namespace SmartServePOS.ViewModels
 			if (SelectedProduct == null)
 				return;
 
-			var variants = _catalogService.GetVariantsByProduct(SelectedProduct.ProductId);
+			var variants = _catalogService.GetVariantsByProduct(SelectedProduct.Id);
 
 			foreach (var variant in variants)
 			{
 				Variants.Add(new ProductVariantDto
 				{
 					ProductId = variant.ProductId,
-					VariantId = variant.VariantId,
+					Id = variant.Id,
 					Price = variant.Price,
 					VariantName = variant.VariantName
 				});
@@ -189,7 +189,7 @@ namespace SmartServePOS.ViewModels
 		}
 		private void AddVariantToBill(ProductVariantDto variant)
 		{
-			var existing = BillItems.FirstOrDefault(x => x.VariantId == variant.VariantId);
+			var existing = BillItems.FirstOrDefault(x => x.VariantId == variant.Id);
 
 			if (existing != null)
 			{
@@ -199,7 +199,7 @@ namespace SmartServePOS.ViewModels
 			{
 				BillItems.Add(new BillItemModelDto
 				{
-					VariantId = variant.VariantId,
+					VariantId = variant.Id,
 					ItemName = $"{SelectedProduct.Name} - {variant.VariantName}",
 					Quantity = 1,
 					PriceSnapshot = variant.Price
@@ -260,7 +260,7 @@ namespace SmartServePOS.ViewModels
 			{
 				Variants.Add(new ProductVariantDto
 				{
-					VariantId = item.VariantId,
+					Id = item.VariantId,
 					ProductId = item.ProductId,
 					VariantName = $"{item.ProductName} - {item.VariantName}",
 					Price = item.Price
@@ -310,13 +310,13 @@ namespace SmartServePOS.ViewModels
 		{
 			if (!BillItems.Any())
 				return;
-			var statusId = _catalogService.GetTableStatusByCode(TableStatusCodes.RUNNING).StatusId;
+			var statusId = _catalogService.GetTableStatusByCode(TableStatusCodes.RUNNING).Id;
 
 			if (_currentOrderId <= 0)
 			{
 				var request = new OrderDto
 				{
-					OrderId = _currentOrderId,
+					Id = _currentOrderId,
 					TableId = _currentTableId,
 					StatusId = statusId,
 					OrderType = "DINE_IN",
@@ -339,7 +339,7 @@ namespace SmartServePOS.ViewModels
 			{
 				var request = new OrderDto
 				{
-					OrderId = _currentOrderId,
+					Id = _currentOrderId,
 					TableId = _currentTableId,
 					StatusId = statusId,
 					OrderType = "DINE_IN",

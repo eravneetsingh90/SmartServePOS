@@ -125,7 +125,7 @@ namespace SmartServePOS.ViewModels
 		{
 			var uniqueCategories = _stocks
 								.Where(s => s.Variant?.Product?.Category != null)
-								.GroupBy(s => s.Variant.Product.Category.CategoryId)
+								.GroupBy(s => s.Variant.Product.Category.Id)
 								.Select(g => g.First().Variant.Product.Category);
 
 			Categories.Clear();
@@ -139,8 +139,8 @@ namespace SmartServePOS.ViewModels
 		private async Task LoadProductsAsync()
 		{
 			var uniqueProducts = _stocks
-								.Where(s => s.Variant?.Product != null && s.Variant?.Product.CategoryId == SelectedCategory.CategoryId)
-								.GroupBy(s => s.Variant.Product.ProductId)
+								.Where(s => s.Variant?.Product != null && s.Variant?.Product.CategoryId == SelectedCategory.Id)
+								.GroupBy(s => s.Variant.Product.Id)
 								.Select(g => g.First().Variant.Product);
 			Products.Clear();
 			Variants.Clear();
@@ -163,7 +163,7 @@ namespace SmartServePOS.ViewModels
 			if (SelectedProduct == null)
 				return;
 
-			foreach (var v in _stocks.Where(a=>a.Variant.ProductId==SelectedProduct.ProductId))
+			foreach (var v in _stocks.Where(a=>a.Variant.ProductId==SelectedProduct.Id))
 			{
 				Variants.Add(v.Variant);
 			}
@@ -187,7 +187,7 @@ namespace SmartServePOS.ViewModels
 
 		private void AddVariant(ProductVariantDto variant)
 		{
-			var existing = StockRows.FirstOrDefault(x => x.VariantId == variant.VariantId);
+			var existing = StockRows.FirstOrDefault(x => x.VariantId == variant.Id);
 
 			if (existing != null)
 			{
@@ -195,11 +195,11 @@ namespace SmartServePOS.ViewModels
 			}
 			else
 			{
-				var currentstock = _stocks.FirstOrDefault(x => x.VariantId == variant.VariantId);
+				var currentstock = _stocks.FirstOrDefault(x => x.VariantId == variant.Id);
 				StockRows.Add(new AddStockModel
 				{
 					ItemType = currentstock.ItemType,
-					VariantId = variant.VariantId,
+					VariantId = variant.Id,
 					DisplayName = $"{variant.Product.Name} - {variant.VariantName}",
 					SearchText = (variant.Product.Category.Name + " " + variant.Product.Name + " " + variant.VariantName).ToLower(),
 					Unit = "PCS",
@@ -288,7 +288,7 @@ namespace SmartServePOS.ViewModels
 			{
 				Variants.Add(new ProductVariantDto
 				{
-					VariantId = item.VariantId,
+					Id = item.VariantId,
 					//ProductId = item.ProductId,
 					VariantName = item.DisplayName,
 					//Price = item.Price

@@ -180,7 +180,7 @@
 					<ListBox.ItemsPanel>
 						<ItemsPanelTemplate>
 							<WrapPanel
-								ItemHeight="50"
+								ItemHeight="60"
 								ItemWidth="160"
 								Orientation="Horizontal" />
 						</ItemsPanelTemplate>
