@@ -207,6 +207,32 @@
 								</Style>
 							</DataGridTextColumn.EditingElementStyle>
 						</DataGridTextColumn>
+						<DataGridTemplateColumn Width="140" Header="Type">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+
+										<!--  Color Dot  -->
+										<Ellipse
+											Width="10"
+											Height="10"
+											Margin="0,0,6,0"
+											Fill="{Binding FoodTypeColor}" />
+
+										<!--  Dropdown  -->
+
+										<ComboBox
+											Width="90"
+											DisplayMemberPath="Display"
+											ItemsSource="{Binding DataContext.FoodTypeOptions, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+											SelectedValue="{Binding FoodType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+											SelectedValuePath="Value" />
+
+
+									</StackPanel>
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
 						<DataGridCheckBoxColumn
 							Width="60"
 							Binding="{Binding IsActive, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
