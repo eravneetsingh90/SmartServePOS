@@ -322,18 +322,6 @@
 						</DataGridTextColumn>
 
 						<DataGridCheckBoxColumn
-							Width="65"
-							Binding="{Binding IsStock, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-							Header="Is Stock">
-							<DataGridCheckBoxColumn.ElementStyle>
-								<Style TargetType="CheckBox">
-									<Setter Property="HorizontalAlignment" Value="Center" />
-									<Setter Property="VerticalAlignment" Value="Center" />
-								</Style>
-							</DataGridCheckBoxColumn.ElementStyle>
-						</DataGridCheckBoxColumn>
-
-						<DataGridCheckBoxColumn
 							Width="55"
 							Binding="{Binding IsActive, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
 							Header="Active">

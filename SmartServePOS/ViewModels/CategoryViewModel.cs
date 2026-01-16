@@ -63,7 +63,6 @@ namespace SmartServePOS.ViewModels
 			{
 				Name = "New Category",
 				IsActive = true,
-				IsStock = false,
 				DisplayOrder = nextOrder
 			});
 		}

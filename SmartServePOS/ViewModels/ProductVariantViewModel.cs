@@ -146,7 +146,6 @@ namespace SmartServePOS.ViewModels
 				VariantName = "New Variant",
 				Price = 0,
 				IsActive = true,
-				IsStock = false,
 				DisplayOrder = nextOrder
 			};
 

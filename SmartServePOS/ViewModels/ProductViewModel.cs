@@ -100,7 +100,6 @@ namespace SmartServePOS.ViewModels
 				CategoryId = SelectedCategory.CategoryId,
 				Name = "New Product",
 				IsActive = true,
-				IsStock = false,
 				DisplayOrder = nextOrder
 			});
 		}
