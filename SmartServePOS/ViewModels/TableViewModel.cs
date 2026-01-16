@@ -154,7 +154,7 @@ namespace SmartServePOS.ViewModels
 					GrandTotal = sumItems
 				};
 
-				_printService.PrintBill(printbill, showPreview: true);
+				_printService.PrintBill(printbill, showPreview: false);
 				order.StatusId = _catalogService.GetTableStatusByCode(TableStatusCodes.PRINTED).StatusId;
 				await _billingService.UpdateOrderAsync(order);
 				_ = InitializeAsync();

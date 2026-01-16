@@ -301,7 +301,7 @@ namespace SmartServePOS.ViewModels
 			bill = BuildBillPrintModel();
 
 			// Phase 1: preview first
-			_printService.PrintBill(bill, showPreview: true);
+			_printService.PrintBill(bill, showPreview: false);
 
 			// Phase 2 (later):
 			// _printService.PrintBill(bill, showPreview: false);

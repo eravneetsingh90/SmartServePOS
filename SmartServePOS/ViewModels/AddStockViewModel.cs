@@ -3,9 +3,12 @@ using SmartServe.Domain.Constants;
 using SmartServe.Domain.Models;
 using SmartServe.Domain.Services;
 using SmartServePOS.Command;
+using SmartServePOS.Constant;
+using SmartServePOS.Helper;
 using SmartServePOS.Models;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using System.Windows.Navigation;
 
 namespace SmartServePOS.ViewModels
 {
@@ -13,6 +16,8 @@ namespace SmartServePOS.ViewModels
 	{
 		#region fields
 		private readonly IMapper _mapper;
+		private readonly INavigationService _navigationService;
+		private readonly INotificationService _notificationService;
 		private string _searchText;
 		private bool _isSearchActive;
 		private readonly IProductService _productService;
@@ -86,10 +91,13 @@ namespace SmartServePOS.ViewModels
 
 		public AddStockViewModel(
 			IMapper mapper,
+			INotificationService notificationService,
 			IProductService productService,
-			IStockService stockService)
+			IStockService stockService,
+			INavigationService navigationService)
 		{
 			_mapper = mapper;
+			_notificationService = notificationService;
 			_productService = productService;
 			_stockService = stockService;
 			Categories = new ObservableCollection<CategoryDto>();
@@ -102,6 +110,7 @@ namespace SmartServePOS.ViewModels
 			SaveStockCommand = new RelayCommand(async _ => await SaveStockAsync());
 			ReloadCommand = new RelayCommand(async _ => await ReloadAsync());
 			ClearCommand = new RelayCommand(ClearStockRows);
+			_navigationService = navigationService;
 		}
 
 		#region Methods
@@ -186,8 +195,10 @@ namespace SmartServePOS.ViewModels
 			}
 			else
 			{
+				var currentstock = _stocks.FirstOrDefault(x => x.VariantId == variant.VariantId);
 				StockRows.Add(new AddStockModel
 				{
+					ItemType = currentstock.ItemType,
 					VariantId = variant.VariantId,
 					DisplayName = $"{variant.Product.Name} - {variant.VariantName}",
 					SearchText = (variant.Product.Category.Name + " " + variant.Product.Name + " " + variant.VariantName).ToLower(),
@@ -237,15 +248,16 @@ namespace SmartServePOS.ViewModels
 			if (!StockRows.Any())
 				return;
 
-			foreach (var row in StockRows)
-			{
-				if (row.Quantity <= 0)
-					throw new InvalidOperationException("Quantity must be greater than zero.");
-			}
 			var stocks = _mapper.Map<List<AddStockDto>>(StockRows.ToList());
-			await _stockService.AddStockAsync(stocks);
-
-			StockRows.Clear();
+			var response = await _stockService.AddStockAsync(stocks);
+			if (response.MetaData.ResultCode == ResultCodes.Success)
+			{
+				StockRows.Clear();
+				_notificationService.Success(UIConstants.SavedSuccessfully);
+				_navigationService.NavigateToStockManagementView();
+			}
+			else
+				_notificationService.Error(UIConstants.Error);
 		}
 
 		private void PerformSearch()

@@ -498,7 +498,7 @@
 									Width="90"
 									Margin="4"
 									Background="#C62828"
-									Command="{Binding SaveCommand}"
+									Command="{Binding SaveStockCommand}"
 									Content="Save"
 									Foreground="White"
 									IsEnabled="{Binding IsEditable}" />
