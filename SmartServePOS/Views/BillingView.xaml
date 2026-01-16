@@ -202,39 +202,56 @@
 					<ListBox.ItemTemplate>
 						<DataTemplate>
 							<Border
-								x:Name="Root"
-								Padding="2"
-								Background="White"
-								BorderBrush="#DADADA"
-								BorderThickness="1"
-								CornerRadius="2">
+        x:Name="Root"
+        Padding="2"
+        Background="White"
+        BorderBrush="#DADADA"
+        BorderThickness="1"
+        CornerRadius="2">
 
-								<TextBlock
-									VerticalAlignment="Center"
-									FontSize="13"
-									FontWeight="SemiBold"
-									Text="{Binding Name}"
-									TextAlignment="Center"
-									TextWrapping="Wrap" />
+								<Grid>
+									<!-- Product Name -->
+									<TextBlock
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                FontSize="13"
+                FontWeight="SemiBold"
+                Text="{Binding Name}"
+                TextAlignment="Center"
+                TextWrapping="Wrap"
+                Margin="4" />
+
+									<!-- FOOD TYPE DOT -->
+									<Ellipse
+                Width="10"
+                Height="10"
+                Fill="{Binding FoodTypeColor}"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Margin="4" />
+								</Grid>
 							</Border>
 
-							<!--  STATES  -->
+							<!-- STATES -->
 							<DataTemplate.Triggers>
 
-								<!--  SELECTED  -->
-								<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}" Value="True">
+								<!-- SELECTED -->
+								<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}"
+                     Value="True">
 									<Setter TargetName="Root" Property="Background" Value="#FFF3E0" />
 									<Setter TargetName="Root" Property="BorderBrush" Value="#C62828" />
 									<Setter TargetName="Root" Property="BorderThickness" Value="2" />
 								</DataTrigger>
 
-								<!--  HOVER  -->
-								<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsMouseOver}" Value="True">
+								<!-- HOVER -->
+								<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsMouseOver}"
+                     Value="True">
 									<Setter TargetName="Root" Property="Background" Value="#FAFAFA" />
 								</DataTrigger>
 
 							</DataTemplate.Triggers>
 						</DataTemplate>
+
 					</ListBox.ItemTemplate>
 
 				</ListBox>

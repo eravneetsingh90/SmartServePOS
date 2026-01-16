@@ -1,4 +1,5 @@
-﻿using SmartServe.Domain.Constants;
+﻿using AutoMapper;
+using SmartServe.Domain.Constants;
 using SmartServe.Domain.Models;
 using SmartServe.Domain.Services;
 using SmartServe.EFCore.Models;
@@ -13,6 +14,7 @@ namespace SmartServePOS.ViewModels
 	public class BillingViewModel : BaseViewModel
 	{
 		#region commands
+		private readonly IMapper _mapper;
 		public ICommand IncreaseQtyCommand { get; }
 		public ICommand DecreaseQtyCommand { get; }
 		public ICommand RemoveItemCommand { get; }
@@ -24,7 +26,7 @@ namespace SmartServePOS.ViewModels
 
 		#region collections
 		public ObservableCollection<CategoryDto> Categories { get; }
-		public ObservableCollection<ProductDto> Products { get; }
+		public ObservableCollection<ProductModel> Products { get; }
 		public ObservableCollection<ProductVariantDto> Variants { get; }
 		public ObservableCollection<BillItemModelDto> BillItems { get; }
 		#endregion
@@ -54,8 +56,8 @@ namespace SmartServePOS.ViewModels
 				LoadProducts();
 			}
 		}
-		private ProductDto _selectedProduct;
-		public ProductDto SelectedProduct
+		private ProductModel _selectedProduct;
+		public ProductModel SelectedProduct
 		{
 			get => _selectedProduct;
 			set
@@ -102,13 +104,13 @@ namespace SmartServePOS.ViewModels
 
 		#region constructors
 		public BillingViewModel(
-			//int orderId,
+			IMapper mapper,
 			ICatalogService catalogService,
 			IPrintService printService,
 			IBillingService billingService,
 			INavigationService navigationService)
 		{
-			//_currentOrderId = orderId;
+			_mapper = mapper;
 			_catalogService = catalogService;
 			_printService = printService;
 			_billingService = billingService;
@@ -122,7 +124,7 @@ namespace SmartServePOS.ViewModels
 			PrintCommand = new RelayCommand<BillPrintModel>(PrintBill);
 
 			Categories = new ObservableCollection<CategoryDto>();
-			Products = new ObservableCollection<ProductDto>();
+			Products = new ObservableCollection<ProductModel>();
 			Variants = new ObservableCollection<ProductVariantDto>();
 			BillItems = new ObservableCollection<BillItemModelDto>();
 			LoadCategories();
@@ -157,12 +159,7 @@ namespace SmartServePOS.ViewModels
 
 			foreach (var product in products)
 			{
-				Products.Add(new ProductDto
-				{
-					CategoryId = product.CategoryId ?? 0,
-					Id = product.Id,
-					Name = product.Name
-				});
+				Products.Add(_mapper.Map<ProductModel>(product));
 			}
 			if (SelectedProduct == null)
 				SelectedProduct = Products.FirstOrDefault();
