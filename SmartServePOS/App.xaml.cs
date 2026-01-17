@@ -5,7 +5,9 @@ using SmartServe.Domain.Dependencies;
 using SmartServe.Domain.Services;
 using SmartServe.EFCore.Dependencies;
 using SmartServePOS.Dependencies;
+using SmartServePOS.Helper;
 using SmartServePOS.Views;
+using System.IO;
 using System.Windows;
 
 namespace SmartServePOS
@@ -19,6 +21,10 @@ namespace SmartServePOS
 		{
 			ConfigHelper.Instance.SetLang("en");
 			base.OnStartup(e);
+
+			var dbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),"SmartServePOS","Data","SmartServePOS.db");
+
+			new DatabaseInitializer(dbPath).Initialize();
 
 			Configuration = new ConfigurationBuilder()
 			.SetBasePath(AppContext.BaseDirectory)
@@ -35,7 +41,7 @@ namespace SmartServePOS
 			services.UseDomain();
 
 			services.UseApp();
-			
+
 			Services = services.BuildServiceProvider();
 
 			var mainWindow = Services.GetRequiredService<MainWindow>();

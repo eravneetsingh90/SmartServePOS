@@ -10,12 +10,17 @@
 
   <ItemGroup>
     <None Remove="appsettings.json" />
+    <None Remove="Migrations\001_initial_schema.sql" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\001_initial_schema.sql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,6 +33,7 @@
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
     <PackageReference Include="HandyControl" Version="3.5.1" />
     <PackageReference Include="HandyControl.Lang.en" Version="3.5.1" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.23" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
@@ -37,6 +43,10 @@
     <Resource Include="Assets\Icons\smartserve.ico">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\" />
   </ItemGroup>
 
 </Project>
