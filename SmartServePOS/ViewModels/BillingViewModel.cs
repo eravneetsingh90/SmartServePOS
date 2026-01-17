@@ -29,7 +29,8 @@ namespace SmartServePOS.ViewModels
 		public ObservableCollection<ProductModel> Products { get; }
 		public ObservableCollection<ProductVariantDto> Variants { get; }
 		public ObservableCollection<BillItemModelDto> BillItems { get; }
-		#endregion
+		public ObservableCollection<string> DiscountTypes { get; }
+#endregion
 
 		#region services
 		private readonly IPrintService _printService;
@@ -67,7 +68,8 @@ namespace SmartServePOS.ViewModels
 				LoadVariants();
 			}
 		}
-		public decimal GrandTotal => BillItems.Sum(x => x.TotalPrice);
+		public decimal SubTotal => BillItems.Sum(x => x.TotalPrice);
+		public decimal GrandTotal => SubTotal - DiscountAmount;
 		public string SearchText
 		{
 			get => _searchText;
@@ -100,7 +102,57 @@ namespace SmartServePOS.ViewModels
 				OnPropertyChanged(nameof(IsEditable));
 			}
 		}
-#endregion
+		private string _selectedDiscountType = "NONE";
+		public string SelectedDiscountType
+		{
+			get => _selectedDiscountType;
+			set
+			{
+				if (_selectedDiscountType == value) return;
+				_selectedDiscountType = value;
+				OnPropertyChanged(nameof(SelectedDiscountType));
+				OnPropertyChanged(nameof(IsDiscountValueEnabled));
+				RecalculateTotals();
+			}
+		}
+
+		private decimal _discountValue;
+		public decimal DiscountValue
+		{
+			get => _discountValue;
+			set
+			{
+				if (_discountValue == value) return;
+				_discountValue = value;
+				OnPropertyChanged(nameof(DiscountValue));
+				RecalculateTotals();
+			}
+		}
+
+		public bool IsDiscountValueEnabled =>
+			SelectedDiscountType != "NONE";
+
+		public decimal DiscountAmount
+		{
+			get
+			{
+				var subTotal = SubTotal;
+
+				if (SelectedDiscountType == "PERCENT")
+				{
+					return Math.Round(subTotal * DiscountValue / 100, 2);
+				}
+
+				if (SelectedDiscountType == "FLAT")
+				{
+					return DiscountValue > subTotal ? subTotal : DiscountValue;
+				}
+
+				return 0;
+			}
+		}
+
+		#endregion
 
 		#region constructors
 		public BillingViewModel(
@@ -122,7 +174,7 @@ namespace SmartServePOS.ViewModels
 			SaveCommand = new RelayCommand(async _ => await SaveAsync());
 			AddVariantCommand = new RelayCommand<ProductVariantDto>(AddVariantToBill);
 			PrintCommand = new RelayCommand<BillPrintModel>(PrintBill);
-
+			DiscountTypes = new ObservableCollection<string>{"NONE", "PERCENT", "FLAT" };
 			Categories = new ObservableCollection<CategoryDto>();
 			Products = new ObservableCollection<ProductModel>();
 			Variants = new ObservableCollection<ProductVariantDto>();
@@ -203,14 +255,14 @@ namespace SmartServePOS.ViewModels
 				});
 			}
 
-			OnPropertyChanged(nameof(GrandTotal));
+			RecalculateTotals();
 		}
 		private void IncreaseQty(BillItemModelDto item)
 		{
 			if (item == null) return;
 
 			item.Quantity++;
-			OnPropertyChanged(nameof(GrandTotal));
+			RecalculateTotals();
 		}
 		private void DecreaseQty(BillItemModelDto item)
 		{
@@ -225,14 +277,14 @@ namespace SmartServePOS.ViewModels
 				BillItems.Remove(item);
 			}
 
-			OnPropertyChanged(nameof(GrandTotal));
+			RecalculateTotals();
 		}
 		private void RemoveItem(BillItemModelDto item)
 		{
 			if (item == null) return;
 
 			BillItems.Remove(item);
-			OnPropertyChanged(nameof(GrandTotal));
+			RecalculateTotals();
 		}
 		private void PerformSearch()
 		{
@@ -284,9 +336,9 @@ namespace SmartServePOS.ViewModels
 					UnitPrice = x.PriceSnapshot
 				}).ToList(),
 
-				SubTotal = BillItems.Sum(x => x.Quantity * x.PriceSnapshot),
-				//Discount = AppliedDiscountAmount,          // 0 if none
-				//DiscountLabel = AppliedDiscountLabel,       // "10%" or ""
+				SubTotal = SubTotal,
+				Discount = DiscountAmount,
+				DiscountLabel = SelectedDiscountType == "Percentage" ? $"{DiscountValue}%" : SelectedDiscountType == "₹" ? $"₹{DiscountValue}" : "",
 				GrandTotal = GrandTotal
 			};
 		}
@@ -317,7 +369,9 @@ namespace SmartServePOS.ViewModels
 					TableId = _currentTableId,
 					StatusId = statusId,
 					OrderType = "DINE_IN",
-					TotalAmount = GrandTotal
+					TotalAmount = GrandTotal,
+					DiscountType = IsDiscountValueEnabled ? SelectedDiscountType: null,
+					DiscountValue = IsDiscountValueEnabled ? DiscountValue: null
 				};
 
 				_currentOrderId = await _billingService.CreateOrderAsync(request);
@@ -340,7 +394,9 @@ namespace SmartServePOS.ViewModels
 					TableId = _currentTableId,
 					StatusId = statusId,
 					OrderType = "DINE_IN",
-					TotalAmount = GrandTotal
+					TotalAmount = GrandTotal,
+					DiscountType = IsDiscountValueEnabled ? SelectedDiscountType : null,
+					DiscountValue = IsDiscountValueEnabled ? DiscountValue : null
 				};
 
 				await _billingService.UpdateOrderAsync(request);
@@ -357,7 +413,7 @@ namespace SmartServePOS.ViewModels
 			}
 			// optional: clear bill after save
 			BillItems.Clear();
-			OnPropertyChanged(nameof(GrandTotal));
+			RecalculateTotals();
 			_navigationService.NavigateToTableView();
 		}
 		public async Task LoadOrderAsync(int orderId, int tableId)
@@ -373,7 +429,8 @@ namespace SmartServePOS.ViewModels
 			var order = await _billingService.GetOrderAsync(_currentOrderId);
 			if (order == null)
 				return;
-
+			SelectedDiscountType = order.DiscountType;
+			DiscountValue = order.DiscountValue??0;
 			foreach (var item in order.OrderItems)
 			{
 				BillItems.Add(new BillItemModelDto
@@ -384,13 +441,20 @@ namespace SmartServePOS.ViewModels
 					PriceSnapshot = item.PriceSnapshot
 				});
 			}
-			OnPropertyChanged(nameof(GrandTotal));
+			RecalculateTotals();
 		}
 		public async void RefreshAsync()
 		{
 			await _catalogService.Refresh();
 			LoadCategories();
 		}
+		private void RecalculateTotals()
+		{
+			OnPropertyChanged(nameof(SubTotal));
+			OnPropertyChanged(nameof(DiscountAmount));
+			OnPropertyChanged(nameof(GrandTotal));
+		}
+
 		#endregion
 	}
 }

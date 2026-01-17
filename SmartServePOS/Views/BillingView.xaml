@@ -202,50 +202,48 @@
 					<ListBox.ItemTemplate>
 						<DataTemplate>
 							<Border
-        x:Name="Root"
-        Padding="2"
-        Background="White"
-        BorderBrush="#DADADA"
-        BorderThickness="1"
-        CornerRadius="2">
+								x:Name="Root"
+								Padding="2"
+								Background="White"
+								BorderBrush="#DADADA"
+								BorderThickness="1"
+								CornerRadius="2">
 
 								<Grid>
-									<!-- Product Name -->
+									<!--  Product Name  -->
 									<TextBlock
-                VerticalAlignment="Center"
-                HorizontalAlignment="Center"
-                FontSize="13"
-                FontWeight="SemiBold"
-                Text="{Binding Name}"
-                TextAlignment="Center"
-                TextWrapping="Wrap"
-                Margin="4" />
+										Margin="4"
+										HorizontalAlignment="Center"
+										VerticalAlignment="Center"
+										FontSize="13"
+										FontWeight="SemiBold"
+										Text="{Binding Name}"
+										TextAlignment="Center"
+										TextWrapping="Wrap" />
 
-									<!-- FOOD TYPE DOT -->
+									<!--  FOOD TYPE DOT  -->
 									<Ellipse
-                Width="10"
-                Height="10"
-                Fill="{Binding FoodTypeColor}"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Top"
-                Margin="4" />
+										Width="10"
+										Height="10"
+										Margin="4"
+										HorizontalAlignment="Right"
+										VerticalAlignment="Top"
+										Fill="{Binding FoodTypeColor}" />
 								</Grid>
 							</Border>
 
-							<!-- STATES -->
+							<!--  STATES  -->
 							<DataTemplate.Triggers>
 
-								<!-- SELECTED -->
-								<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}"
-                     Value="True">
+								<!--  SELECTED  -->
+								<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}" Value="True">
 									<Setter TargetName="Root" Property="Background" Value="#FFF3E0" />
 									<Setter TargetName="Root" Property="BorderBrush" Value="#C62828" />
 									<Setter TargetName="Root" Property="BorderThickness" Value="2" />
 								</DataTrigger>
 
-								<!-- HOVER -->
-								<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsMouseOver}"
-                     Value="True">
+								<!--  HOVER  -->
+								<DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsMouseOver}" Value="True">
 									<Setter TargetName="Root" Property="Background" Value="#FAFAFA" />
 								</DataTrigger>
 
@@ -503,42 +501,93 @@
 						Background="#2E2E2E">
 
 						<Grid>
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition />
-								<ColumnDefinition Width="180" />
-							</Grid.ColumnDefinitions>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
+							</Grid.RowDefinitions>
+							<!--  ================= DISCOUNT SECTION =================  -->
+							<Grid Grid.Row="0" Margin="0,0,0,8">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition />
+									<ColumnDefinition Width="80" />
+								</Grid.ColumnDefinitions>
 
-							<StackPanel Orientation="Horizontal">
-								<Button
-									Width="90"
-									Margin="4"
-									Background="#C62828"
-									Command="{Binding SaveCommand}"
-									Content="Save"
-									Foreground="White"
-									IsEnabled="{Binding IsEditable}" />
-								<!--<Button
+								<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+									<TextBlock
+										Margin="10,0,16,0"
+										VerticalAlignment="Center"
+										Foreground="White"
+										Text="Discount" />
+
+									<!--  Discount Type  -->
+									<ComboBox
+										Width="100"
+										Margin="0,0,16,0"
+										IsEnabled="{Binding IsEditable}"
+										ItemsSource="{Binding DiscountTypes}"
+										SelectedItem="{Binding SelectedDiscountType}" />
+
+									<!--  Discount Value  -->
+
+									<!--<TextBox
+										Width="60"
+										IsEnabled="{Binding IsDiscountValueEnabled}"
+										Text="{Binding DiscountValue, Mode=TwoWay, UpdateSourceTrigger=LostFocus, StringFormat={}{0:0}}" />-->
+									<TextBox
+										Width="60"
+										IsEnabled="{Binding IsDiscountValueEnabled}"
+										Text="{Binding DiscountValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+
+								</StackPanel>
+
+								<!--  Discount Amount  -->
+								<TextBlock
+									Grid.Column="1"
+									Margin="0,0,10,0"
+									HorizontalAlignment="Right"
+									Foreground="#FFB74D"
+									Text="{Binding DiscountAmount, StringFormat=-₹{0:0}}" />
+							</Grid>
+
+							<Grid Grid.Row="1">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition />
+									<ColumnDefinition Width="180" />
+								</Grid.ColumnDefinitions>
+
+								<StackPanel Orientation="Horizontal">
+									<Button
+										Width="90"
+										Margin="4"
+										Background="#C62828"
+										Command="{Binding SaveCommand}"
+										Content="Save"
+										Foreground="White"
+										IsEnabled="{Binding IsEditable}" />
+									<!--<Button
 									Width="90"
 									Margin="4"
 									Background="#444"
 									Command="{Binding PrintCommand}"
 									Content="Print"
 									Foreground="White" />-->
-							</StackPanel>
+								</StackPanel>
 
-							<StackPanel Grid.Column="1" HorizontalAlignment="Right">
-								<TextBlock
-									HorizontalAlignment="Right"
-									FontSize="12"
-									Foreground="White"
-									Text="TOTAL" />
-								<TextBlock
-									HorizontalAlignment="Right"
-									FontSize="30"
-									FontWeight="Bold"
-									Foreground="Yellow"
-									Text="{Binding GrandTotal, StringFormat=₹{0}}" />
-							</StackPanel>
+								<StackPanel Grid.Column="1" HorizontalAlignment="Right">
+									<TextBlock
+										HorizontalAlignment="Right"
+										FontSize="12"
+										Foreground="White"
+										Text="TOTAL" />
+									<TextBlock
+										HorizontalAlignment="Right"
+										FontSize="30"
+										FontWeight="Bold"
+										Foreground="Yellow"
+										Text="{Binding GrandTotal, StringFormat=₹{0}}" />
+								</StackPanel>
+							</Grid>
 						</Grid>
 					</Border>
 				</Grid>
