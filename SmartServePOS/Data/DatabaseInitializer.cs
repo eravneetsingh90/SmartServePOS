@@ -2,7 +2,7 @@
 using System.IO;
 using System.Reflection;
 
-namespace SmartServePOS.Helper
+namespace SmartServePOS.Data
 {
 	
 	public class DatabaseInitializer
