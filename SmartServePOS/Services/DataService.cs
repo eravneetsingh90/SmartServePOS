@@ -3,9 +3,9 @@ using Microsoft.Data.Sqlite;
 using SmartServe.Domain.Services;
 using SmartServePOS.Models;
 
-namespace SmartServePOS.Data
+namespace SmartServePOS.Services
 {
-	public class DataService
+	public class DataService : IDataService
 	{
 		private readonly IMapper _mapper;
 		private readonly ISqliteConnectionFactory _connectionFactory;
@@ -21,7 +21,7 @@ namespace SmartServePOS.Data
 		#region public methods
 		public async Task SyncAsync()
 		{
-			var categories = _mapper.Map<List<CategoryDto>>(await _productService.GetCategoriesAsync());
+			var categories = _mapper.Map<List<CategoryDto>>(await _productService.GetActiveCategoriesAsync());
 			using var connection = _connectionFactory.CreateConnection();
 			using var tx = connection.BeginTransaction();
 			//SyncRoles(data.Roles);

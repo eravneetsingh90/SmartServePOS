@@ -2,6 +2,7 @@
 using SmartServePOS.Data;
 using SmartServePOS.Helper;
 using SmartServePOS.Mapping;
+using SmartServePOS.Services;
 using SmartServePOS.ViewModels;
 using SmartServePOS.Views;
 using System.IO;
@@ -10,21 +11,6 @@ namespace SmartServePOS.Dependencies
 {
 	public static class DependencyExtensions
 	{
-		public static IServiceCollection InitializeDb(
-			this IServiceCollection services)
-		{
-			var dbPath = Path.Combine(
-					Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-					"SmartServePOS",
-					"Data",
-					"SmartServePOS.db");
-
-			new DatabaseInitializer(dbPath).Initialize();
-			services.AddSingleton<ISqliteConnectionFactory>(
-				new SqliteConnectionFactory(dbPath));
-
-			return services;
-		}
 		public static IServiceCollection UseApp(
 			this IServiceCollection services)
 		{
@@ -60,7 +46,7 @@ namespace SmartServePOS.Dependencies
 			services.AddScoped<IDialogService, HandyDialogService>();
 			services.AddScoped<INavigationService, NavigationService>();
 
-			services.AddTransient<DataService>();
+			services.AddTransient<IDataService, DataService>();
 
 			return services;
 		}

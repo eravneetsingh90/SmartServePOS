@@ -6,6 +6,7 @@ using SmartServe.Domain.Services;
 using SmartServe.EFCore.Dependencies;
 using SmartServePOS.Data;
 using SmartServePOS.Dependencies;
+using SmartServePOS.Services;
 using SmartServePOS.Views;
 using System.IO;
 using System.Net.NetworkInformation;
@@ -26,13 +27,13 @@ namespace SmartServePOS
 			// -------------------------------
 			// 1️⃣ Ensure DB exists
 			// -------------------------------
-			//var dbPath = Path.Combine(
-			//	Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-			//	"SmartServePOS",
-			//	"Data",
-			//	"SmartServePOS.db");
+			var dbPath = Path.Combine(
+				Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+				"SmartServePOS",
+				"Data",
+				"SmartServePOS.db");
 
-			//new DatabaseInitializer(dbPath).Initialize();
+			new DatabaseInitializer(dbPath).Initialize();
 
 			// -------------------------------
 			// 2️⃣ Load configuration
@@ -49,7 +50,7 @@ namespace SmartServePOS
 
 			services.AddSingleton(Configuration);
 
-			services.InitializeDb();
+			services.AddSingleton<ISqliteConnectionFactory>(new SqliteConnectionFactory(dbPath));
 			services.UseEFCore(Configuration);
 			services.UseDomain();
 			services.UseApp();
@@ -83,7 +84,7 @@ namespace SmartServePOS
 
 					using var scope = Services.CreateScope();
 					var syncService = scope.ServiceProvider
-						.GetRequiredService<DataService>();
+						.GetRequiredService<IDataService>();
 
 					await syncService.SyncAsync();
 

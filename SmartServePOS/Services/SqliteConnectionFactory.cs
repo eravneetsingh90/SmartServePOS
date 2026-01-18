@@ -1,6 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 
-namespace SmartServePOS.Data
+namespace SmartServePOS.Services
 {
 		public interface ISqliteConnectionFactory
 		{
