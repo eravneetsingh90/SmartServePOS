@@ -201,7 +201,7 @@ namespace SmartServePOS.ViewModels
 
 			await _billingService.CloseOrderAsync(
 				SelectedOrderId,
-				new PaymentDto
+				new Payment
 				{
 					OrderId=SelectedOrderId,
 					Mode = SelectedPaymentMode.ToString().ToUpper(),

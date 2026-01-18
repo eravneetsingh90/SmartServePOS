@@ -9,9 +9,9 @@ namespace SmartServePOS.ViewModels
 	public class CurrentStockViewModel : BaseViewModel
 	{
 		private readonly IStockStore _stockStore;
-		public IEnumerable<CurrentStockDto> LowStockItems => _allStocks.Where(x => x.IsLowStock);
+		public IEnumerable<CurrentStock> LowStockItems => _allStocks.Where(x => x.IsLowStock);
 
-		public ObservableCollection<CurrentStockDto> Stocks { get; private set; }
+		public ObservableCollection<CurrentStock> Stocks { get; private set; }
 
 		public ICommand RefreshCommand { get; }
 
@@ -33,14 +33,14 @@ namespace SmartServePOS.ViewModels
 			}
 		}
 
-		private List<CurrentStockDto> _allStocks;
+		private List<CurrentStock> _allStocks;
 
 		public CurrentStockViewModel(IStockStore stockStore)
 		{
 			_stockStore = stockStore;
 
-			Stocks = new ObservableCollection<CurrentStockDto>();
-			_allStocks = new List<CurrentStockDto>();
+			Stocks = new ObservableCollection<CurrentStock>();
+			_allStocks = new List<CurrentStock>();
 
 			RefreshCommand = new RelayCommand(async _ => await LoadAsync());
 

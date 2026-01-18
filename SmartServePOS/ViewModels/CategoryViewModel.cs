@@ -18,7 +18,7 @@ namespace SmartServePOS.ViewModels
 		private readonly IProductService _productService;
 		private readonly INotificationService _notificationService;
 		private readonly IDialogService _dialogService;
-		public ObservableCollection<CategoryDto> Categories { get; } = new();
+		public ObservableCollection<Category> Categories { get; } = new();
 
 		public ICommand AddCommand { get; }
 		public ICommand SaveCommand { get; }
@@ -59,7 +59,7 @@ namespace SmartServePOS.ViewModels
 			? Categories.Max(c => c.DisplayOrder) + 1
 			: 1;
 
-			Categories.Add(new CategoryDto
+			Categories.Add(new Category
 			{
 				Name = "New Category",
 				IsActive = true,
@@ -81,7 +81,7 @@ namespace SmartServePOS.ViewModels
 
 		private async void DeleteCategory(object? parameter)
 		{
-			if (parameter is not CategoryDto category)
+			if (parameter is not Category category)
 				return;
 
 			var result = await _dialogService.ShowConfirmAsync("Confirm Delete", $"Are you sure you want to delete category \"{category.Name}\"?");

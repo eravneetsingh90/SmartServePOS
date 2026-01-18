@@ -22,11 +22,11 @@ namespace SmartServePOS.ViewModels
 		private readonly IProductService _productService;
 		private readonly INotificationService _notificationService;
 		private readonly IDialogService _dialogService;
-		public ObservableCollection<CategoryDto> Categories { get; } = new();
+		public ObservableCollection<Category> Categories { get; } = new();
 		public ObservableCollection<ProductModel> Products { get; } = new();
 
-		private CategoryDto? _selectedCategory;
-		public CategoryDto? SelectedCategory
+		private Category? _selectedCategory;
+		public Category? SelectedCategory
 		{
 			get => _selectedCategory;
 			set
@@ -73,7 +73,7 @@ namespace SmartServePOS.ViewModels
 		{
 			Categories.Clear();
 			var items = await _productService.GetCategoriesAsync();
-			var categoryModels = _mapper.Map<List<CategoryDto>>(items);
+			var categoryModels = _mapper.Map<List<Category>>(items);
 			foreach (var c in categoryModels)
 			{
 				Categories.Add(c);
@@ -118,7 +118,7 @@ namespace SmartServePOS.ViewModels
 		{
 			if (SelectedCategory == null)
 				return;
-			var products = _mapper.Map<List<ProductDto>>(Products);
+			var products = _mapper.Map<List<Product>>(Products);
 			var response = await _productService.SaveBulkProductsAsync(products);
 			if (response.MetaData.ResultCode == ResultCodes.Success)
 				_notificationService.Success(UIConstants.SavedSuccessfully);

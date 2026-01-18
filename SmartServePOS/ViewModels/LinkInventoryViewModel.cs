@@ -23,8 +23,8 @@ namespace SmartServePOS.ViewModels
 
 		#region Collections
 
-		public ObservableCollection<CategoryDto> Categories { get; } = new();
-		public ObservableCollection<ProductDto> Products { get; } = new();
+		public ObservableCollection<Category> Categories { get; } = new();
+		public ObservableCollection<Product> Products { get; } = new();
 		public ObservableCollection<LinkInventoryModel> Variants { get; } = new();
 		public ObservableCollection<IngredientStockSetupModel> Ingredients { get; } = new();
 
@@ -32,8 +32,8 @@ namespace SmartServePOS.ViewModels
 
 		#region Properties
 
-		private CategoryDto _selectedCategory;
-		public CategoryDto SelectedCategory
+		private Category _selectedCategory;
+		public Category SelectedCategory
 		{
 			get => _selectedCategory;
 			set
@@ -43,8 +43,8 @@ namespace SmartServePOS.ViewModels
 			}
 		}
 
-		private ProductDto _selectedProduct;
-		public ProductDto SelectedProduct
+		private Product _selectedProduct;
+		public Product SelectedProduct
 		{
 			get => _selectedProduct;
 			set
@@ -158,7 +158,7 @@ namespace SmartServePOS.ViewModels
 
 			foreach (var category in categories)
 			{
-				Categories.Add(new CategoryDto
+				Categories.Add(new Category
 				{
 					Id = category.Id,
 					Name = category.Name
@@ -180,7 +180,7 @@ namespace SmartServePOS.ViewModels
 
 			foreach (var product in products)
 			{
-				Products.Add(new ProductDto
+				Products.Add(new Product
 				{
 					Id = product.Id,
 					CategoryId = product.CategoryId ?? 0,

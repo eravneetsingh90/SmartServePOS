@@ -28,12 +28,12 @@ namespace SmartServePOS.ViewModels
 
 		#region properties
 		private readonly IMapper _mapper;
-		public ObservableCollection<CategoryDto> Categories { get; }
-		public ObservableCollection<ProductDto> Products { get; }
-		public ObservableCollection<ProductVariantDto> Variants { get; }
+		public ObservableCollection<Category> Categories { get; }
+		public ObservableCollection<Product> Products { get; }
+		public ObservableCollection<ProductVariant> Variants { get; }
 		
-		private CategoryDto? _selectedCategory;
-		public CategoryDto? SelectedCategory
+		private Category? _selectedCategory;
+		public Category? SelectedCategory
 		{
 			get => _selectedCategory;
 			set
@@ -43,8 +43,8 @@ namespace SmartServePOS.ViewModels
 				_ = LoadProductsAsync();
 			}
 		}
-		private ProductDto? _selectedProduct;
-		public ProductDto? SelectedProduct
+		private Product? _selectedProduct;
+		public Product? SelectedProduct
 		{
 			get => _selectedProduct;
 			set
@@ -67,13 +67,13 @@ namespace SmartServePOS.ViewModels
 			_notificationService = notificationService;
 			_dialogService = dialogService;
 			_productService = productService;
-			Categories = new ObservableCollection<CategoryDto>();
-			Products = new ObservableCollection<ProductDto>();
-			Variants = new ObservableCollection<ProductVariantDto>();
+			Categories = new ObservableCollection<Category>();
+			Products = new ObservableCollection<Product>();
+			Variants = new ObservableCollection<ProductVariant>();
 
 			AddVariantCommand = new RelayCommand(_ => AddVariant());
 			SaveCommand = new RelayCommand(async _ => await SaveAsync());
-			DeleteCommand = new RelayCommand<ProductVariantDto>(DeleteVariant);
+			DeleteCommand = new RelayCommand<ProductVariant>(DeleteVariant);
 			RefreshCommand = new RelayCommand(async _ => await LoadVariantsAsync());
 		}
 		#endregion
@@ -89,7 +89,7 @@ namespace SmartServePOS.ViewModels
 		{
 			Categories.Clear();
 			var items = await _productService.GetCategoriesAsync();
-			var categoryModels = _mapper.Map<List<CategoryDto>>(items);
+			var categoryModels = _mapper.Map<List<Category>>(items);
 			foreach (var c in categoryModels)
 			{
 				Categories.Add(c);
@@ -107,7 +107,7 @@ namespace SmartServePOS.ViewModels
 				return;
 
 			var products = await _productService.GetProductByCategoryIdAsync(SelectedCategory.Id);
-			var productModels = _mapper.Map<List<ProductDto>>(products);
+			var productModels = _mapper.Map<List<Product>>(products);
 			foreach (var p in productModels)
 			{
 				Products.Add(p);
@@ -124,7 +124,7 @@ namespace SmartServePOS.ViewModels
 				return;
 
 			var variants = await _productService.GetVariantByProductIdAsync(SelectedProduct.Id);
-			var variantModels = _mapper.Map<List<ProductVariantDto>>(variants);
+			var variantModels = _mapper.Map<List<ProductVariant>>(variants);
 			foreach (var v in variantModels)
 			{
 				Variants.Add(v);
@@ -140,7 +140,7 @@ namespace SmartServePOS.ViewModels
 				? Variants.Max(x => x.DisplayOrder) + 1
 				: 1;
 
-			var variant = new ProductVariantDto
+			var variant = new ProductVariant
 			{
 				ProductId = SelectedProduct.Id,
 				VariantName = "New Variant",
@@ -153,7 +153,7 @@ namespace SmartServePOS.ViewModels
 			OnPropertyChanged(nameof(Variants));
 		}
 
-		private async void DeleteVariant(ProductVariantDto? variant)
+		private async void DeleteVariant(ProductVariant? variant)
 		{
 			if (variant == null)
 				return;
@@ -178,7 +178,7 @@ namespace SmartServePOS.ViewModels
 
 		private async Task SaveAsync()
 		{
-			var productVariants = _mapper.Map<List<ProductVariantDto>>(Variants);
+			var productVariants = _mapper.Map<List<ProductVariant>>(Variants);
 			var response = await _productService.SaveBulkVariantAsync(productVariants);
 			if (response.MetaData.ResultCode == ResultCodes.Success)
 				_notificationService.Success(UIConstants.SavedSuccessfully);

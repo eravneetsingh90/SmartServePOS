@@ -82,7 +82,7 @@ namespace SmartServePOS.ViewModels
 			{
 				IsBusy = true;
 
-				User? user = await _authService.LoginAsync(Username, Pin);
+				UserEntity? user = await _authService.LoginAsync(Username, Pin);
 
 				if (user == null)
 				{

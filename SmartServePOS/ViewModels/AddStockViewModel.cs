@@ -22,18 +22,18 @@ namespace SmartServePOS.ViewModels
 		private bool _isSearchActive;
 		private readonly IProductService _productService;
 		private readonly IStockService _stockService;
-		private List<StockDto> _stocks = new();
-		public ObservableCollection<CategoryDto> Categories { get; } = new();
-		public ObservableCollection<ProductDto> Products { get; }
-		public ObservableCollection<ProductVariantDto> Variants { get; } = new();
-		public ObservableCollection<IngredientDto> Ingredients { get; } = new();
+		private List<Stock> _stocks = new();
+		public ObservableCollection<Category> Categories { get; } = new();
+		public ObservableCollection<Product> Products { get; }
+		public ObservableCollection<ProductVariant> Variants { get; } = new();
+		public ObservableCollection<Ingredient> Ingredients { get; } = new();
 		public ObservableCollection<AddStockModel> StockRows { get; } = new();
 		#endregion
 
 		#region Selected Items (Variant Flow)
 
-		private CategoryDto? _selectedCategory;
-		public CategoryDto? SelectedCategory
+		private Category? _selectedCategory;
+		public Category? SelectedCategory
 		{
 			get => _selectedCategory;
 			set
@@ -43,8 +43,8 @@ namespace SmartServePOS.ViewModels
 				_ = LoadProductsAsync();
 			}
 		}
-		private ProductDto? _selectedProduct;
-		public ProductDto? SelectedProduct
+		private Product? _selectedProduct;
+		public Product? SelectedProduct
 		{
 			get => _selectedProduct;
 			set
@@ -100,12 +100,12 @@ namespace SmartServePOS.ViewModels
 			_notificationService = notificationService;
 			_productService = productService;
 			_stockService = stockService;
-			Categories = new ObservableCollection<CategoryDto>();
-			Products = new ObservableCollection<ProductDto>();
-			Variants = new ObservableCollection<ProductVariantDto>();
+			Categories = new ObservableCollection<Category>();
+			Products = new ObservableCollection<Product>();
+			Variants = new ObservableCollection<ProductVariant>();
 			IncreaseQtyCommand = new RelayCommand<AddStockModel>(IncreaseQty);
 			DecreaseQtyCommand = new RelayCommand<AddStockModel>(DecreaseQty);
-			AddVariantCommand = new RelayCommand<ProductVariantDto>(AddVariant);
+			AddVariantCommand = new RelayCommand<ProductVariant>(AddVariant);
 			RemoveRowCommand = new RelayCommand<AddStockModel>(RemoveRow);
 			SaveStockCommand = new RelayCommand(async _ => await SaveStockAsync());
 			ReloadCommand = new RelayCommand(async _ => await ReloadAsync());
@@ -185,7 +185,7 @@ namespace SmartServePOS.ViewModels
 				Ingredients.Add(ing);
 		}
 
-		private void AddVariant(ProductVariantDto variant)
+		private void AddVariant(ProductVariant variant)
 		{
 			var existing = StockRows.FirstOrDefault(x => x.VariantId == variant.Id);
 
@@ -248,7 +248,7 @@ namespace SmartServePOS.ViewModels
 			if (!StockRows.Any())
 				return;
 
-			var stocks = _mapper.Map<List<AddStockDto>>(StockRows.ToList());
+			var stocks = _mapper.Map<List<AddStock>>(StockRows.ToList());
 			var response = await _stockService.AddStockAsync(stocks);
 			if (response.MetaData.ResultCode == ResultCodes.Success)
 			{
@@ -286,7 +286,7 @@ namespace SmartServePOS.ViewModels
 
 			foreach (var item in results)
 			{
-				Variants.Add(new ProductVariantDto
+				Variants.Add(new ProductVariant
 				{
 					Id = item.VariantId,
 					//ProductId = item.ProductId,

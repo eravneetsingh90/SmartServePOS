@@ -17,7 +17,7 @@ namespace SmartServePOS.Views
 		private void VariantClicked(object sender, MouseButtonEventArgs e)
 		{
 			if (sender is ListBoxItem item &&
-				item.DataContext is ProductVariantDto variant &&
+				item.DataContext is ProductVariant variant &&
 				DataContext is AddStockViewModel vm &&
 				vm.AddVariantCommand.CanExecute(variant))
 			{
