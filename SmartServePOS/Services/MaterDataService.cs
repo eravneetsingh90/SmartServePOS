@@ -3,7 +3,6 @@ using Microsoft.Data.Sqlite;
 using SmartServe.Domain.Services;
 using SmartServe.Domain.Stores;
 using SmartServePOS.Models;
-using System.Linq.Expressions;
 
 namespace SmartServePOS.Services
 {
@@ -27,7 +26,6 @@ namespace SmartServePOS.Services
 			_tableStatusStore = tableStatusStore;
 		}
 
-
 		#region public methods
 		public async Task SyncAsync()
 		{
@@ -36,10 +34,8 @@ namespace SmartServePOS.Services
 			await SyncRestaurantTables(connection);
 			await SyncTableStatus(connection);
 			await SyncCategories(connection);
-			//SyncBrands(data.Brands);
 			await SyncProducts(connection);
 			await SyncProductVariants(connection);
-
 			tx.Commit();
 		}
 		public async Task<List<CategoryDto>> GetCategoriesAsync()
@@ -77,7 +73,6 @@ namespace SmartServePOS.Services
 
 			return result;
 		}
-
 		public async Task<List<ProductDto>> GetProductsAsync()
 		{
 			var result = new List<ProductDto>();
@@ -117,8 +112,6 @@ namespace SmartServePOS.Services
 
 			return result;
 		}
-
-
 		public async Task<List<ProductVariantDto>> GetProductVariantsAsync()
 		{
 			var result = new List<ProductVariantDto>();
@@ -161,10 +154,44 @@ namespace SmartServePOS.Services
 			return result;
 		}
 
+		public async Task<List<TableStatusDto>> GetTableStatusAsync()
+		{
+			var result = new List<TableStatusDto>();
+
+			using var connection = _connectionFactory.CreateConnection();
+			using var command = connection.CreateCommand();
+
+			command.CommandText = @"
+								SELECT
+									Id,
+									LocalId,
+									status_code,
+									status_name,
+									color_hex
+								FROM table_status
+								ORDER BY status_code;
+								";
+
+			using var reader = await command.ExecuteReaderAsync();
+
+			while (await reader.ReadAsync())
+			{
+				result.Add(new TableStatusDto
+				{
+					Id = reader.GetInt32(0),
+					LocalId = reader.GetInt32(1),   
+					StatusCode = reader.GetString(2),
+					StatusName = reader.IsDBNull(3) ? null : reader.GetString(3),
+					ColorHex = reader.IsDBNull(4) ? null : reader.GetString(4)
+				});
+			}
+
+			return result;
+		}
+
 		#endregion
 
 		#region private methods
-
 		private async Task SyncRestaurantTables(SqliteConnection connection)
 		{
 			var tables = _mapper.Map<List<RestaurantTableDto>>(await _tableStore.GetActiveRestaurantTablesAsync());
@@ -191,7 +218,6 @@ namespace SmartServePOS.Services
 				cmd.ExecuteNonQuery();
 			}
 		}
-
 		private async Task SyncTableStatus(SqliteConnection connection)
 		{
 			var statuses = _mapper.Map<List<TableStatusDto>>(
@@ -233,7 +259,6 @@ namespace SmartServePOS.Services
 				var dd = ex;
 			}
 		}
-
 		private async Task SyncCategories(SqliteConnection connection)
 		{
 			var categories = _mapper.Map<List<CategoryDto>>(await _productService.GetActiveCategoriesAsync());
@@ -261,26 +286,6 @@ namespace SmartServePOS.Services
 				cmd.ExecuteNonQuery();
 			}
 		}
-		//		private void SyncBrands(IEnumerable<BrandDto> brands)
-		//		{
-		//			foreach (var b in brands)
-		//			{
-		//				using var cmd = _connection.CreateCommand();
-		//				cmd.CommandText = @"
-		//INSERT INTO brands (ServerId, name, is_active, UpdatedOn)
-		//VALUES (@ServerId, @Name, @Active, @UpdatedOn)
-		//ON CONFLICT(ServerId) DO UPDATE SET
-		//    name = excluded.name,
-		//    is_active = excluded.is_active,
-		//    UpdatedOn = excluded.UpdatedOn;
-		//";
-		//				cmd.Parameters.AddWithValue("@ServerId", b.Id);
-		//				cmd.Parameters.AddWithValue("@Name", b.Name);
-		//				cmd.Parameters.AddWithValue("@Active", b.IsActive ? 1 : 0);
-		//				cmd.Parameters.AddWithValue("@UpdatedOn", b.UpdatedOn);
-		//				cmd.ExecuteNonQuery();
-		//			}
-		//		}
 		private async Task SyncProducts(SqliteConnection connection)
 		{
 			try
@@ -334,7 +339,6 @@ namespace SmartServePOS.Services
 				var exc = ex;
 			}
 		}
-
 		private async Task SyncProductVariants(SqliteConnection connection)
 		{
 			try
@@ -383,6 +387,5 @@ namespace SmartServePOS.Services
 			}
 		}
 		#endregion
-
 	}
 }

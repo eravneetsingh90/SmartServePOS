@@ -35,7 +35,7 @@ namespace SmartServePOS.ViewModels
 
 		#region services
 		private readonly IPrintService _printService;
-		private readonly ICatalogService _catalogService;
+		private readonly IPOSCatalogService _catalogService;
 		private readonly IBillingService _billingService;
 		private readonly INavigationService _navigationService;
 
@@ -158,7 +158,7 @@ namespace SmartServePOS.ViewModels
 		#region constructors
 		public BillingViewModel(
 			IMapper mapper,
-			ICatalogService catalogService,
+			IPOSCatalogService catalogService,
 			IPrintService printService,
 			IBillingService billingService,
 			INavigationService navigationService)

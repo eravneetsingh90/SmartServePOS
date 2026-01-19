@@ -1,36 +1,29 @@
 ﻿using AutoMapper;
 using SmartServe.Domain.Models;
 using SmartServe.Domain.Services;
-using SmartServe.Domain.Stores;
 using SmartServePOS.Models;
 
 namespace SmartServePOS.Services
 {
-	public class CatalogService : ICatalogService
+	public class POSCatalogService : IPOSCatalogService
 	{
 		#region fields
 		private readonly IMapper _mapper;
 		private readonly IMasterDataService _dataService;
-		private readonly IProductService _productService;
-		private readonly ITableStatusStore _tableStatusStore;
 		private List<CategoryDto> _categories = new();
 		private List<ProductDto> _products = new();
 		private List<ProductVariantDto> _variants = new();
 		private List<CatalogSearchItem> _searchIndex = new();
-		private List<TableStatus> _tableStatus = new();
-		private List<Brand> _brands = new();
+		private List<TableStatusDto> _tableStatus = new();
 		private bool _loaded;
 		#endregion
 
-		public CatalogService(
+		public POSCatalogService(
 			IMapper mapper,
 			IProductService productService,
-			ITableStatusStore tableStatusStore, 
 			IMasterDataService dataService)
 		{
 			_mapper = mapper;
-			_productService = productService;
-			_tableStatusStore = tableStatusStore;
 			_dataService = dataService;
 		}
 
@@ -48,13 +41,8 @@ namespace SmartServePOS.Services
 			_variants = await _dataService.GetProductVariantsAsync();
 
 			// Table Statuses
-			var tableStatus = (await _tableStatusStore.GetAllAsync()).ToList();
-			_tableStatus = _mapper.Map<List<TableStatus>>(tableStatus);
+			var tableStatus = await _dataService.GetTableStatusAsync();
 
-			var brands = (await _productService.GetBrandsAsync())
-				.Where(v => v.IsActive == true)
-				.ToList();
-			_brands = _mapper.Map<List<Brand>>(brands);
 			// 🔍 Build search index
 			_searchIndex =
 				(from v in _variants
@@ -111,12 +99,11 @@ namespace SmartServePOS.Services
 			await LoadAsync();
 		}
 
-		public TableStatus GetTableStatusByCode(string statusCode)
+		public TableStatusDto GetTableStatusByCode(string statusCode)
 			=> _tableStatus
 				.Where(v => v.StatusCode.Equals(statusCode)).FirstOrDefault();
 
-		public IReadOnlyList<Brand> GetBrands()
-			=> _brands;
+		
 	}
 
 }

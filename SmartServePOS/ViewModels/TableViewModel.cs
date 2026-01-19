@@ -17,9 +17,10 @@ namespace SmartServePOS.ViewModels
 {
 	public class TableViewModel : BaseViewModel
 	{
+		private readonly IPOSBillingService _posBillingService;
 		private readonly IPrintService _printService;
 		private readonly IBillingService _billingService;
-		private readonly ICatalogService _catalogService;
+		private readonly IPOSCatalogService _catalogService;
 		public bool IsPaymentPopupOpen { get; set; }
 		public int SelectedTableId { get; set; }
 		public int SelectedOrderId { get; set; }
@@ -33,7 +34,6 @@ namespace SmartServePOS.ViewModels
 		public ICommand ClosePaymentPopupCommand { get; }
 		public ICommand OpenPaymentCommand { get; }
 		public ICommand SettleAndSaveCommand { get; }
-		private readonly IRestaurantTableStore _tableStore;
 		public bool IsPartPayment => SelectedPaymentMode == Helper.PaymentMode.Part;
 		private decimal _partPaymentCash;
 		public decimal PartPaymentCash
@@ -61,16 +61,16 @@ namespace SmartServePOS.ViewModels
 			}
 		}
 		public TableViewModel(
-			IRestaurantTableStore tableStore,
+			IPOSBillingService posBillingService,
 			INavigationService navigationService,
 			IPrintService printService,
 			IBillingService billingService,
-			ICatalogService catalogService)
+			IPOSCatalogService catalogService)
 		{
 			_catalogService = catalogService;
 			_billingService = billingService;
 			_printService = printService;
-			_tableStore = tableStore ?? throw new ArgumentNullException(nameof(tableStore));
+			_posBillingService = posBillingService;
 			_navigationService = navigationService;
 			OpenTableCommand = new RelayCommand<GetTableViewDto>(OpenTable);
 			PrintCommand = new RelayCommand<GetTableViewDto>(PrintBill);
@@ -86,21 +86,11 @@ namespace SmartServePOS.ViewModels
 		{
 			try
 			{
-				var dtos = await _tableStore.GetTablesForViewAsync();
+				var dtos = await _posBillingService.GetTablesForViewAsync();
 				Tables.Clear();
 				foreach (var d in dtos)
 				{
-					Tables.Add(new GetTableViewDto
-					{
-						TableId = d.TableId,
-						DisplayName = d.DisplayName ?? string.Empty,
-						OrderId = d.OrderId,
-						StatusName = d.StatusName,
-						StatusCode = d.StatusCode,
-						ColorHex = d.ColorHex,
-						Amount = d.Amount,
-						//IsOccupied = d.OrderId != null
-					});
+					Tables.Add(d);
 				}
 				Notify(nameof(Tables));
 			}
