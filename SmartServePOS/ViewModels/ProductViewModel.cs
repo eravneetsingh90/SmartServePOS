@@ -23,7 +23,7 @@ namespace SmartServePOS.ViewModels
 		private readonly INotificationService _notificationService;
 		private readonly IDialogService _dialogService;
 		public ObservableCollection<Category> Categories { get; } = new();
-		public ObservableCollection<ProductModel> Products { get; } = new();
+		public ObservableCollection<ProductDto> Products { get; } = new();
 
 		private Category? _selectedCategory;
 		public Category? SelectedCategory
@@ -62,7 +62,7 @@ namespace SmartServePOS.ViewModels
 			_dialogService = dialogService;
 			AddProductCommand = new RelayCommand(_ => AddProduct());
 			SaveCommand = new RelayCommand(async _ => await SaveAsync());
-			DeleteProductCommand = new RelayCommand<ProductModel>(DeleteProduct);
+			DeleteProductCommand = new RelayCommand<ProductDto>(DeleteProduct);
 			RefreshCommand = new RelayCommand(async _ => await LoadProductsAsync());
 		}
 		public async Task Initialize()
@@ -91,7 +91,7 @@ namespace SmartServePOS.ViewModels
 			var data = await _productService.GetProductByCategoryIdAsync(SelectedCategory.Id);
 			foreach (var p in data)
 			{
-				Products.Add(_mapper.Map<ProductModel>(p));
+				Products.Add(_mapper.Map<ProductDto>(p));
 			}
 		}
 
@@ -104,8 +104,8 @@ namespace SmartServePOS.ViewModels
 				? Products.Max(p => p.DisplayOrder) + 1
 				: 1;
 
-			Products.Add(new ProductModel
-				{
+			Products.Add(new ProductDto
+			{
 					CategoryId = SelectedCategory.Id,					
 					Name = "New Product",
 					IsActive = true,
@@ -128,7 +128,7 @@ namespace SmartServePOS.ViewModels
 				_notificationService.Error(UIConstants.Error);
 			await LoadProductsAsync();
 		}
-		private async void DeleteProduct(ProductModel? product)
+		private async void DeleteProduct(ProductDto? product)
 		{
 			if (product == null)
 				return;

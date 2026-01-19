@@ -3,11 +3,12 @@ using System.Windows.Media;
 
 namespace SmartServePOS.Models
 {
-	public class ProductModel : BaseViewModel
+	public class ProductDto : BaseViewModel
 	{
 		private string? _foodType;
 
 		public int Id { get; set; }
+		public int LocalId { get; set; }
 		public string Name { get; set; }
 
 		public string? FoodType
@@ -37,9 +38,10 @@ namespace SmartServePOS.Models
 
 		public int? CategoryId { get; set; }
 
-		public bool? IsActive { get; set; }
+		public bool IsActive { get; set; }
 
 		public int DisplayOrder { get; set; }
+		public DateTime UpdatedOn { get; set; }
 
 	}
 

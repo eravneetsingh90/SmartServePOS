@@ -6,6 +6,7 @@ using SmartServe.EFCore.Models;
 using SmartServePOS.Command;
 using SmartServePOS.Helper;
 using SmartServePOS.Models;
+using SmartServePOS.Services;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
@@ -26,7 +27,7 @@ namespace SmartServePOS.ViewModels
 
 		#region collections
 		public ObservableCollection<Category> Categories { get; }
-		public ObservableCollection<ProductModel> Products { get; }
+		public ObservableCollection<ProductDto> Products { get; }
 		public ObservableCollection<ProductVariant> Variants { get; }
 		public ObservableCollection<BillItemModelDto> BillItems { get; }
 		public ObservableCollection<string> DiscountTypes { get; }
@@ -57,8 +58,8 @@ namespace SmartServePOS.ViewModels
 				LoadProducts();
 			}
 		}
-		private ProductModel _selectedProduct;
-		public ProductModel SelectedProduct
+		private ProductDto _selectedProduct;
+		public ProductDto SelectedProduct
 		{
 			get => _selectedProduct;
 			set
@@ -176,7 +177,7 @@ namespace SmartServePOS.ViewModels
 			PrintCommand = new RelayCommand<BillPrintModel>(PrintBill);
 			DiscountTypes = new ObservableCollection<string>{"NONE", "PERCENT", "FLAT" };
 			Categories = new ObservableCollection<Category>();
-			Products = new ObservableCollection<ProductModel>();
+			Products = new ObservableCollection<ProductDto>();
 			Variants = new ObservableCollection<ProductVariant>();
 			BillItems = new ObservableCollection<BillItemModelDto>();
 			LoadCategories();
@@ -211,7 +212,7 @@ namespace SmartServePOS.ViewModels
 
 			foreach (var product in products)
 			{
-				Products.Add(_mapper.Map<ProductModel>(product));
+				Products.Add(_mapper.Map<ProductDto>(product));
 			}
 			if (SelectedProduct == null)
 				SelectedProduct = Products.FirstOrDefault();

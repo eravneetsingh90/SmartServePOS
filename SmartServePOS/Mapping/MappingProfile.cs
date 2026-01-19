@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using SmartServe.Domain.Models;
+using SmartServe.EFCore.Models;
 using SmartServePOS.Models;
 
 namespace SmartServePOS.Mapping
@@ -10,9 +11,11 @@ namespace SmartServePOS.Mapping
 		{
 			//CreateMap<Brand, BrandModel>().ReverseMap();
 			CreateMap<AddStock, AddStockModel>().ReverseMap();
-			CreateMap<Product, ProductModel>().ReverseMap();
+			CreateMap<Product, ProductDto>().ReverseMap();
 			CreateMap<Category, CategoryDto>().ReverseMap();
-			
+			CreateMap<ProductVariant, ProductVariantDto>().ReverseMap();
+			CreateMap <RestaurantTable, RestaurantTableDto>().ReverseMap();
+			CreateMap<TableStatusEntity, TableStatusDto>().ReverseMap();
 		}
 	}
 }

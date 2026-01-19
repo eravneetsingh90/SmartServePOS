@@ -12,36 +12,11 @@ SELECT 1
 WHERE NOT EXISTS (SELECT 1 FROM SchemaVersion);
 
 -- =============================================================================
--- ROLES
--- =============================================================================
-CREATE TABLE IF NOT EXISTS roles (
-    Id INTEGER PRIMARY KEY AUTOINCREMENT,
-    ServerId INTEGER UNIQUE,
-    role_name TEXT UNIQUE NOT NULL,
-    UpdatedOn TEXT
-);
-
--- =============================================================================
--- USERS
--- =============================================================================
-CREATE TABLE IF NOT EXISTS users (
-    Id INTEGER PRIMARY KEY AUTOINCREMENT,
-    ServerId INTEGER UNIQUE,
-    name TEXT NOT NULL,
-    role_id INTEGER,
-    pin_hash TEXT,
-    is_active INTEGER DEFAULT 1,
-    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    UpdatedOn TEXT,
-    FOREIGN KEY (role_id) REFERENCES roles(Id)
-);
-
--- =============================================================================
 -- CATEGORIES
 -- =============================================================================
 CREATE TABLE IF NOT EXISTS categories (
-    Id INTEGER PRIMARY KEY AUTOINCREMENT,
-    ServerId INTEGER UNIQUE,
+    LocalId INTEGER PRIMARY KEY AUTOINCREMENT,
+    Id INTEGER UNIQUE,
     name TEXT UNIQUE NOT NULL,
     is_active INTEGER DEFAULT 1,
     display_order INTEGER DEFAULT 0,
@@ -52,8 +27,8 @@ CREATE TABLE IF NOT EXISTS categories (
 -- BRANDS
 -- =============================================================================
 CREATE TABLE IF NOT EXISTS brands (
-    Id INTEGER PRIMARY KEY AUTOINCREMENT,
-    ServerId INTEGER UNIQUE,
+    LocalId INTEGER PRIMARY KEY AUTOINCREMENT,
+    Id INTEGER UNIQUE,
     name TEXT UNIQUE NOT NULL,
     is_active INTEGER DEFAULT 1,
     UpdatedOn TEXT
@@ -63,8 +38,8 @@ CREATE TABLE IF NOT EXISTS brands (
 -- PRODUCTS
 -- =============================================================================
 CREATE TABLE IF NOT EXISTS products (
-    Id INTEGER PRIMARY KEY AUTOINCREMENT,
-    ServerId INTEGER UNIQUE,
+    LocalId INTEGER PRIMARY KEY AUTOINCREMENT,
+    Id INTEGER UNIQUE,
     name TEXT NOT NULL,
     category_id INTEGER,
     is_active INTEGER DEFAULT 1,
@@ -79,8 +54,8 @@ CREATE TABLE IF NOT EXISTS products (
 -- PRODUCT VARIANTS
 -- =============================================================================
 CREATE TABLE IF NOT EXISTS product_variants (
-    Id INTEGER PRIMARY KEY AUTOINCREMENT,
-    ServerId INTEGER UNIQUE,
+    LocalId INTEGER PRIMARY KEY AUTOINCREMENT,
+    Id INTEGER UNIQUE,
     product_id INTEGER NOT NULL,
     brand_id INTEGER,
     variant_name TEXT NOT NULL,
@@ -98,56 +73,11 @@ CREATE INDEX IF NOT EXISTS idx_variants_product
     ON product_variants(product_id);
 
 -- =============================================================================
--- PRODUCT INGREDIENTS (RECIPE / BOM)
--- =============================================================================
-CREATE TABLE IF NOT EXISTS product_ingredients (
-    product_variant_id INTEGER NOT NULL,
-    ingredient_variant_id INTEGER NOT NULL,
-    quantity REAL NOT NULL CHECK (quantity > 0),
-    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    updated_at TEXT,
-    PRIMARY KEY (product_variant_id, ingredient_variant_id),
-    FOREIGN KEY (product_variant_id) REFERENCES product_variants(Id) ON DELETE CASCADE,
-    FOREIGN KEY (ingredient_variant_id) REFERENCES product_variants(Id),
-    CHECK (product_variant_id <> ingredient_variant_id)
-);
-
--- =============================================================================
--- STOCK
--- =============================================================================
-CREATE TABLE IF NOT EXISTS stock (
-    Id INTEGER PRIMARY KEY AUTOINCREMENT,
-    item_type TEXT NOT NULL CHECK (item_type IN ('VARIANT','INGREDIENT')),
-    variant_id INTEGER NOT NULL,
-    unit TEXT NOT NULL,
-    min_stock_level REAL DEFAULT 0,
-    is_active INTEGER DEFAULT 1,
-    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (variant_id) REFERENCES product_variants(Id) ON DELETE CASCADE,
-    UNIQUE (item_type, variant_id)
-);
-
--- =============================================================================
--- STOCK TRANSACTIONS
--- =============================================================================
-CREATE TABLE IF NOT EXISTS stock_transactions (
-    Id INTEGER PRIMARY KEY AUTOINCREMENT,
-    stock_id INTEGER NOT NULL,
-    transaction_type TEXT NOT NULL CHECK (transaction_type IN ('IN','OUT','ADJUST')),
-    quantity REAL NOT NULL CHECK (quantity > 0),
-    reason TEXT NOT NULL,
-    reference_type TEXT,
-    reference_id INTEGER,
-    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (stock_id) REFERENCES stock(Id) ON DELETE CASCADE
-);
-
--- =============================================================================
 -- RESTAURANT TABLES
 -- =============================================================================
 CREATE TABLE IF NOT EXISTS restaurant_tables (
-    Id INTEGER PRIMARY KEY AUTOINCREMENT,
-    ServerId INTEGER UNIQUE,
+    LocalId INTEGER PRIMARY KEY AUTOINCREMENT,
+    Id INTEGER UNIQUE,
     display_name TEXT NOT NULL,
     is_active INTEGER DEFAULT 1,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
@@ -158,7 +88,8 @@ CREATE TABLE IF NOT EXISTS restaurant_tables (
 -- TABLE STATUS
 -- =============================================================================
 CREATE TABLE IF NOT EXISTS table_status (
-    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    LocalId INTEGER PRIMARY KEY AUTOINCREMENT,
+    Id INTEGER UNIQUE,
     status_code TEXT UNIQUE NOT NULL,
     status_name TEXT,
     color_hex TEXT

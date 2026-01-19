@@ -8,12 +8,14 @@ namespace SmartServePOS.Models
 {
 	public class ProductVariantDto
 	{
-		public int Id { get; set; }              // ServerId
+		public int Id { get; set; }
+		public int LocalId { get; set; }
 		public int ProductId { get; set; }       // Server ProductId
 		public int? BrandId { get; set; }        // Server BrandId (nullable)
 		public string VariantName { get; set; }
 		public decimal Price { get; set; }
 		public bool IsActive { get; set; }
+		public int DisplayOrder { get; set; }
 		public DateTime UpdatedOn { get; set; }
 	}
 

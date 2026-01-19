@@ -70,7 +70,7 @@ namespace SmartServePOS
 			// 5️⃣ Load local catalog (offline-safe)
 			// -------------------------------
 			var catalog = Services.GetRequiredService<ICatalogService>();
-			await catalog.LoadAsync();
+			//await catalog.LoadAsync();
 
 			_ = Task.Run(async () =>
 			{
@@ -84,7 +84,7 @@ namespace SmartServePOS
 
 					using var scope = Services.CreateScope();
 					var syncService = scope.ServiceProvider
-						.GetRequiredService<IDataService>();
+						.GetRequiredService<IMasterDataService>();
 
 					await syncService.SyncAsync();
 

@@ -46,8 +46,8 @@ namespace SmartServePOS.Dependencies
 			services.AddScoped<IDialogService, HandyDialogService>();
 			services.AddScoped<INavigationService, NavigationService>();
 
-			services.AddTransient<IDataService, DataService>();
-
+			services.AddTransient<IMasterDataService, MasterDataService>();
+			services.AddSingleton<ICatalogService, CatalogService>();
 			return services;
 		}
 	}

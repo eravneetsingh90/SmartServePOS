@@ -2,7 +2,8 @@
 {
 	public class CategoryDto
 	{
-		public int Id { get; set; }              // ServerId
+		public int LocalId { get; set; }
+		public int Id { get; set; } //serverId
 		public string Name { get; set; }
 		public int DisplayOrder { get; set; }
 		public bool IsActive { get; set; }
