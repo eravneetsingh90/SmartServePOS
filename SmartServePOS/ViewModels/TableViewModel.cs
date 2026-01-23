@@ -11,15 +11,15 @@ using SmartServePOS.Services;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Input;
 
 namespace SmartServePOS.ViewModels
 {
 	public class TableViewModel : BaseViewModel
 	{
-		private readonly IPOSBillingService _posBillingService;
+		private readonly IPOSBillingService _billingService;
 		private readonly IPrintService _printService;
-		private readonly IBillingService _billingService;
 		private readonly IPOSCatalogService _catalogService;
 		public bool IsPaymentPopupOpen { get; set; }
 		public int SelectedTableId { get; set; }
@@ -61,16 +61,14 @@ namespace SmartServePOS.ViewModels
 			}
 		}
 		public TableViewModel(
-			IPOSBillingService posBillingService,
+			IPOSBillingService billingService,
 			INavigationService navigationService,
 			IPrintService printService,
-			IBillingService billingService,
 			IPOSCatalogService catalogService)
 		{
 			_catalogService = catalogService;
 			_billingService = billingService;
 			_printService = printService;
-			_posBillingService = posBillingService;
 			_navigationService = navigationService;
 			OpenTableCommand = new RelayCommand<GetTableViewDto>(OpenTable);
 			PrintCommand = new RelayCommand<GetTableViewDto>(PrintBill);
@@ -86,7 +84,7 @@ namespace SmartServePOS.ViewModels
 		{
 			try
 			{
-				var dtos = await _posBillingService.GetTablesForViewAsync();
+				var dtos = await _billingService.GetTablesForViewAsync();
 				Tables.Clear();
 				foreach (var d in dtos)
 				{
@@ -100,13 +98,31 @@ namespace SmartServePOS.ViewModels
 			}
 		}
 
-		private async void OpenTable(GetTableViewDto table)
+		//private async void OpenTable(GetTableViewDto table)
+		//{
+		//	if (table == null)
+		//		return;
+
+		//	_navigationService.NavigateToBillingView(table.OrderId ?? 0, table.TableId);
+		//}
+		private void OpenTable(GetTableViewDto table)
 		{
 			if (table == null)
 				return;
 
-			_navigationService.NavigateToBillingView(table.OrderId ?? 0, table.TableId);
+			// IMPORTANT: defer navigation
+			Application.Current.Dispatcher.BeginInvoke(
+				new Action(async () =>
+				{
+					await _navigationService.NavigateToBillingView(
+						table.OrderId ?? 0,
+						table.TableId
+					);
+				}),
+				System.Windows.Threading.DispatcherPriority.Background
+			);
 		}
+
 
 		public event PropertyChangedEventHandler? PropertyChanged;
 		protected void Notify([CallerMemberName] string? name = null) =>
@@ -120,29 +136,40 @@ namespace SmartServePOS.ViewModels
 				var order = await _billingService.GetOrderAsync(orderId);
 				if (order == null)
 					return;
-				var sumItems = order.OrderItems.Sum(x => x.Quantity * x.PriceSnapshot);
+				var subTotal = order.OrderItems.Sum(x => x.Quantity * x.PriceSnapshot);
+				decimal discount = 0;
+				if (order.DiscountType == "PERCENT")
+				{
+					discount = Math.Round(subTotal * order.DiscountValue / 100, 2);
+				}
+
+				if (order.DiscountType == "FLAT")
+				{
+					discount = order.DiscountValue;
+				}
 				BillPrintModel printbill = new BillPrintModel
 				{
 					ShopName = "Scoop Ice Cream Cafe",
-					Address = "Sco 8, Basement, Fortune City Center\nSec. 123, Mohali-140301",
+					Address = "Sco 8, Basement, Fortune City Center\nSec. 123, S.A.S Nagar-140301",
 
-					//BillNo = _currentOrder.OrderNumber,
+					BillNo = order.OrderNumber,
 					//TableName = _currentOrder.TableName ?? "N/A",
-					//Cashier = _currentUser?.Name ?? "biller",
+					Cashier = "biller",
 
 					PrintedAt = DateTime.Now,
 
 					Items = order.OrderItems.Select(x => new BillPrintItem
 					{
-						Name = x.Variant?.VariantName??string.Empty,
+						Name = x.Variant.Product.Name ??string.Empty,
+						VariantName = x.Variant?.VariantName ?? string.Empty,
 						Quantity = x.Quantity,
 						UnitPrice = x.PriceSnapshot
 					}).ToList(),
 
-					SubTotal = sumItems,
-					//Discount = AppliedDiscountAmount,          // 0 if none
+					SubTotal = subTotal,
+					Discount = discount,          // 0 if none
 					//DiscountLabel = AppliedDiscountLabel,       // "10%" or ""
-					GrandTotal = sumItems
+					GrandTotal = subTotal - discount
 				};
 
 				_printService.PrintBill(printbill, showPreview: false);
@@ -192,7 +219,7 @@ namespace SmartServePOS.ViewModels
 
 			await _billingService.CloseOrderAsync(
 				SelectedOrderId,
-				new Payment
+				new PaymentDto
 				{
 					OrderId=SelectedOrderId,
 					Mode = SelectedPaymentMode.ToString().ToUpper(),

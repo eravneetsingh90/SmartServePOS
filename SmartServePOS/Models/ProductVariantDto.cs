@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartServe.Domain.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,6 +18,8 @@ namespace SmartServePOS.Models
 		public bool IsActive { get; set; }
 		public int DisplayOrder { get; set; }
 		public DateTime UpdatedOn { get; set; }
+		public virtual ProductDto Product { get; set; } = null!;
+
 	}
 
 }

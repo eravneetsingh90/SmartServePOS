@@ -3,7 +3,8 @@
 	public interface INavigationService
 	{
 		void NavigateToAddStockView();
-		void NavigateToBillingView(int orderId,int tableId);
+		//void NavigateToBillingView(int orderId,int tableId);
+		Task NavigateToBillingView(int orderId, int tableId);
 		void NavigateToTableView();
 		void NavigateToCategoryView();
 		void NavigateToProductView();

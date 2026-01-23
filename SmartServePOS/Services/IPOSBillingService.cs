@@ -5,6 +5,12 @@ namespace SmartServePOS.Services
 	public interface IPOSBillingService
 	{
 		Task<List<GetTableViewDto>> GetTablesForViewAsync();
+		Task<OrderDto> GetOrderAsync(int orderId);
+		Task<int> CreateOrderAsync(OrderDto request);
+		Task UpdateOrderAsync(OrderDto dto);
+		Task CreateOrderItemsAsync(List<OrderItemDto> orderItems);
+		Task UpdateOrderItemsAsync(int orderId, List<OrderItemDto> items);
+		Task CloseOrderAsync(int orderId, PaymentDto payment);
 
 	}
 }

@@ -36,26 +36,34 @@ namespace SmartServePOS.Helper
 			}
 			await viewModel.InitializeAsync();
 		}
-		public async void NavigateToBillingView(int orderId,int tableId)
+		public async Task NavigateToBillingView(int orderId, int tableId)
 		{
-			BillingViewModel billingViewModel = null;
+			BillingViewModel billingViewModel;
+
 			if (App.Services is not null)
 			{
-				billingViewModel = App.Services.GetService<BillingViewModel>();
+				billingViewModel = App.Services.GetService<BillingViewModel>()
+					?? throw new InvalidOperationException("BillingViewModel not registered.");
 			}
 			else
 			{
-				throw new InvalidOperationException("BillingViewModel dependencies must be provided via DI.");
+				throw new InvalidOperationException("DI container not available.");
 			}
 
-			var billingView = new BillingView();
-			billingView.DataContext = billingViewModel;
+			var billingView = new BillingView
+			{
+				DataContext = billingViewModel
+			};
+
 			if (Application.Current.MainWindow is MainWindow mw)
 			{
 				mw.MainFrame.Navigate(billingView);
 			}
+
+			// Load AFTER navigation, still safe
 			await billingViewModel.LoadOrderAsync(orderId, tableId);
 		}
+
 
 		public async void NavigateToTableView()
 		{

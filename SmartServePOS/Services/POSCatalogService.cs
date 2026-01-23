@@ -8,7 +8,6 @@ namespace SmartServePOS.Services
 	public class POSCatalogService : IPOSCatalogService
 	{
 		#region fields
-		private readonly IMapper _mapper;
 		private readonly IMasterDataService _dataService;
 		private List<CategoryDto> _categories = new();
 		private List<ProductDto> _products = new();
@@ -19,11 +18,9 @@ namespace SmartServePOS.Services
 		#endregion
 
 		public POSCatalogService(
-			IMapper mapper,
 			IProductService productService,
 			IMasterDataService dataService)
 		{
-			_mapper = mapper;
 			_dataService = dataService;
 		}
 
@@ -41,7 +38,7 @@ namespace SmartServePOS.Services
 			_variants = await _dataService.GetProductVariantsAsync();
 
 			// Table Statuses
-			var tableStatus = await _dataService.GetTableStatusAsync();
+			_tableStatus = await _dataService.GetTableStatusAsync();
 
 			// 🔍 Build search index
 			_searchIndex =

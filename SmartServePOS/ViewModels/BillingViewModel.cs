@@ -36,7 +36,7 @@ namespace SmartServePOS.ViewModels
 		#region services
 		private readonly IPrintService _printService;
 		private readonly IPOSCatalogService _catalogService;
-		private readonly IBillingService _billingService;
+		private readonly IPOSBillingService _billingService;
 		private readonly INavigationService _navigationService;
 
 		#endregion
@@ -160,7 +160,7 @@ namespace SmartServePOS.ViewModels
 			IMapper mapper,
 			IPOSCatalogService catalogService,
 			IPrintService printService,
-			IBillingService billingService,
+			IPOSBillingService billingService,
 			INavigationService navigationService)
 		{
 			_mapper = mapper;
@@ -364,20 +364,21 @@ namespace SmartServePOS.ViewModels
 
 			if (_currentOrderId <= 0)
 			{
-				var request = new Order
+				var request = new OrderDto
 				{
 					Id = _currentOrderId,
 					TableId = _currentTableId,
+					OrderNumber = DateTime.Now.ToString("yyMMddHHmmss"),
 					StatusId = statusId,
 					OrderType = "DINE_IN",
 					TotalAmount = GrandTotal,
 					DiscountType = IsDiscountValueEnabled ? SelectedDiscountType: null,
-					DiscountValue = IsDiscountValueEnabled ? DiscountValue: null
+					DiscountValue = IsDiscountValueEnabled ? DiscountValue: 0
 				};
 
 				_currentOrderId = await _billingService.CreateOrderAsync(request);
 
-				var orderItems = BillItems.Select(x => new OrderItem
+				var orderItems = BillItems.Select(x => new OrderItemDto
 				{
 					OrderId = _currentOrderId,
 					VariantId = x.VariantId,
@@ -389,7 +390,7 @@ namespace SmartServePOS.ViewModels
 			}
 			else 
 			{
-				var request = new Order
+				var request = new OrderDto
 				{
 					Id = _currentOrderId,
 					TableId = _currentTableId,
@@ -397,12 +398,12 @@ namespace SmartServePOS.ViewModels
 					OrderType = "DINE_IN",
 					TotalAmount = GrandTotal,
 					DiscountType = IsDiscountValueEnabled ? SelectedDiscountType : null,
-					DiscountValue = IsDiscountValueEnabled ? DiscountValue : null
+					DiscountValue = IsDiscountValueEnabled ? DiscountValue : 0
 				};
 
 				await _billingService.UpdateOrderAsync(request);
 
-				var orderItems = BillItems.Select(x => new OrderItem
+				var orderItems = BillItems.Select(x => new OrderItemDto
 				{
 					OrderId = _currentOrderId,
 					VariantId = x.VariantId,
@@ -431,12 +432,12 @@ namespace SmartServePOS.ViewModels
 			if (order == null)
 				return;
 			SelectedDiscountType = order.DiscountType;
-			DiscountValue = order.DiscountValue??0;
+			DiscountValue = order.DiscountValue;
 			foreach (var item in order.OrderItems)
 			{
 				BillItems.Add(new BillItemModelDto
 				{
-					VariantId = item.VariantId ?? 0,
+					VariantId = item.VariantId,
 					ItemName = item.Variant.Product.Name + " - " + item.Variant?.VariantName,
 					Quantity = item.Quantity,
 					PriceSnapshot = item.PriceSnapshot
