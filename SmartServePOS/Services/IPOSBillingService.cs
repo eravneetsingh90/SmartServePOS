@@ -11,6 +11,9 @@ namespace SmartServePOS.Services
 		Task CreateOrderItemsAsync(List<OrderItemDto> orderItems);
 		Task UpdateOrderItemsAsync(int orderId, List<OrderItemDto> items);
 		Task CloseOrderAsync(int orderId, PaymentDto payment);
-
+		Task<List<OrderDto>> GetUnsyncedOrdersAsync();
+		Task<List<OrderItemDto>> GetOrderItemsByOrderIdAsync(int orderId);
+		Task<PaymentDto> GetPaymentByOrderIdAsync(int orderId);
+		Task MarkOrderAsSyncedAsync(int id);
 	}
 }

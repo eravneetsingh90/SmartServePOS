@@ -6,6 +6,7 @@ using SmartServe.Domain.Services;
 using SmartServe.EFCore.Dependencies;
 using SmartServePOS.Data;
 using SmartServePOS.Dependencies;
+using SmartServePOS.Helper;
 using SmartServePOS.Services;
 using SmartServePOS.Views;
 using System.IO;
@@ -47,15 +48,16 @@ namespace SmartServePOS
 			// 3️⃣ Setup DI (ONLY ONCE)
 			// -------------------------------
 			var services = new ServiceCollection();
-
 			services.AddSingleton(Configuration);
-
 			services.AddSingleton<ISqliteConnectionFactory>(new SqliteConnectionFactory(dbPath));
 			services.UseEFCore(Configuration);
 			services.UseDomain();
 			services.UseApp();
-
 			Services = services.BuildServiceProvider();
+
+			//data sync scheduler
+			var scheduler = Services.GetRequiredService<SyncScheduler>();
+			_ = scheduler.StartAsync(); // fire & forget
 
 			// -------------------------------
 			// 4️⃣ Show UI immediately

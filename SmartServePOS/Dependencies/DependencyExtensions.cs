@@ -40,7 +40,8 @@ namespace SmartServePOS.Dependencies
 			services.AddSingleton<CurrentStockViewModel>();
 			services.AddSingleton<LinkInventoryView>();
 			services.AddSingleton<LinkInventoryViewModel>();
-
+			services.AddSingleton<SyncScheduler>();
+			
 			services.AddScoped<IPrintService, PrintService>();
 			services.AddScoped<INotificationService, HandyNotificationService>();
 			services.AddScoped<IDialogService, HandyDialogService>();
@@ -49,6 +50,8 @@ namespace SmartServePOS.Dependencies
 			services.AddTransient<IMasterDataService, MasterDataService>();
 			services.AddTransient<IPOSBillingService, POSBillingService>();
 			services.AddSingleton<IPOSCatalogService, POSCatalogService>();
+			services.AddSingleton<IOrderSyncService, OrderSyncService>();
+			
 			return services;
 		}
 	}

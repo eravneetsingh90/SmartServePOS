@@ -9,7 +9,7 @@ using System.Data;
 
 namespace SmartServePOS.Services
 {
-    public class POSBillingService : IPOSBillingService
+	public class POSBillingService : IPOSBillingService
 	{
 		private readonly IMapper _mapper;
 		private readonly ISqliteConnectionFactory _connectionFactory;
@@ -83,7 +83,7 @@ namespace SmartServePOS.Services
 
 			return result;
 		}
-		
+
 		public async Task<int> CreateOrderAsync(OrderDto order)
 		{
 			using var connection = _connectionFactory.CreateConnection();
@@ -125,6 +125,39 @@ namespace SmartServePOS.Services
 			return order;
 		}
 
+		public async Task<List<OrderDto>> GetUnsyncedOrdersAsync()
+		{
+			using var connection = _connectionFactory.CreateConnection();
+
+			var result = new List<OrderDto>();
+			using var cmd = connection.CreateCommand();
+			cmd.CommandText = "SELECT * FROM orders WHERE IsSynced = 0 and closed_at is not null ORDER BY created_at LIMIT 10;";
+
+			using var reader = await cmd.ExecuteReaderAsync();
+			while (await reader.ReadAsync())
+			{
+				result.Add(
+					new OrderDto
+					{
+						Id = reader.GetInt32(reader.GetOrdinal("Id")),
+						OrderNumber = reader.GetString(reader.GetOrdinal("order_number")),
+						OrderType = reader.GetString(reader.GetOrdinal("order_type")),
+						TableId = reader.IsDBNull("table_id") ? null : reader.GetInt32("table_id"),
+						StatusId = reader.GetInt32("status_id"),
+						TotalAmount = reader.GetDecimal("total_amount"),
+						DiscountType = reader.IsDBNull("discount_type") ? null : reader.GetString("discount_type"),
+						DiscountValue = reader.GetDecimal("discount_value"),
+						DiscountReason = reader.IsDBNull("discount_reason") ? null : reader.GetString("discount_reason"),
+						CreatedAt = DateTime.Parse(reader.GetString("created_at")),
+						ClosedAt = reader.IsDBNull("closed_at")
+					? null
+					: DateTime.Parse(reader.GetString("closed_at"))
+					}
+					);
+			}
+			return result;
+		}
+
 		public async Task UpdateOrderAsync(OrderDto order)
 		{
 			using var connection = _connectionFactory.CreateConnection();
@@ -151,7 +184,6 @@ namespace SmartServePOS.Services
 
 			await cmd.ExecuteNonQueryAsync();
 		}
-
 		public async Task CreateOrderItemsAsync(List<OrderItemDto> items)
 		{
 			using var connection = _connectionFactory.CreateConnection();
@@ -216,7 +248,6 @@ namespace SmartServePOS.Services
 
 			tx.Commit();
 		}
-
 		public async Task CloseOrderAsync(int orderId, PaymentDto payment)
 		{
 			using var connection = _connectionFactory.CreateConnection();
@@ -265,6 +296,101 @@ namespace SmartServePOS.Services
 				throw;
 			}
 		}
+		public async Task<List<OrderItemDto>> GetOrderItemsByOrderIdAsync(int orderId)
+		{
+			using var conn = _connectionFactory.CreateConnection();
+
+			var result = new List<OrderItemDto>();
+
+			using var cmd = conn.CreateCommand();
+			cmd.CommandText = @"
+			SELECT 
+			-- Order Item
+			oi.Id               AS OrderItemId,
+			oi.order_id         AS OrderId,
+			oi.variant_id       AS VariantId,
+			oi.quantity         AS Quantity,
+			oi.price_snapshot   AS PriceSnapshot,
+			oi.discount_amount  AS DiscountAmount
+
+			FROM order_items oi
+			WHERE oi.order_id = @Id";
+
+			cmd.Parameters.AddWithValue("@Id", orderId);
+
+			using var reader = await cmd.ExecuteReaderAsync();
+			while (await reader.ReadAsync())
+			{
+				result.Add(new OrderItemDto
+				{
+					Id = reader.GetInt32(reader.GetOrdinal("OrderItemId")),
+					OrderId = reader.GetInt32(reader.GetOrdinal("OrderId")),
+					VariantId = reader.GetInt32(reader.GetOrdinal("VariantId")),
+					Quantity = reader.GetInt32(reader.GetOrdinal("Quantity")),
+					PriceSnapshot = reader.GetDecimal(reader.GetOrdinal("PriceSnapshot")),
+					DiscountAmount = reader.GetDecimal(reader.GetOrdinal("DiscountAmount"))
+				});
+			}
+
+			return result;
+		}
+
+		public async Task<PaymentDto?> GetPaymentByOrderIdAsync(int orderId)
+		{
+			using var conn = _connectionFactory.CreateConnection();
+			await conn.OpenAsync();
+
+			using var cmd = conn.CreateCommand();
+			cmd.CommandText = @"
+				SELECT 
+					id,
+					order_id,
+					mode,
+					amount,
+					status,
+					created_at,
+					IsSynced
+				FROM payments
+				WHERE order_id = @orderId
+				LIMIT 1;
+			";
+
+			cmd.Parameters.AddWithValue("@orderId", orderId);
+
+			using var reader = await cmd.ExecuteReaderAsync();
+			if (!await reader.ReadAsync())
+				return null;
+
+			return new PaymentDto
+			{
+				Id = reader.GetInt32(reader.GetOrdinal("id")),
+				OrderId = reader.GetInt32(reader.GetOrdinal("order_id")),
+				Mode = reader.GetString(reader.GetOrdinal("mode")),
+				Amount = reader.GetDecimal(reader.GetOrdinal("amount")),
+				Status = reader.GetString(reader.GetOrdinal("status")),
+				CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at")),
+				IsSynced = reader.GetInt32(reader.GetOrdinal("IsSynced")) == 1
+			};
+		}
+
+		public async Task MarkOrderAsSyncedAsync(int id)
+		{
+			using var conn = _connectionFactory.CreateConnection();
+			await conn.OpenAsync();
+
+			using var cmd = conn.CreateCommand();
+			cmd.CommandText = @"
+		UPDATE orders
+		SET 
+			IsSynced = 1,
+			SyncedOn = CURRENT_TIMESTAMP
+		WHERE id = @id;
+	";
+
+			cmd.Parameters.AddWithValue("@id", id);
+
+			await cmd.ExecuteNonQueryAsync();
+		}
 
 
 		#region private methods
@@ -294,7 +420,6 @@ namespace SmartServePOS.Services
 					: DateTime.Parse(reader.GetString("closed_at"))
 			};
 		}
-
 		private async Task<List<OrderItemDto>> GetOrderItemsAsync(SqliteConnection conn, int orderId)
 		{
 			var result = new List<OrderItemDto>();
@@ -373,9 +498,6 @@ namespace SmartServePOS.Services
 
 			return result;
 		}
-
-
-
 		private async Task<List<PaymentDto>> GetPaymentsAsync(SqliteConnection conn, int orderId)
 		{
 			var result = new List<PaymentDto>();
@@ -400,12 +522,7 @@ namespace SmartServePOS.Services
 			return result;
 		}
 
-		private void InsertPayment(
-			SqliteConnection conn,
-			SqliteTransaction tx,
-			int orderId,
-			string mode,
-			decimal amount)
+		private void InsertPayment(SqliteConnection conn, SqliteTransaction tx, int orderId, string mode, decimal amount)
 		{
 			using var cmd = conn.CreateCommand();
 			cmd.Transaction = tx;
