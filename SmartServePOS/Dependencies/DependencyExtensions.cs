@@ -43,7 +43,9 @@ namespace SmartServePOS.Dependencies
 			services.AddSingleton<SyncScheduler>();
 			services.AddSingleton<DashboardView>();
 			services.AddSingleton<DashboardViewModel>();
-
+			services.AddSingleton<OrderDetailsView>();
+			services.AddSingleton<OrderDetailsViewModel>();
+			
 			services.AddScoped<IPrintService, PrintService>();
 			services.AddScoped<INotificationService, HandyNotificationService>();
 			services.AddScoped<IDialogService, HandyDialogService>();

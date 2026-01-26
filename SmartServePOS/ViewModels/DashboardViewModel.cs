@@ -1,13 +1,16 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.DependencyInjection;
 using SmartServe.Domain.Constants;
 using SmartServe.Domain.Models;
 using SmartServe.Domain.Services;
 using SmartServePOS.Command;
 using SmartServePOS.Helper;
 using SmartServePOS.Models;
+using SmartServePOS.Views;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace SmartServePOS.ViewModels
@@ -39,7 +42,6 @@ namespace SmartServePOS.ViewModels
 			LoadOrdersCommand = new AsyncRelayCommand(LoadOrdersAsync);
 			SyncOrdersCommand = new AsyncRelayCommand(SyncOrdersAsync);
 			OpenOrderDetailsCommand = new RelayCommand<OrderGridDto>(OpenOrderDetails);
-
 
 		}
 
@@ -108,24 +110,13 @@ namespace SmartServePOS.ViewModels
 			set { _totalOrders = value; OnPropertyChanged(); }
 		}
 
+		public OrderGridDto SelectedOrder { get; set; }
+
 		// =====================
 		// GRID
 		// =====================
 
 		public ObservableCollection<OrderGridDto> Orders { get; }
-
-		private OrderGridDto _selectedOrder;
-		public OrderGridDto SelectedOrder
-		{
-			get => _selectedOrder;
-			set
-			{
-				_selectedOrder = value;
-				OnPropertyChanged();
-				if (value != null)
-					OpenOrderDetailsCommand.Execute(value);
-			}
-		}
 
 		// =====================
 		// COMMANDS
@@ -133,37 +124,9 @@ namespace SmartServePOS.ViewModels
 
 		public ICommand LoadOrdersCommand { get; }
 		public ICommand SyncOrdersCommand { get; }
-		public ICommand OpenOrderDetailsCommand { get; }
-		public ICommand ToggleExpandCommand => new RelayCommand<OrderGridDto>(ToggleExpand);
+		public ICommand OpenOrderDetailsCommand { get; } 
 
 
-		// =====================
-		// LOGIC
-		// =====================
-		private async void ToggleExpand(OrderGridDto order)
-		{
-			order.IsExpanded = !order.IsExpanded;
-
-			if (order.IsExpanded && order.Items.Count == 0)
-			{
-				// lazy load details
-				var details = await _reportService.GetOrderItemsAsync(order.Id);
-
-				order.Items.Clear();
-				foreach (var item in details)
-					order.Items.Add(new OrderItemDto
-					{
-						Id = item.Id,
-						OrderId = item.OrderId??0,
-						Quantity = item.Quantity,
-						PriceSnapshot = item.PriceSnapshot,
-						DiscountAmount = item.DiscountAmount ?? 0,
-
-						ProductName = item.Variant?.Product?.Name,
-						VariantName = item.Variant?.VariantName
-					});
-			}
-		}
 		private async Task LoadOrdersAsync()
 		{
 			var (fromUtc, toUtc) = ResolveDateRangeUtc();
@@ -198,10 +161,22 @@ namespace SmartServePOS.ViewModels
 			await LoadOrdersAsync();
 		}
 
-		private void OpenOrderDetails(OrderGridDto order)
+		private async void OpenOrderDetails(OrderGridDto? dto)
 		{
-			_navigationService.OpenOrderDetailsDialog(order.Id);
-			SelectedOrder = null; // reset selection
+			if (SelectedOrder == null)
+				return;
+
+			var vm = App.Services.GetService<OrderDetailsViewModel>();
+
+			await vm.LoadAsync(SelectedOrder.Id);
+
+			var view = new OrderDetailsView
+			{
+				DataContext = vm,
+				Owner = Application.Current.MainWindow
+			};
+
+			view.ShowDialog();
 		}
 
 		// =====================

@@ -174,48 +174,24 @@
 		<!--  ORDERS GRID  -->
 		<!--  =====================  -->
 		<Border
-			Grid.Row="3"
+			Grid.Row="2"
 			Margin="0,12,0,0"
 			Padding="0"
 			Background="#FFFFFF"
 			BorderBrush="#E5E5E5"
 			BorderThickness="1"
 			CornerRadius="8">
-
 			<DataGrid
 				AutoGenerateColumns="False"
 				IsReadOnly="True"
 				ItemsSource="{Binding Orders}"
-				RowDetailsVisibilityMode="VisibleWhenSelected">
+				SelectedItem="{Binding SelectedOrder}">
 				<DataGrid.Resources>
 					<Style TargetType="Button">
 						<Setter Property="Foreground" Value="#444" />
 					</Style>
 				</DataGrid.Resources>
-				<!--  =====================  -->
-				<!--  MAIN COLUMNS  -->
-				<!--  =====================  -->
 				<DataGrid.Columns>
-
-					<!--  Expand / Collapse  -->
-					<DataGridTemplateColumn Width="48">
-						<DataGridTemplateColumn.CellTemplate>
-							<DataTemplate>
-								<Button
-									HorizontalAlignment="Center"
-									VerticalAlignment="Center"
-									Background="Transparent"
-									BorderThickness="0"
-									Command="{Binding DataContext.ToggleExpandCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-									CommandParameter="{Binding}"
-									Content="{Binding IsExpanded, Converter={StaticResource ExpandIconConverter}}"
-									FontSize="14"
-									FontWeight="SemiBold"
-									Foreground="#444" />
-
-							</DataTemplate>
-						</DataGridTemplateColumn.CellTemplate>
-					</DataGridTemplateColumn>
 
 					<DataGridTextColumn
 						Width="*"
@@ -237,63 +213,17 @@
 						Width="*"
 						Binding="{Binding Discount}"
 						Header="Discount" />
+					<DataGridTemplateColumn Width="80">
+						<DataGridTemplateColumn.CellTemplate>
+							<DataTemplate>
+								<Button Cursor="Hand" Command="{Binding DataContext.OpenOrderDetailsCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" Content="View" />
+							</DataTemplate>
+						</DataGridTemplateColumn.CellTemplate>
+					</DataGridTemplateColumn>
+
 
 				</DataGrid.Columns>
 
-				<!--  =====================  -->
-				<!--  EXPANDED DETAILS  -->
-				<!--  =====================  -->
-				<DataGrid.RowDetailsTemplate>
-					<DataTemplate>
-						<Border
-							Margin="10,0"
-							Padding="10"
-							Background="#F8F9FB"
-							CornerRadius="6"
-							Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibilityConverter}}">
-
-							<StackPanel>
-
-								<!--  Order Items  -->
-								<TextBlock
-									Margin="0,0,0,6"
-									FontWeight="SemiBold"
-									Text="Items" />
-
-								<ItemsControl ItemsSource="{Binding Items}">
-									<ItemsControl.ItemTemplate>
-										<DataTemplate>
-											<Grid Margin="0,2">
-												<Grid.ColumnDefinitions>
-													<ColumnDefinition Width="*" />
-													<ColumnDefinition Width="Auto" />
-													<ColumnDefinition Width="Auto" />
-												</Grid.ColumnDefinitions>
-
-												<TextBlock Text="{Binding DisplayName}" />
-												<TextBlock
-													Grid.Column="1"
-													Margin="10,0"
-													Text="{Binding Quantity}" />
-												<TextBlock
-													Grid.Column="2"
-													Margin="10,0"
-													Text="{Binding LineTotal, StringFormat=₹ {0:N2}}" />
-											</Grid>
-										</DataTemplate>
-									</ItemsControl.ItemTemplate>
-								</ItemsControl>
-
-								<!--  Payment  -->
-								<Separator Margin="0,6" />
-
-								<TextBlock Text="{Binding Payment.Mode, StringFormat=Payment: {0}}" />
-								<TextBlock Text="{Binding Payment.Amount, StringFormat=Paid: ₹ {0:N2}}" />
-
-							</StackPanel>
-						</Border>
-					</DataTemplate>
-				</DataGrid.RowDetailsTemplate>
 			</DataGrid>
 
 		</Border>
