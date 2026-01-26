@@ -24,7 +24,7 @@ namespace SmartServePOS.Models
 		public ObservableCollection<OrderItemDto> Items { get; }
 			= new();
 
-		public PaymentDto Payment { get; set; }
+		public decimal Discount { get; set; }
 	}
 
 }

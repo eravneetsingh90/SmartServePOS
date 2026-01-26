@@ -90,26 +90,63 @@
 
 			<!--  Total Sales  -->
 			<Border
-				Grid.Column="0"
-				Margin="0,0,8,0"
 				Padding="16"
 				Background="#FFFFFF"
 				BorderBrush="#E5E5E5"
 				BorderThickness="1"
-				CornerRadius="8">
-				<StackPanel>
-					<TextBlock
-						FontSize="12"
-						Foreground="#888"
-						Text="Total Sales" />
-					<TextBlock
-						Margin="0,4,0,0"
-						FontSize="28"
-						FontWeight="Bold"
-						Text="{Binding TotalSales, StringFormat=₹ {0:N0}}" />
-				</StackPanel>
-			</Border>
+				CornerRadius="10">
 
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="2*" />
+						<ColumnDefinition Width="1*" />
+						<ColumnDefinition Width="1*" />
+					</Grid.ColumnDefinitions>
+
+					<!--  TOTAL  -->
+					<StackPanel Grid.Column="0">
+						<TextBlock
+							FontSize="12"
+							Foreground="#888"
+							Text="Total Sales" />
+
+						<TextBlock
+							Margin="0,4,0,0"
+							FontSize="30"
+							FontWeight="Bold"
+							Text="{Binding TotalSales, StringFormat=₹ {0:N0}}" />
+					</StackPanel>
+
+					<!--  CASH  -->
+					<StackPanel Grid.Column="1" HorizontalAlignment="Center">
+						<TextBlock
+							FontSize="12"
+							Foreground="#666"
+							Text="Cash" />
+
+						<TextBlock
+							Margin="0,6,0,0"
+							FontSize="22"
+							FontWeight="SemiBold"
+							Text="{Binding CashSales, StringFormat=₹ {0:N0}}" />
+					</StackPanel>
+
+					<!--  UPI  -->
+					<StackPanel Grid.Column="2" HorizontalAlignment="Center">
+						<TextBlock
+							FontSize="12"
+							Foreground="#666"
+							Text="UPI" />
+
+						<TextBlock
+							Margin="0,6,0,0"
+							FontSize="22"
+							FontWeight="SemiBold"
+							Text="{Binding UpiSales, StringFormat=₹ {0:N0}}" />
+					</StackPanel>
+
+				</Grid>
+			</Border>
 			<!--  Total Orders  -->
 			<Border
 				Grid.Column="1"
@@ -147,42 +184,118 @@
 
 			<DataGrid
 				AutoGenerateColumns="False"
-				CanUserAddRows="False"
-				GridLinesVisibility="Horizontal"
-				HeadersVisibility="Column"
 				IsReadOnly="True"
 				ItemsSource="{Binding Orders}"
-				RowHeight="44"
-				SelectedItem="{Binding SelectedOrder}">
-
+				RowDetailsVisibilityMode="VisibleWhenSelected">
+				<DataGrid.Resources>
+					<Style TargetType="Button">
+						<Setter Property="Foreground" Value="#444" />
+					</Style>
+				</DataGrid.Resources>
+				<!--  =====================  -->
+				<!--  MAIN COLUMNS  -->
+				<!--  =====================  -->
 				<DataGrid.Columns>
+
+					<!--  Expand / Collapse  -->
+					<DataGridTemplateColumn Width="48">
+						<DataGridTemplateColumn.CellTemplate>
+							<DataTemplate>
+								<Button
+									HorizontalAlignment="Center"
+									VerticalAlignment="Center"
+									Background="Transparent"
+									BorderThickness="0"
+									Command="{Binding DataContext.ToggleExpandCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+									CommandParameter="{Binding}"
+									Content="{Binding IsExpanded, Converter={StaticResource ExpandIconConverter}}"
+									FontSize="14"
+									FontWeight="SemiBold"
+									Foreground="#444" />
+
+							</DataTemplate>
+						</DataGridTemplateColumn.CellTemplate>
+					</DataGridTemplateColumn>
+
 					<DataGridTextColumn
 						Width="*"
 						Binding="{Binding OrderNumber}"
 						Header="Order No" />
-
 					<DataGridTextColumn
 						Width="*"
 						Binding="{Binding DisplayTime}"
 						Header="Time" />
-
 					<DataGridTextColumn
 						Width="*"
 						Binding="{Binding OrderType}"
 						Header="Type" />
-
 					<DataGridTextColumn
 						Width="*"
 						Binding="{Binding TotalAmount, StringFormat=₹ {0:N2}}"
 						Header="Amount" />
-
 					<DataGridTextColumn
 						Width="*"
-						Binding="{Binding Status}"
-						Header="Status" />
+						Binding="{Binding Discount}"
+						Header="Discount" />
+
 				</DataGrid.Columns>
 
+				<!--  =====================  -->
+				<!--  EXPANDED DETAILS  -->
+				<!--  =====================  -->
+				<DataGrid.RowDetailsTemplate>
+					<DataTemplate>
+						<Border
+							Margin="10,0"
+							Padding="10"
+							Background="#F8F9FB"
+							CornerRadius="6"
+							Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibilityConverter}}">
+
+							<StackPanel>
+
+								<!--  Order Items  -->
+								<TextBlock
+									Margin="0,0,0,6"
+									FontWeight="SemiBold"
+									Text="Items" />
+
+								<ItemsControl ItemsSource="{Binding Items}">
+									<ItemsControl.ItemTemplate>
+										<DataTemplate>
+											<Grid Margin="0,2">
+												<Grid.ColumnDefinitions>
+													<ColumnDefinition Width="*" />
+													<ColumnDefinition Width="Auto" />
+													<ColumnDefinition Width="Auto" />
+												</Grid.ColumnDefinitions>
+
+												<TextBlock Text="{Binding Name}" />
+												<TextBlock
+													Grid.Column="1"
+													Margin="10,0"
+													Text="{Binding Quantity}" />
+												<TextBlock
+													Grid.Column="2"
+													Margin="10,0"
+													Text="{Binding Total, StringFormat=₹ {0:N2}}" />
+											</Grid>
+										</DataTemplate>
+									</ItemsControl.ItemTemplate>
+								</ItemsControl>
+
+								<!--  Payment  -->
+								<Separator Margin="0,6" />
+
+								<TextBlock Text="{Binding Payment.Mode, StringFormat=Payment: {0}}" />
+								<TextBlock Text="{Binding Payment.Amount, StringFormat=Paid: ₹ {0:N2}}" />
+
+							</StackPanel>
+						</Border>
+					</DataTemplate>
+				</DataGrid.RowDetailsTemplate>
 			</DataGrid>
+
 		</Border>
 
 	</Grid>

@@ -139,12 +139,12 @@ namespace SmartServePOS.ViewModels
 			{
 				var subTotal = SubTotal;
 
-				if (SelectedDiscountType == "PERCENT")
+				if (SelectedDiscountType == DiscountType.PERCENT)
 				{
 					return Math.Round(subTotal * DiscountValue / 100, 2);
 				}
 
-				if (SelectedDiscountType == "FLAT")
+				if (SelectedDiscountType == DiscountType.FLAT)
 				{
 					return DiscountValue > subTotal ? subTotal : DiscountValue;
 				}
@@ -175,7 +175,7 @@ namespace SmartServePOS.ViewModels
 			SaveCommand = new RelayCommand(async _ => await SaveAsync());
 			AddVariantCommand = new RelayCommand<ProductVariant>(AddVariantToBill);
 			PrintCommand = new RelayCommand<BillPrintModel>(PrintBill);
-			DiscountTypes = new ObservableCollection<string>{"NONE", "PERCENT", "FLAT" };
+			DiscountTypes = new ObservableCollection<string>{"NONE", DiscountType.PERCENT, DiscountType.FLAT };
 			Categories = new ObservableCollection<Category>();
 			Products = new ObservableCollection<ProductDto>();
 			Variants = new ObservableCollection<ProductVariant>();
@@ -339,7 +339,7 @@ namespace SmartServePOS.ViewModels
 
 				SubTotal = SubTotal,
 				Discount = DiscountAmount,
-				DiscountLabel = SelectedDiscountType == "Percentage" ? $"{DiscountValue}%" : SelectedDiscountType == "₹" ? $"₹{DiscountValue}" : "",
+				DiscountLabel = SelectedDiscountType == DiscountType.PERCENT ? $"{DiscountValue}%" : SelectedDiscountType == "₹" ? $"₹{DiscountValue}" : "",
 				GrandTotal = GrandTotal
 			};
 		}

@@ -138,12 +138,12 @@ namespace SmartServePOS.ViewModels
 					return;
 				var subTotal = order.OrderItems.Sum(x => x.Quantity * x.PriceSnapshot);
 				decimal discount = 0;
-				if (order.DiscountType == "PERCENT")
+				if (order.DiscountType == DiscountType.PERCENT)
 				{
 					discount = Math.Round(subTotal * order.DiscountValue / 100, 2);
 				}
 
-				if (order.DiscountType == "FLAT")
+				if (order.DiscountType == DiscountType.FLAT)
 				{
 					discount = order.DiscountValue;
 				}

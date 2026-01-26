@@ -1,4 +1,7 @@
-﻿using SmartServe.Domain.Services;
+﻿using AutoMapper;
+using SmartServe.Domain.Constants;
+using SmartServe.Domain.Models;
+using SmartServe.Domain.Services;
 using SmartServePOS.Command;
 using SmartServePOS.Helper;
 using SmartServePOS.Models;
@@ -11,16 +14,19 @@ namespace SmartServePOS.ViewModels
 {
 	public class DashboardViewModel : BaseViewModel
 	{
+		private readonly IMapper _mapper;
 		private readonly IOrderReportService _reportService;
 		private readonly INavigationService _navigationService;
 		private readonly SyncScheduler _sync;
 		public Array DateRanges => Enum.GetValues(typeof(DateRangeType));
 		public DashboardViewModel(
+			IMapper mapper,
 			IOrderReportService reportService,
 			INavigationService navigationService,
 			SyncScheduler sync)
 		{
 			_sync = sync;
+			_mapper = mapper;
 			_reportService = reportService;
 			_navigationService = navigationService;
 
@@ -81,6 +87,20 @@ namespace SmartServePOS.ViewModels
 			set { _totalSales = value; OnPropertyChanged(); }
 		}
 
+		private decimal _cashSales;
+		public decimal CashSales
+		{
+			get => _cashSales;
+			set { _cashSales = value; OnPropertyChanged(); }
+		}
+
+		private decimal _upiSales;
+		public decimal UpiSales
+		{
+			get => _upiSales;
+			set { _upiSales = value; OnPropertyChanged(); }
+		}
+
 		private int _totalOrders;
 		public int TotalOrders
 		{
@@ -114,11 +134,26 @@ namespace SmartServePOS.ViewModels
 		public ICommand LoadOrdersCommand { get; }
 		public ICommand SyncOrdersCommand { get; }
 		public ICommand OpenOrderDetailsCommand { get; }
+		public ICommand ToggleExpandCommand => new RelayCommand<OrderGridDto>(ToggleExpand);
+
 
 		// =====================
 		// LOGIC
 		// =====================
+		private async void ToggleExpand(OrderGridDto order)
+		{
+			order.IsExpanded = !order.IsExpanded;
 
+			if (order.IsExpanded && order.Items.Count == 0)
+			{
+				// lazy load details
+				var details = await _reportService.GetOrderItemsAsync(order.Id);
+
+				order.Items.Clear();
+				foreach (var item in details)
+					order.Items.Add(_mapper.Map<OrderItemDto>(item));
+			}
+		}
 		private async Task LoadOrdersAsync()
 		{
 			var (fromUtc, toUtc) = ResolveDateRangeUtc();
@@ -134,14 +169,17 @@ namespace SmartServePOS.ViewModels
 					Id = order.Id,
 					OrderNumber = order.OrderNumber,
 					OrderType = order.OrderType,
-					Status = order.Status.StatusName,
 					TotalAmount = order.TotalAmount ?? 0,
-					DisplayTime = ConvertToIST(order.CreatedAt ?? DateTime.MinValue)
+					DisplayTime = ConvertToIST(order.CreatedAt ?? DateTime.MinValue),
+					Discount = (order.DiscountType == DiscountType.PERCENT ?	order.TotalAmount * order.DiscountValue / (100 - order.DiscountValue) : order.DiscountValue)??0
 				});
 			}
 
 			TotalSales = result.TotalSales;
+			CashSales = result.CashSales;
+			UpiSales = result.UpiSales;
 			TotalOrders = result.TotalOrders;
+			
 		}
 
 		private async Task SyncOrdersAsync()
