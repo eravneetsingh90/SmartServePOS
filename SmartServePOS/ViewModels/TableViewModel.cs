@@ -34,7 +34,7 @@ namespace SmartServePOS.ViewModels
 		public ICommand ClosePaymentPopupCommand { get; }
 		public ICommand OpenPaymentCommand { get; }
 		public ICommand SettleAndSaveCommand { get; }
-		public bool IsPartPayment => SelectedPaymentMode == Helper.PaymentMode.Part;
+		public bool IsPartPayment => SelectedPaymentMode == Models.PaymentModeType.Part;
 		private decimal _partPaymentCash;
 		public decimal PartPaymentCash
 		{
@@ -48,8 +48,8 @@ namespace SmartServePOS.ViewModels
 		}
 		public decimal RemainingAmount =>
 	Math.Max(0, BillTotal - PartPaymentCash);
-		private Helper.PaymentMode _selectedPaymentMode;
-		public Helper.PaymentMode SelectedPaymentMode
+		private Models.PaymentModeType _selectedPaymentMode;
+		public Models.PaymentModeType SelectedPaymentMode
 		{
 			get => _selectedPaymentMode;
 			set

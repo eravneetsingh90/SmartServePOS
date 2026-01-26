@@ -41,7 +41,9 @@ namespace SmartServePOS.Dependencies
 			services.AddSingleton<LinkInventoryView>();
 			services.AddSingleton<LinkInventoryViewModel>();
 			services.AddSingleton<SyncScheduler>();
-			
+			services.AddSingleton<DashboardView>();
+			services.AddSingleton<DashboardViewModel>();
+
 			services.AddScoped<IPrintService, PrintService>();
 			services.AddScoped<INotificationService, HandyNotificationService>();
 			services.AddScoped<IDialogService, HandyDialogService>();

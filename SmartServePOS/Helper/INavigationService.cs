@@ -11,5 +11,7 @@
 		void NavigateToProductVariantView();
 		void NavigateToMenuManagementView();
 		void NavigateToStockManagementView();
+		void NavigateToDashboardView();
+		void OpenOrderDetailsDialog(int id);
 	}
 }

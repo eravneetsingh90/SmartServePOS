@@ -201,7 +201,7 @@ namespace SmartServePOS.ViewModels
 
 			var variants = await _productService.GetVariantByProductIdAsync(SelectedProduct.Id);
 
-			var stockItems = await _stockService.GetStockItemAsync(StockItemType.VARIANT);
+			var stockItems = await _stockService.GetStockItemAsync(StockItem.VARIANT);
 			var stockLookup = stockItems.ToDictionary(x => x.VariantId);
 
 			foreach (var variant in variants)
@@ -251,7 +251,7 @@ namespace SmartServePOS.ViewModels
 				Ingredients.Clear();
 
 				var ingredients = await _stockService.GetIngredients();
-				var stockItems = await _stockService.GetStockItemAsync(StockItemType.INGREDIENT);
+				var stockItems = await _stockService.GetStockItemAsync(StockItem.INGREDIENT);
 
 				var stockLookup = stockItems.ToDictionary(x => x.VariantId);
 
@@ -292,7 +292,7 @@ namespace SmartServePOS.ViewModels
 			if (!variant.IsStockTracked)
 			{
 				await _stockService.ActivateStockItemAsync(
-					StockItemType.VARIANT,
+					StockItem.VARIANT,
 					variant.VariantId);
 
 				variant.IsStockTracked = true;
@@ -300,7 +300,7 @@ namespace SmartServePOS.ViewModels
 			else
 			{
 				await _stockService.DeactivateStockItemAsync(
-					StockItemType.VARIANT,
+					StockItem.VARIANT,
 					variant.VariantId);
 
 				variant.IsStockTracked = false;
@@ -319,7 +319,7 @@ namespace SmartServePOS.ViewModels
 			if (!ingredient.IsStockTracked)
 			{
 				await _stockService.ActivateStockItemAsync(
-					StockItemType.INGREDIENT,
+					StockItem.INGREDIENT,
 					ingredient.IngredientId);
 
 				ingredient.IsStockTracked = true;
@@ -327,7 +327,7 @@ namespace SmartServePOS.ViewModels
 			else
 			{
 				await _stockService.DeactivateStockItemAsync(
-					StockItemType.INGREDIENT,
+					StockItem.INGREDIENT,
 					ingredient.IngredientId);
 
 				ingredient.IsStockTracked = false;

@@ -99,6 +99,13 @@
 						Foreground="White" />
 
 					<Button
+						x:Name="DashboardButton"
+						Margin="0,0,8,0"
+						Background="#C62828"
+						Click="DashboardButton_Click"
+						Content="Dashboard"
+						Foreground="White" />
+					<Button
 						x:Name="MenuManagementButton"
 						Margin="0,0,8,0"
 						Background="#C62828"

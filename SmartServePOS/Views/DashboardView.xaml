@@ -1,0 +1,189 @@
+﻿<Page
+	x:Class="SmartServePOS.Views.DashboardView"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:local="clr-namespace:SmartServePOS.Views"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:viewmodels="clr-namespace:SmartServePOS.ViewModels"
+	Title="Dashboard"
+	Background="#F5F5F5"
+	mc:Ignorable="d">
+
+
+	<Grid Margin="16">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<!--  Date Filter  -->
+			<RowDefinition Height="Auto" />
+			<!--  Summary  -->
+			<RowDefinition Height="*" />
+			<!--  Orders Grid  -->
+		</Grid.RowDefinitions>
+
+		<!--  =====================  -->
+		<!--  DATE FILTER BAR  -->
+		<!--  =====================  -->
+		<Border
+			Grid.Row="0"
+			Padding="12"
+			Background="#FFFFFF"
+			BorderBrush="#E5E5E5"
+			BorderThickness="1"
+			CornerRadius="8">
+
+			<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+
+				<TextBlock
+					Margin="0,0,20,0"
+					FontSize="18"
+					FontWeight="SemiBold"
+					Text="Sales" />
+
+				<ComboBox
+					Width="160"
+					ItemsSource="{Binding DateRanges}"
+					SelectedItem="{Binding SelectedRange}" />
+
+				<StackPanel
+					Margin="12,0,0,0"
+					Orientation="Horizontal"
+					Visibility="{Binding IsCustomRangeVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+
+					<DatePicker Width="130" SelectedDate="{Binding FromDate}" />
+
+					<TextBlock
+						Margin="6,0"
+						VerticalAlignment="Center"
+						Text="to" />
+
+					<DatePicker Width="130" SelectedDate="{Binding ToDate}" />
+				</StackPanel>
+
+				<Button
+					Margin="12,0,0,0"
+					Padding="12,4"
+					Background="#555"
+					Command="{Binding LoadOrdersCommand}"
+					Content="Refresh"
+					Cursor="Hand"
+					Foreground="White" />
+				<Button
+					Margin="12,0,0,0"
+					Padding="12,4"
+					Background="#555"
+					Command="{Binding SyncOrdersCommand}"
+					Content="Sync"
+					Cursor="Hand"
+					Foreground="White" />
+			</StackPanel>
+		</Border>
+
+		<!--  =====================  -->
+		<!--  SALES SUMMARY  -->
+		<!--  =====================  -->
+		<Grid Grid.Row="1" Margin="0,12,0,0">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
+
+			<!--  Total Sales  -->
+			<Border
+				Grid.Column="0"
+				Margin="0,0,8,0"
+				Padding="16"
+				Background="#FFFFFF"
+				BorderBrush="#E5E5E5"
+				BorderThickness="1"
+				CornerRadius="8">
+				<StackPanel>
+					<TextBlock
+						FontSize="12"
+						Foreground="#888"
+						Text="Total Sales" />
+					<TextBlock
+						Margin="0,4,0,0"
+						FontSize="28"
+						FontWeight="Bold"
+						Text="{Binding TotalSales, StringFormat=₹ {0:N0}}" />
+				</StackPanel>
+			</Border>
+
+			<!--  Total Orders  -->
+			<Border
+				Grid.Column="1"
+				Margin="8,0,0,0"
+				Padding="16"
+				Background="#FFFFFF"
+				BorderBrush="#E5E5E5"
+				BorderThickness="1"
+				CornerRadius="8">
+				<StackPanel>
+					<TextBlock
+						FontSize="12"
+						Foreground="#888"
+						Text="Total Orders" />
+					<TextBlock
+						Margin="0,4,0,0"
+						FontSize="28"
+						FontWeight="Bold"
+						Text="{Binding TotalOrders}" />
+				</StackPanel>
+			</Border>
+		</Grid>
+
+		<!--  =====================  -->
+		<!--  ORDERS GRID  -->
+		<!--  =====================  -->
+		<Border
+			Grid.Row="3"
+			Margin="0,12,0,0"
+			Padding="0"
+			Background="#FFFFFF"
+			BorderBrush="#E5E5E5"
+			BorderThickness="1"
+			CornerRadius="8">
+
+			<DataGrid
+				AutoGenerateColumns="False"
+				CanUserAddRows="False"
+				GridLinesVisibility="Horizontal"
+				HeadersVisibility="Column"
+				IsReadOnly="True"
+				ItemsSource="{Binding Orders}"
+				RowHeight="44"
+				SelectedItem="{Binding SelectedOrder}">
+
+				<DataGrid.Columns>
+					<DataGridTextColumn
+						Width="*"
+						Binding="{Binding OrderNumber}"
+						Header="Order No" />
+
+					<DataGridTextColumn
+						Width="*"
+						Binding="{Binding DisplayTime}"
+						Header="Time" />
+
+					<DataGridTextColumn
+						Width="*"
+						Binding="{Binding OrderType}"
+						Header="Type" />
+
+					<DataGridTextColumn
+						Width="*"
+						Binding="{Binding TotalAmount, StringFormat=₹ {0:N2}}"
+						Header="Amount" />
+
+					<DataGridTextColumn
+						Width="*"
+						Binding="{Binding Status}"
+						Header="Status" />
+				</DataGrid.Columns>
+
+			</DataGrid>
+		</Border>
+
+	</Grid>
+</Page>

@@ -162,6 +162,31 @@ namespace SmartServePOS.Helper
 				mw.MainFrame.Navigate(view);
 			}
 		}
+		public async void NavigateToDashboardView()
+		{
+			DashboardViewModel viewModel = null;
+			if (App.Services is not null)
+			{
+				viewModel = App.Services.GetService<DashboardViewModel>();
+			}
+			else
+			{
+				throw new InvalidOperationException("DashboardViewModel dependencies must be provided via DI.");
+			}
+
+			var view = new DashboardView();
+			view.DataContext = viewModel;
+			if (Application.Current.MainWindow is MainWindow mw)
+			{
+				mw.MainFrame.Navigate(view);
+			}
+			await viewModel.InitializeAsync();
+		}
+
+		public void OpenOrderDetailsDialog(int id)
+		{
+			//throw new NotImplementedException();
+		}
 	}
 
 }

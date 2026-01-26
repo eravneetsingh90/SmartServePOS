@@ -39,5 +39,10 @@ namespace SmartServePOS
 			// Navigate the main frame to the POSView
 			_navigationService.NavigateToStockManagementView();
 		}
+		private void DashboardButton_Click(object sender, RoutedEventArgs e)
+		{
+			_navigationService.NavigateToDashboardView();
+		}
+		
 	}
 }

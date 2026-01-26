@@ -12,8 +12,8 @@ namespace SmartServePOS.Helper
 		public SyncScheduler(IOrderSyncService syncService)
 		{
 			_syncService = syncService;
-			//_timer = new PeriodicTimer(TimeSpan.FromMinutes(2));
-			_timer = new PeriodicTimer(TimeSpan.FromSeconds(40));
+			_timer = new PeriodicTimer(TimeSpan.FromMinutes(10));
+			//_timer = new PeriodicTimer(TimeSpan.FromSeconds(40));
 		}
 
 		public async Task StartAsync()
@@ -24,7 +24,7 @@ namespace SmartServePOS.Helper
 			}
 		}
 
-		private async Task RunOnceSafeAsync()
+		public async Task RunOnceSafeAsync()
 		{
 			try
 			{
