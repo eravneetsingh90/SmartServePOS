@@ -49,16 +49,18 @@ namespace SmartServePOS.Services
 					await _serverRepo.CreateOrderItemsAsync(orderItems);
 
 					var paymentLocal = await _localRepo.GetPaymentByOrderIdAsync(order.Id);
-					await _serverRepo.CloseOrderAsync(
-					serverOrderId,
-					new Payment
-					{
-						OrderId = serverOrderId,
-						Mode = paymentLocal.Mode.ToString().ToUpper(),
-						Amount = paymentLocal.Amount,
-						Status = paymentLocal.Status,
-						PartPaymentCash = paymentLocal.PartPaymentCash
-					});
+					var payments = paymentLocal.Select(
+						p => new Payment
+						{
+							OrderId = serverOrderId,
+							Mode = p.Mode.ToString().ToUpper(),
+							Amount = p.Amount,
+							Status = p.Status,
+							PartPaymentCash = p.PartPaymentCash,
+							CreatedAt = ToUtc(p.CreatedAt)
+						}
+						).ToList();
+					await _serverRepo.CreatePaymentsAsync(_mapper.Map<List<Payment>>(payments));
 					await _localRepo.MarkOrderAsSyncedAsync(order.Id);
 				}
 			}
@@ -67,7 +69,21 @@ namespace SmartServePOS.Services
 				// log and continue
 			}
 		}
-		
+
+
+		#region private methods
+		private static DateTime ToUtc(DateTime dt)
+		{
+			return dt.Kind switch
+			{
+				DateTimeKind.Utc => dt,
+				DateTimeKind.Local => dt.ToUniversalTime(),
+				DateTimeKind.Unspecified => DateTime.SpecifyKind(dt, DateTimeKind.Utc),
+				_ => dt
+			};
+		}
+		#endregion
+
 	}
 
 }

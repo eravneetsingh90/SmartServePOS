@@ -151,7 +151,17 @@ namespace SmartServePOS.ViewModels
 
 				order.Items.Clear();
 				foreach (var item in details)
-					order.Items.Add(_mapper.Map<OrderItemDto>(item));
+					order.Items.Add(new OrderItemDto
+					{
+						Id = item.Id,
+						OrderId = item.OrderId??0,
+						Quantity = item.Quantity,
+						PriceSnapshot = item.PriceSnapshot,
+						DiscountAmount = item.DiscountAmount ?? 0,
+
+						ProductName = item.Variant?.Product?.Name,
+						VariantName = item.Variant?.VariantName
+					});
 			}
 		}
 		private async Task LoadOrdersAsync()
@@ -171,7 +181,7 @@ namespace SmartServePOS.ViewModels
 					OrderType = order.OrderType,
 					TotalAmount = order.TotalAmount ?? 0,
 					DisplayTime = ConvertToIST(order.CreatedAt ?? DateTime.MinValue),
-					Discount = (order.DiscountType == DiscountType.PERCENT ?	order.TotalAmount * order.DiscountValue / (100 - order.DiscountValue) : order.DiscountValue)??0
+					Discount = (order.DiscountType == DiscountType.PERCENT ? order.TotalAmount * order.DiscountValue / (100 - order.DiscountValue) : order.DiscountValue) ?? 0
 				});
 			}
 
@@ -179,7 +189,7 @@ namespace SmartServePOS.ViewModels
 			CashSales = result.CashSales;
 			UpiSales = result.UpiSales;
 			TotalOrders = result.TotalOrders;
-			
+
 		}
 
 		private async Task SyncOrdersAsync()

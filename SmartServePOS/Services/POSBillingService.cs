@@ -335,8 +335,9 @@ namespace SmartServePOS.Services
 			return result;
 		}
 
-		public async Task<PaymentDto?> GetPaymentByOrderIdAsync(int orderId)
+		public async Task<List<PaymentDto>> GetPaymentByOrderIdAsync(int orderId)
 		{
+			var result = new List<PaymentDto>();
 			using var conn = _connectionFactory.CreateConnection();
 			await conn.OpenAsync();
 
@@ -351,26 +352,26 @@ namespace SmartServePOS.Services
 					created_at,
 					IsSynced
 				FROM payments
-				WHERE order_id = @orderId
-				LIMIT 1;
+				WHERE order_id = @orderId;
 			";
 
 			cmd.Parameters.AddWithValue("@orderId", orderId);
 
 			using var reader = await cmd.ExecuteReaderAsync();
-			if (!await reader.ReadAsync())
-				return null;
-
-			return new PaymentDto
+			while (await reader.ReadAsync())
 			{
-				Id = reader.GetInt32(reader.GetOrdinal("id")),
-				OrderId = reader.GetInt32(reader.GetOrdinal("order_id")),
-				Mode = reader.GetString(reader.GetOrdinal("mode")),
-				Amount = reader.GetDecimal(reader.GetOrdinal("amount")),
-				Status = reader.GetString(reader.GetOrdinal("status")),
-				CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at")),
-				IsSynced = reader.GetInt32(reader.GetOrdinal("IsSynced")) == 1
-			};
+				result.Add(new PaymentDto
+				{
+					Id = reader.GetInt32(reader.GetOrdinal("id")),
+					OrderId = reader.GetInt32(reader.GetOrdinal("order_id")),
+					Mode = reader.GetString(reader.GetOrdinal("mode")),
+					Amount = reader.GetDecimal(reader.GetOrdinal("amount")),
+					Status = reader.GetString(reader.GetOrdinal("status")),
+					CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at")),
+					IsSynced = reader.GetInt32(reader.GetOrdinal("IsSynced")) == 1
+				});
+			}
+			return result;
 		}
 
 		public async Task MarkOrderAsSyncedAsync(int id)

@@ -22,7 +22,7 @@ namespace SmartServePOS.Models
 
 		// 🔹 Loaded on expand (lazy)
 		public ObservableCollection<OrderItemDto> Items { get; }
-			= new();
+		= new ObservableCollection<OrderItemDto>();
 
 		public decimal Discount { get; set; }
 	}

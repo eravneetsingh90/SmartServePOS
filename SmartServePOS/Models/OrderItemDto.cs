@@ -18,6 +18,12 @@ namespace SmartServePOS.Models
 		// 🔹 Derived (not stored, but useful for UI)
 		public decimal LineTotal =>
 			(PriceSnapshot * Quantity) - DiscountAmount;
+		public string ProductName { get; set; }
+		public string VariantName { get; set; }
+		public string DisplayName =>
+		string.IsNullOrWhiteSpace(VariantName)
+			? ProductName
+			: $"{ProductName} ({VariantName})";
 		public virtual ProductVariantDto Variant { get; set; }
 	}
 }

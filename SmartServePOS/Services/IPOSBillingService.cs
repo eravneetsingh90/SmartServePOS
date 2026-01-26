@@ -13,7 +13,7 @@ namespace SmartServePOS.Services
 		Task CloseOrderAsync(int orderId, PaymentDto payment);
 		Task<List<OrderDto>> GetUnsyncedOrdersAsync();
 		Task<List<OrderItemDto>> GetOrderItemsByOrderIdAsync(int orderId);
-		Task<PaymentDto> GetPaymentByOrderIdAsync(int orderId);
+		Task<List<PaymentDto>> GetPaymentByOrderIdAsync(int orderId);
 		Task MarkOrderAsSyncedAsync(int id);
 	}
 }
