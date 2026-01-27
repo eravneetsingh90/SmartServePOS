@@ -5,6 +5,7 @@ using SmartServePOS.Models;
 using SmartServePOS.ViewModels;
 using SmartServePOS.Views;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace SmartServePOS.Helper
 {
@@ -15,6 +16,18 @@ namespace SmartServePOS.Helper
 		public NavigationService(IServiceProvider serviceProvider)
 		{
 			_serviceProvider = serviceProvider;
+		}
+		//public void NavigateTo<T>()
+		//{
+		//	throw new NotImplementedException();
+		//}
+		public void NavigateTo<T>()
+		{
+			var view = _serviceProvider.GetRequiredService<T>();
+			if (Application.Current.MainWindow is MainWindow mw)
+			{
+				mw.MainFrame.Navigate(view);
+			}
 		}
 		public async void NavigateToAddStockView()
 		{
@@ -187,6 +200,8 @@ namespace SmartServePOS.Helper
 		{
 			//throw new NotImplementedException();
 		}
+
+		
 	}
 
 }

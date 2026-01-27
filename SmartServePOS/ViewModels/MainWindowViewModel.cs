@@ -1,7 +1,14 @@
-﻿namespace SmartServePOS.ViewModels
+﻿using SmartServePOS.Command;
+using SmartServePOS.Helper;
+using SmartServePOS.Views;
+using System.Windows.Input;
+
+namespace SmartServePOS.ViewModels
 {
 	public class MainWindowViewModel : BaseViewModel
 	{
+		private readonly INavigationService _navigationService;
+		public ICommand LogoutCommand { get; }
 		private bool _isLoggedIn;
 
 		public bool IsLoggedIn
@@ -35,7 +42,25 @@
 				OnPropertyChanged();
 			}
 		}
+		public MainWindowViewModel(INavigationService navigationService)
+		{
+			_navigationService = navigationService;
+			LogoutCommand = new RelayCommand(Logout);
+		}
+		private void Logout(object? _)
+		{
+			// 1️⃣ Clear session
+			//AuthSession.Logout();
 
+			// 2️⃣ Reset POS runtime
+			//PosState.Reset();
+
+			// 3️⃣ Update UI state
+			IsLoggedIn = false;
+
+			// 4️⃣ Navigate to Login
+			_navigationService.NavigateTo<LoginView>();
+		}
 	}
 
 }

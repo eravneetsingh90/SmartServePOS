@@ -61,6 +61,20 @@
 
 			<DockPanel Margin="8,0">
 
+				<!--  RIGHT: LOGOUT  -->
+				<StackPanel
+					VerticalAlignment="Center"
+					DockPanel.Dock="Right"
+					Orientation="Horizontal">
+					<Button
+						Background="#555"
+						Command="{Binding LogoutCommand}"
+						Content="Logout"
+						Cursor="Hand"
+						FontWeight="SemiBold"
+						Foreground="White" />
+				</StackPanel>
+
 				<!--  LEFT: MENU + TITLE  -->
 				<StackPanel
 					VerticalAlignment="Center"
@@ -83,10 +97,9 @@
 						Text="SmartServe POS" />
 				</StackPanel>
 
-				<!--  CENTER: ACTIONS  -->
+				<!--  CENTER: ACTION BUTTONS  -->
 				<StackPanel
 					Margin="20,0,0,0"
-					HorizontalAlignment="Left"
 					VerticalAlignment="Center"
 					Orientation="Horizontal">
 
@@ -108,6 +121,7 @@
 						Cursor="Hand"
 						Foreground="White"
 						Visibility="{Binding IsAdmin, Converter={StaticResource BoolToVisibilityConverter}}" />
+
 					<Button
 						x:Name="MenuManagementButton"
 						Margin="0,0,8,0"
@@ -127,9 +141,10 @@
 						Cursor="Hand"
 						Foreground="White"
 						Visibility="{Binding IsAdmin, Converter={StaticResource BoolToVisibilityConverter}}" />
-
 				</StackPanel>
+
 			</DockPanel>
+
 		</Border>
 
 		<!--  ================= MAIN CONTENT =================  -->

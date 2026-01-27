@@ -39,5 +39,5 @@ namespace SmartServePOS.Command
 
 		public event EventHandler? CanExecuteChanged;
 	}
-
+	
 }

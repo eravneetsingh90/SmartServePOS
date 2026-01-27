@@ -2,6 +2,7 @@
 {
 	public interface INavigationService
 	{
+		void NavigateTo<T>();
 		void NavigateToAddStockView();
 		//void NavigateToBillingView(int orderId,int tableId);
 		Task NavigateToBillingView(int orderId, int tableId);
@@ -13,5 +14,6 @@
 		void NavigateToStockManagementView();
 		void NavigateToDashboardView();
 		void OpenOrderDetailsDialog(int id);
+		
 	}
 }
