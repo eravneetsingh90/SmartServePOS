@@ -5,6 +5,7 @@
 		public string ShopName { get; set; } = string.Empty;
 		public string ShopAddress { get; set; } = string.Empty;
 		public string TerminalId { get; set; } = string.Empty;
+		public bool PrintPreview { get; set; } = false;
 	}
 	public class ThemeSettings
 	{

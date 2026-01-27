@@ -106,7 +106,8 @@
 						Click="DashboardButton_Click"
 						Content="Dashboard"
 						Cursor="Hand"
-						Foreground="White" />
+						Foreground="White"
+						Visibility="{Binding IsAdmin, Converter={StaticResource BoolToVisibilityConverter}}" />
 					<Button
 						x:Name="MenuManagementButton"
 						Margin="0,0,8,0"
@@ -114,7 +115,8 @@
 						Click="MenuManagementButton_Click"
 						Content="Menu Management"
 						Cursor="Hand"
-						Foreground="White" />
+						Foreground="White"
+						Visibility="{Binding IsAdmin, Converter={StaticResource BoolToVisibilityConverter}}" />
 
 					<Button
 						x:Name="StockManagementButton"
@@ -123,7 +125,8 @@
 						Click="StockManagementButton_Click"
 						Content="Stock Management"
 						Cursor="Hand"
-						Foreground="White" />
+						Foreground="White"
+						Visibility="{Binding IsAdmin, Converter={StaticResource BoolToVisibilityConverter}}" />
 
 				</StackPanel>
 			</DockPanel>

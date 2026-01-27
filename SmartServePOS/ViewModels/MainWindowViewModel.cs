@@ -13,6 +13,18 @@
 				OnPropertyChanged();
 			}
 		}
+
+		private bool _isAdmin;
+
+		public bool IsAdmin
+		{
+			get => _isAdmin;
+			set
+			{
+				_isAdmin = value;
+				OnPropertyChanged();
+			}
+		}
 		private bool _isLoading = true;
 		public bool IsLoading
 		{

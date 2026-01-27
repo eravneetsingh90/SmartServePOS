@@ -93,6 +93,7 @@ namespace SmartServePOS.ViewModels
 
 				// Success
 				_mainWindowVm.IsLoggedIn = true;
+				_mainWindowVm.IsAdmin = user.Role?.RoleName == "OWNER" ? true : false;
 				_navigationService.NavigateToTableView();
 			}
 			catch

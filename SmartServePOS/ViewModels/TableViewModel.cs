@@ -175,7 +175,7 @@ namespace SmartServePOS.ViewModels
 					GrandTotal = subTotal - discount
 				};
 
-				_printService.PrintBill(printbill, showPreview: true);
+				_printService.PrintBill(printbill, showPreview: _settings.PrintPreview);
 				order.StatusId = _catalogService.GetTableStatusByCode(TableStatusCodes.PRINTED).Id;
 				await _billingService.UpdateOrderAsync(order);
 				_ = InitializeAsync();
