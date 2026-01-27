@@ -1,4 +1,5 @@
-﻿using SmartServe.Domain.Constants;
+﻿using Microsoft.Extensions.Options;
+using SmartServe.Domain.Constants;
 using SmartServePOS.Command;
 using SmartServePOS.Helper;
 using SmartServePOS.Models;
@@ -13,6 +14,7 @@ namespace SmartServePOS.ViewModels
 {
 	public class TableViewModel : BaseViewModel
 	{
+		private readonly POSSettings _settings;
 		private readonly SyncScheduler _sync;
 		private readonly IPOSBillingService _billingService;
 		private readonly IPrintService _printService;
@@ -58,12 +60,14 @@ namespace SmartServePOS.ViewModels
 			}
 		}
 		public TableViewModel(
+			IOptions<POSSettings> options,
 			IPOSBillingService billingService,
 			INavigationService navigationService,
 			IPrintService printService,
 			IPOSCatalogService catalogService,
 			SyncScheduler sync)
 		{
+			_settings = options.Value;
 			_catalogService = catalogService;
 			_billingService = billingService;
 			_printService = printService;
@@ -148,8 +152,8 @@ namespace SmartServePOS.ViewModels
 				}
 				BillPrintModel printbill = new BillPrintModel
 				{
-					ShopName = "Scoop Ice Cream Cafe",
-					Address = "Sco 8, Basement, Fortune City Center\nSec. 123, S.A.S Nagar-140301",
+					ShopName = _settings.ShopName,
+					Address = _settings.ShopAddress,
 
 					BillNo = order.OrderNumber,
 					//TableName = _currentOrder.TableName ?? "N/A",

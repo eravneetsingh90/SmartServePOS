@@ -7,6 +7,7 @@ using SmartServe.EFCore.Dependencies;
 using SmartServePOS.Data;
 using SmartServePOS.Dependencies;
 using SmartServePOS.Helper;
+using SmartServePOS.Models;
 using SmartServePOS.Services;
 using SmartServePOS.Views;
 using System.IO;
@@ -48,6 +49,8 @@ namespace SmartServePOS
 			// 3️⃣ Setup DI (ONLY ONCE)
 			// -------------------------------
 			var services = new ServiceCollection();
+			services.Configure<POSSettings>(Configuration.GetSection("POS"));
+			services.Configure<ThemeSettings>(Configuration.GetSection("Theme"));
 			services.AddSingleton(Configuration);
 			services.AddSingleton<ISqliteConnectionFactory>(new SqliteConnectionFactory(dbPath));
 			services.UseEFCore(Configuration);

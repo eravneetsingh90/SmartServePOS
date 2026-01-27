@@ -47,10 +47,10 @@
 					<ListBox.ItemTemplate>
 						<DataTemplate>
 							<Border
-								Cursor="Hand"
 								x:Name="Root"
 								Height="46"
-								Background="#333333">
+								Background="#333333"
+								Cursor="Hand">
 
 								<Grid>
 									<Grid.ColumnDefinitions>
@@ -133,10 +133,10 @@
 					<ListBox.ItemTemplate>
 						<DataTemplate>
 							<Border
-								Cursor="Hand"
 								x:Name="Root"
 								Height="46"
-								Background="#eaeaea">
+								Background="#eaeaea"
+								Cursor="Hand">
 
 								<Grid>
 									<Grid.ColumnDefinitions>
@@ -201,24 +201,24 @@
 						DockPanel.Dock="Right"
 						Orientation="Horizontal">
 						<Button
-							Cursor="Hand"
 							Margin="0,0,8,0"
 							Background="#F3F3F3"
 							BorderBrush="#CCC"
 							Command="{Binding AddVariantCommand}"
-							Content="+ Add Variant" />
+							Content="+ Add Variant"
+							Cursor="Hand" />
 						<Button
-							Cursor="Hand"
 							Margin="0,0,8,0"
 							Background="#2E7D32"
 							Command="{Binding SaveCommand}"
 							Content="Save Changes"
+							Cursor="Hand"
 							Foreground="White" />
 						<Button
-							Cursor="Hand"
 							Background="#0047AB"
 							Command="{Binding RefreshCommand}"
 							Content="Refresh 🔄"
+							Cursor="Hand"
 							Foreground="White" />
 					</StackPanel>
 				</DockPanel>
@@ -347,12 +347,12 @@
 							<DataGridTemplateColumn.CellTemplate>
 								<DataTemplate>
 									<Button
-										Cursor="Hand"
 										Background="Transparent"
 										BorderThickness="0"
 										Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
 										CommandParameter="{Binding}"
 										Content="✕"
+										Cursor="Hand"
 										FontSize="14"
 										Foreground="Red"
 										ToolTip="Delete Category" />
