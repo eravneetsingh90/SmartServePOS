@@ -91,7 +91,7 @@ namespace SmartServePOS
 					await syncService.SyncAsync();
 
 					// Optional: reload catalog after sync
-					await catalog.LoadAsync();
+					await catalog.Refresh();
 				}
 				catch (Exception ex)
 				{
