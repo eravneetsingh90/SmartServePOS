@@ -92,11 +92,11 @@ namespace SmartServePOS.Services
 			cmd.CommandText = @"
                 INSERT INTO orders
                 (order_number, order_type, table_id, status_id,
-                 total_amount, discount_type, discount_value, discount_reason,
+                 original_amount,total_amount, discount_type, discount_value, discount_reason,
                  created_at, IsSynced)
                 VALUES
                 (@OrderNumber, @OrderType, @TableId, @StatusId,
-                 @TotalAmount, @DiscountType, @DiscountValue, @DiscountReason,
+                 @OriginalAmount,@TotalAmount, @DiscountType, @DiscountValue, @DiscountReason,
                  CURRENT_TIMESTAMP, 0);
                 SELECT last_insert_rowid();
             ";
@@ -105,6 +105,7 @@ namespace SmartServePOS.Services
 			cmd.Parameters.AddWithValue("@OrderType", order.OrderType);
 			cmd.Parameters.AddWithValue("@TableId", (object?)order.TableId ?? DBNull.Value);
 			cmd.Parameters.AddWithValue("@StatusId", order.StatusId);
+			cmd.Parameters.AddWithValue("@OriginalAmount", order.OriginalAmount);
 			cmd.Parameters.AddWithValue("@TotalAmount", order.TotalAmount);
 			cmd.Parameters.AddWithValue("@DiscountType", (object?)order.DiscountType ?? DBNull.Value);
 			cmd.Parameters.AddWithValue("@DiscountValue", order.DiscountValue);
@@ -144,6 +145,7 @@ namespace SmartServePOS.Services
 						OrderType = reader.GetString(reader.GetOrdinal("order_type")),
 						TableId = reader.IsDBNull("table_id") ? null : reader.GetInt32("table_id"),
 						StatusId = reader.GetInt32("status_id"),
+						OriginalAmount = reader.GetDecimal("original_amount"),
 						TotalAmount = reader.GetDecimal("total_amount"),
 						DiscountType = reader.IsDBNull("discount_type") ? null : reader.GetString("discount_type"),
 						DiscountValue = reader.GetDecimal("discount_value"),
@@ -166,6 +168,7 @@ namespace SmartServePOS.Services
 			cmd.CommandText = @"
                 UPDATE orders
                 SET
+					original_amount = @OriginalAmount,
                     total_amount = @TotalAmount,
 					status_id = @StatusId,
                     discount_type = @DiscountType,
@@ -176,6 +179,7 @@ namespace SmartServePOS.Services
             ";
 
 			cmd.Parameters.AddWithValue("@Id", order.Id);
+			cmd.Parameters.AddWithValue("@OriginalAmount", order.OriginalAmount);
 			cmd.Parameters.AddWithValue("@TotalAmount", order.TotalAmount);
 			cmd.Parameters.AddWithValue("@StatusId", order.StatusId);
 			cmd.Parameters.AddWithValue("@DiscountType", (object?)order.DiscountType ?? DBNull.Value);
@@ -412,6 +416,7 @@ namespace SmartServePOS.Services
 				TableId = reader.IsDBNull("table_id") ? null : reader.GetInt32("table_id"),
 				StatusId = reader.GetInt32("status_id"),
 				TotalAmount = reader.GetDecimal("total_amount"),
+				OriginalAmount = reader.GetDecimal("original_amount"),
 				DiscountType = reader.IsDBNull("discount_type") ? null : reader.GetString("discount_type"),
 				DiscountValue = reader.GetDecimal("discount_value"),
 				DiscountReason = reader.IsDBNull("discount_reason") ? null : reader.GetString("discount_reason"),

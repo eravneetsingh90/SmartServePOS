@@ -104,6 +104,7 @@ CREATE TABLE IF NOT EXISTS orders (
     order_type TEXT CHECK (order_type IN ('DINE_IN','DELIVERY','PICKUP')),
     table_id INTEGER,
     status_id INTEGER,
+    original_amount REAL DEFAULT 0 CHECK (original_amount >= 0),
     total_amount REAL DEFAULT 0 CHECK (total_amount >= 0),
     discount_type TEXT CHECK (discount_type IN ('FLAT','PERCENT')),
     discount_value REAL DEFAULT 0 CHECK (discount_value >= 0),

@@ -20,15 +20,14 @@ namespace SmartServePOS.ViewModels
 		private readonly IMapper _mapper;
 		private readonly IOrderReportService _reportService;
 		private readonly INavigationService _navigationService;
-		private readonly SyncScheduler _sync;
+		
 		public Array DateRanges => Enum.GetValues(typeof(DateRangeType));
 		public DashboardViewModel(
 			IMapper mapper,
 			IOrderReportService reportService,
-			INavigationService navigationService,
-			SyncScheduler sync)
+			INavigationService navigationService
+			)
 		{
-			_sync = sync;
 			_mapper = mapper;
 			_reportService = reportService;
 			_navigationService = navigationService;
@@ -40,7 +39,7 @@ namespace SmartServePOS.ViewModels
 			ToDate = DateTime.Today;
 
 			LoadOrdersCommand = new AsyncRelayCommand(LoadOrdersAsync);
-			SyncOrdersCommand = new AsyncRelayCommand(SyncOrdersAsync);
+			
 			OpenOrderDetailsCommand = new RelayCommand<OrderGridDto>(OpenOrderDetails);
 
 		}
@@ -123,8 +122,8 @@ namespace SmartServePOS.ViewModels
 		// =====================
 
 		public ICommand LoadOrdersCommand { get; }
-		public ICommand SyncOrdersCommand { get; }
-		public ICommand OpenOrderDetailsCommand { get; } 
+		
+		public ICommand OpenOrderDetailsCommand { get; }
 
 
 		private async Task LoadOrdersAsync()
@@ -144,7 +143,7 @@ namespace SmartServePOS.ViewModels
 					OrderType = order.OrderType,
 					TotalAmount = order.TotalAmount ?? 0,
 					DisplayTime = ConvertToIST(order.CreatedAt ?? DateTime.MinValue),
-					Discount = (order.DiscountType == DiscountType.PERCENT ? order.TotalAmount * order.DiscountValue / (100 - order.DiscountValue) : order.DiscountValue) ?? 0
+					Discount = (String.IsNullOrWhiteSpace(order.DiscountType) ? 0 : order.OriginalAmount-order.TotalAmount)??0
 				});
 			}
 
@@ -155,12 +154,7 @@ namespace SmartServePOS.ViewModels
 
 		}
 
-		private async Task SyncOrdersAsync()
-		{
-			await _sync.RunOnceSafeAsync();
-			await LoadOrdersAsync();
-		}
-
+		
 		private async void OpenOrderDetails(OrderGridDto? dto)
 		{
 			if (SelectedOrder == null)
@@ -247,6 +241,10 @@ namespace SmartServePOS.ViewModels
 			);
 
 			return ist.ToString("dd/MM/yyyy hh:mm tt");
+		}
+		private static decimal RoundRupee(decimal value)
+		{
+			return Math.Round(value, MidpointRounding.AwayFromZero);
 		}
 	}
 }

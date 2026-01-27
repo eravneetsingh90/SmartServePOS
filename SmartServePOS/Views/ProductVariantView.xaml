@@ -47,6 +47,7 @@
 					<ListBox.ItemTemplate>
 						<DataTemplate>
 							<Border
+								Cursor="Hand"
 								x:Name="Root"
 								Height="46"
 								Background="#333333">
@@ -132,6 +133,7 @@
 					<ListBox.ItemTemplate>
 						<DataTemplate>
 							<Border
+								Cursor="Hand"
 								x:Name="Root"
 								Height="46"
 								Background="#eaeaea">
@@ -199,18 +201,21 @@
 						DockPanel.Dock="Right"
 						Orientation="Horizontal">
 						<Button
+							Cursor="Hand"
 							Margin="0,0,8,0"
 							Background="#F3F3F3"
 							BorderBrush="#CCC"
 							Command="{Binding AddVariantCommand}"
 							Content="+ Add Variant" />
 						<Button
+							Cursor="Hand"
 							Margin="0,0,8,0"
 							Background="#2E7D32"
 							Command="{Binding SaveCommand}"
 							Content="Save Changes"
 							Foreground="White" />
 						<Button
+							Cursor="Hand"
 							Background="#0047AB"
 							Command="{Binding RefreshCommand}"
 							Content="Refresh 🔄"
@@ -275,6 +280,7 @@
 								<Style TargetType="TextBlock">
 									<Setter Property="HorizontalAlignment" Value="Center" />
 									<Setter Property="VerticalAlignment" Value="Center" />
+									<Setter Property="Cursor" Value="Hand" />
 								</Style>
 							</DataGridTextColumn.ElementStyle>
 
@@ -293,6 +299,7 @@
 								<Style TargetType="TextBlock">
 									<Setter Property="VerticalAlignment" Value="Center" />
 									<Setter Property="HorizontalAlignment" Value="Left" />
+									<Setter Property="Cursor" Value="Hand" />
 								</Style>
 							</DataGridTextColumn.ElementStyle>
 
@@ -311,6 +318,7 @@
 								<Style TargetType="TextBlock">
 									<Setter Property="HorizontalAlignment" Value="Left" />
 									<Setter Property="VerticalAlignment" Value="Center" />
+									<Setter Property="Cursor" Value="Hand" />
 								</Style>
 							</DataGridTextColumn.ElementStyle>
 
@@ -329,6 +337,7 @@
 								<Style TargetType="CheckBox">
 									<Setter Property="HorizontalAlignment" Value="Center" />
 									<Setter Property="VerticalAlignment" Value="Center" />
+									<Setter Property="Cursor" Value="Hand" />
 								</Style>
 							</DataGridCheckBoxColumn.ElementStyle>
 						</DataGridCheckBoxColumn>
@@ -338,6 +347,7 @@
 							<DataGridTemplateColumn.CellTemplate>
 								<DataTemplate>
 									<Button
+										Cursor="Hand"
 										Background="Transparent"
 										BorderThickness="0"
 										Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"

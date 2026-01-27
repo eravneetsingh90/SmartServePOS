@@ -96,6 +96,7 @@
 						Background="#C62828"
 						Click="NewOrderButton_Click"
 						Content="New Order"
+						Cursor="Hand"
 						Foreground="White" />
 
 					<Button
@@ -104,6 +105,7 @@
 						Background="#C62828"
 						Click="DashboardButton_Click"
 						Content="Dashboard"
+						Cursor="Hand"
 						Foreground="White" />
 					<Button
 						x:Name="MenuManagementButton"
@@ -111,6 +113,7 @@
 						Background="#C62828"
 						Click="MenuManagementButton_Click"
 						Content="Menu Management"
+						Cursor="Hand"
 						Foreground="White" />
 
 					<Button
@@ -119,6 +122,7 @@
 						Background="#C62828"
 						Click="StockManagementButton_Click"
 						Content="Stock Management"
+						Cursor="Hand"
 						Foreground="White" />
 
 				</StackPanel>

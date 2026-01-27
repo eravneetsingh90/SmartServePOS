@@ -1,9 +1,4 @@
-﻿using HandyControl.Controls;
-using SmartServe.Domain.Constants;
-using SmartServe.Domain.Models;
-using SmartServe.Domain.Services;
-using SmartServe.Domain.Stores;
-using SmartServe.EFCore.Models;
+﻿using SmartServe.Domain.Constants;
 using SmartServePOS.Command;
 using SmartServePOS.Helper;
 using SmartServePOS.Models;
@@ -18,6 +13,7 @@ namespace SmartServePOS.ViewModels
 {
 	public class TableViewModel : BaseViewModel
 	{
+		private readonly SyncScheduler _sync;
 		private readonly IPOSBillingService _billingService;
 		private readonly IPrintService _printService;
 		private readonly IPOSCatalogService _catalogService;
@@ -29,6 +25,7 @@ namespace SmartServePOS.ViewModels
 
 		public ObservableCollection<GetTableViewDto> Tables { get; } = new();
 		private readonly INavigationService _navigationService;
+		public ICommand SyncOrdersCommand { get; }
 		public ICommand OpenTableCommand { get; }
 		public ICommand PrintCommand { get; }
 		public ICommand ClosePaymentPopupCommand { get; }
@@ -64,7 +61,8 @@ namespace SmartServePOS.ViewModels
 			IPOSBillingService billingService,
 			INavigationService navigationService,
 			IPrintService printService,
-			IPOSCatalogService catalogService)
+			IPOSCatalogService catalogService,
+			SyncScheduler sync)
 		{
 			_catalogService = catalogService;
 			_billingService = billingService;
@@ -76,8 +74,9 @@ namespace SmartServePOS.ViewModels
 			OpenPaymentCommand = new RelayCommand<GetTableViewDto>(OpenPayment);
 			SettleAndSaveCommand = new RelayCommand<GetTableViewDto>(SettleAndSaveAsync);
 			ClosePaymentPopupCommand = new RelayCommand(_ => ClosePaymentPopup());
+			SyncOrdersCommand = new AsyncRelayCommand(SyncOrdersAsync);
 			_ = InitializeAsync();
-
+			_sync = sync;
 		}
 
 		private async Task InitializeAsync()
@@ -140,7 +139,7 @@ namespace SmartServePOS.ViewModels
 				decimal discount = 0;
 				if (order.DiscountType == DiscountType.PERCENT)
 				{
-					discount = Math.Round(subTotal * order.DiscountValue / 100, 2);
+					discount = Math.Round(subTotal * order.DiscountValue / 100, MidpointRounding.AwayFromZero);
 				}
 
 				if (order.DiscountType == DiscountType.FLAT)
@@ -172,7 +171,7 @@ namespace SmartServePOS.ViewModels
 					GrandTotal = subTotal - discount
 				};
 
-				_printService.PrintBill(printbill, showPreview: false);
+				_printService.PrintBill(printbill, showPreview: true);
 				order.StatusId = _catalogService.GetTableStatusByCode(TableStatusCodes.PRINTED).Id;
 				await _billingService.UpdateOrderAsync(order);
 				_ = InitializeAsync();
@@ -233,6 +232,11 @@ namespace SmartServePOS.ViewModels
 			IsPaymentPopupOpen = false;
 			OnPropertyChanged(nameof(IsPaymentPopupOpen));
 		}
+		private async Task SyncOrdersAsync()
+		{
+			await _sync.RunOnceSafeAsync();
+		}
+
 	}
 
 }

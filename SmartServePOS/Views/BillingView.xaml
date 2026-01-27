@@ -38,7 +38,6 @@
 					Margin="10,4,4,4"
 					Background="#C62828"
 					Content="Dine In"
-					Cursor="Hand"
 					Foreground="White" />
 				<!--<Button
 					Width="90"
@@ -207,7 +206,8 @@
 								Background="White"
 								BorderBrush="#DADADA"
 								BorderThickness="1"
-								CornerRadius="2">
+								CornerRadius="2"
+								Cursor="Hand">
 
 								<Grid>
 									<!--  Product Name  -->
@@ -523,6 +523,7 @@
 									<ComboBox
 										Width="100"
 										Margin="0,0,16,0"
+										Cursor="Hand"
 										IsEnabled="{Binding IsEditable}"
 										ItemsSource="{Binding DiscountTypes}"
 										SelectedItem="{Binding SelectedDiscountType}" />
@@ -535,6 +536,7 @@
 										Text="{Binding DiscountValue, Mode=TwoWay, UpdateSourceTrigger=LostFocus, StringFormat={}{0:0}}" />-->
 									<TextBox
 										Width="60"
+										Cursor="Hand"
 										IsEnabled="{Binding IsDiscountValueEnabled}"
 										Text="{Binding DiscountValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
@@ -563,6 +565,7 @@
 										Background="#C62828"
 										Command="{Binding SaveCommand}"
 										Content="Save"
+										Cursor="Hand"
 										Foreground="White"
 										IsEnabled="{Binding IsEditable}" />
 									<!--<Button

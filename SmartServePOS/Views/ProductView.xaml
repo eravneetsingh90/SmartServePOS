@@ -48,7 +48,8 @@
 							<Border
 								x:Name="Root"
 								Height="46"
-								Background="#333333">
+								Background="#333333"
+								Cursor="Hand">
 
 								<Grid>
 									<Grid.ColumnDefinitions>
@@ -128,12 +129,15 @@
 							Background="#F3F3F3"
 							BorderBrush="#CCC"
 							Command="{Binding AddProductCommand}"
-							Content="+ Add Product" />
+							Content="+ Add Product"
+							Cursor="Hand" />
 
 						<Button
+							Margin="0,0,8,0"
 							Background="#2E7D32"
 							Command="{Binding SaveCommand}"
 							Content="Save Changes"
+							Cursor="Hand"
 							Foreground="White"
 							IsEnabled="{Binding CanSave}" />
 
@@ -141,6 +145,7 @@
 							Background="#0047AB"
 							Command="{Binding RefreshCommand}"
 							Content="Refresh 🔄"
+							Cursor="Hand"
 							Foreground="White" />
 					</StackPanel>
 				</DockPanel>
@@ -180,6 +185,7 @@
 								<Style TargetType="TextBlock">
 									<Setter Property="HorizontalAlignment" Value="Center" />
 									<Setter Property="VerticalAlignment" Value="Center" />
+									<Setter Property="Cursor" Value="Hand" />
 								</Style>
 							</DataGridTextColumn.ElementStyle>
 
@@ -197,6 +203,7 @@
 								<Style TargetType="TextBlock">
 									<Setter Property="Padding" Value="12,0" />
 									<Setter Property="VerticalAlignment" Value="Center" />
+									<Setter Property="Cursor" Value="Hand" />
 								</Style>
 							</DataGridTextColumn.ElementStyle>
 
@@ -223,6 +230,7 @@
 
 										<ComboBox
 											Width="90"
+											Cursor="Hand"
 											DisplayMemberPath="Display"
 											ItemsSource="{Binding DataContext.FoodTypeOptions, RelativeSource={RelativeSource AncestorType=DataGrid}}"
 											SelectedValue="{Binding FoodType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -241,6 +249,7 @@
 								<Style TargetType="CheckBox">
 									<Setter Property="HorizontalAlignment" Value="Center" />
 									<Setter Property="VerticalAlignment" Value="Center" />
+									<Setter Property="Cursor" Value="Hand" />
 								</Style>
 							</DataGridCheckBoxColumn.ElementStyle>
 						</DataGridCheckBoxColumn>
@@ -255,6 +264,7 @@
 										Command="{Binding DataContext.DeleteProductCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
 										CommandParameter="{Binding}"
 										Content="✕"
+										Cursor="Hand"
 										Foreground="Red" />
 								</DataTemplate>
 							</DataGridTemplateColumn.CellTemplate>

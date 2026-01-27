@@ -141,7 +141,7 @@ namespace SmartServePOS.ViewModels
 
 				if (SelectedDiscountType == DiscountType.PERCENT)
 				{
-					return Math.Round(subTotal * DiscountValue / 100, 2);
+					return Math.Round(subTotal * DiscountValue / 100, MidpointRounding.AwayFromZero);
 				}
 
 				if (SelectedDiscountType == DiscountType.FLAT)
@@ -371,6 +371,7 @@ namespace SmartServePOS.ViewModels
 					OrderNumber = DateTime.Now.ToString("yyMMddHHmmss"),
 					StatusId = statusId,
 					OrderType = "DINE_IN",
+					OriginalAmount = SubTotal,
 					TotalAmount = GrandTotal,
 					DiscountType = IsDiscountValueEnabled ? SelectedDiscountType: null,
 					DiscountValue = IsDiscountValueEnabled ? DiscountValue: 0
@@ -396,6 +397,7 @@ namespace SmartServePOS.ViewModels
 					TableId = _currentTableId,
 					StatusId = statusId,
 					OrderType = "DINE_IN",
+					OriginalAmount = SubTotal,
 					TotalAmount = GrandTotal,
 					DiscountType = IsDiscountValueEnabled ? SelectedDiscountType : null,
 					DiscountValue = IsDiscountValueEnabled ? DiscountValue : 0
