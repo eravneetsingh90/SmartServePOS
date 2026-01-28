@@ -72,6 +72,8 @@ namespace SmartServePOS.ViewModels
 			_billingService = billingService;
 			_printService = printService;
 			_navigationService = navigationService;
+			_sync = sync;
+
 			OpenTableCommand = new RelayCommand<GetTableViewDto>(OpenTable);
 			PrintCommand = new RelayCommand<GetTableViewDto>(PrintBill);
 			//SaveCommand = new RelayCommand<GetTableViewDto>(SaveAsync);
@@ -80,7 +82,6 @@ namespace SmartServePOS.ViewModels
 			ClosePaymentPopupCommand = new RelayCommand(_ => ClosePaymentPopup());
 			SyncOrdersCommand = new AsyncRelayCommand(SyncOrdersAsync);
 			_ = InitializeAsync();
-			_sync = sync;
 		}
 
 		private async Task InitializeAsync()

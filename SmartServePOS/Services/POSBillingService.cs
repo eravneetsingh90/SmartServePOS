@@ -125,14 +125,13 @@ namespace SmartServePOS.Services
 
 			return order;
 		}
-
 		public async Task<List<OrderDto>> GetUnsyncedOrdersAsync()
 		{
 			using var connection = _connectionFactory.CreateConnection();
 
 			var result = new List<OrderDto>();
 			using var cmd = connection.CreateCommand();
-			cmd.CommandText = "SELECT * FROM orders WHERE IsSynced = 0 and closed_at is not null ORDER BY created_at LIMIT 10;";
+			cmd.CommandText = "SELECT * FROM orders WHERE IsSynced = 0 and closed_at is not null ORDER BY created_at;";
 
 			using var reader = await cmd.ExecuteReaderAsync();
 			while (await reader.ReadAsync())

@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
 using SmartServe.Domain.Constants;
 using SmartServe.Domain.Models;
-using SmartServe.Domain.Services;
-using SmartServe.EFCore.Models;
 using SmartServePOS.Command;
+using SmartServePOS.Constant;
 using SmartServePOS.Helper;
 using SmartServePOS.Models;
 using SmartServePOS.Services;
@@ -31,9 +30,12 @@ namespace SmartServePOS.ViewModels
 		public ObservableCollection<ProductVariant> Variants { get; }
 		public ObservableCollection<BillItemModelDto> BillItems { get; }
 		public ObservableCollection<string> DiscountTypes { get; }
-#endregion
+		#endregion
 
 		#region services
+		private readonly INotificationService _notificationService;
+		private readonly IOrderSyncService _orderSyncService;
+		private readonly IMasterDataService _masterService;
 		private readonly IPrintService _printService;
 		private readonly IPOSCatalogService _catalogService;
 		private readonly IPOSBillingService _billingService;
@@ -161,13 +163,19 @@ namespace SmartServePOS.ViewModels
 			IPOSCatalogService catalogService,
 			IPrintService printService,
 			IPOSBillingService billingService,
-			INavigationService navigationService)
+			INavigationService navigationService,
+			IOrderSyncService orderSyncService,
+			IMasterDataService masterService,
+			INotificationService notificationService)
 		{
 			_mapper = mapper;
 			_catalogService = catalogService;
 			_printService = printService;
 			_billingService = billingService;
 			_navigationService = navigationService;
+			_orderSyncService = orderSyncService;
+			_notificationService = notificationService;
+
 			IncreaseQtyCommand = new RelayCommand<BillItemModelDto>(IncreaseQty);
 			DecreaseQtyCommand = new RelayCommand<BillItemModelDto>(DecreaseQty);
 			RemoveItemCommand = new RelayCommand<BillItemModelDto>(RemoveItem);
@@ -175,12 +183,13 @@ namespace SmartServePOS.ViewModels
 			SaveCommand = new RelayCommand(async _ => await SaveAsync());
 			AddVariantCommand = new RelayCommand<ProductVariant>(AddVariantToBill);
 			PrintCommand = new RelayCommand<BillPrintModel>(PrintBill);
-			DiscountTypes = new ObservableCollection<string>{"NONE", DiscountType.PERCENT, DiscountType.FLAT };
+			DiscountTypes = new ObservableCollection<string> { "NONE", DiscountType.PERCENT, DiscountType.FLAT };
 			Categories = new ObservableCollection<Category>();
 			Products = new ObservableCollection<ProductDto>();
 			Variants = new ObservableCollection<ProductVariant>();
 			BillItems = new ObservableCollection<BillItemModelDto>();
 			LoadCategories();
+			_masterService = masterService;	
 		}
 		#endregion
 
@@ -373,8 +382,8 @@ namespace SmartServePOS.ViewModels
 					OrderType = "DINE_IN",
 					OriginalAmount = SubTotal,
 					TotalAmount = GrandTotal,
-					DiscountType = IsDiscountValueEnabled ? SelectedDiscountType: null,
-					DiscountValue = IsDiscountValueEnabled ? DiscountValue: 0
+					DiscountType = IsDiscountValueEnabled ? SelectedDiscountType : null,
+					DiscountValue = IsDiscountValueEnabled ? DiscountValue : 0
 				};
 
 				_currentOrderId = await _billingService.CreateOrderAsync(request);
@@ -389,7 +398,7 @@ namespace SmartServePOS.ViewModels
 
 				await _billingService.CreateOrderItemsAsync(orderItems);
 			}
-			else 
+			else
 			{
 				var request = new OrderDto
 				{
@@ -413,7 +422,7 @@ namespace SmartServePOS.ViewModels
 					PriceSnapshot = x.PriceSnapshot
 				}).ToList();
 
-				await _billingService.UpdateOrderItemsAsync(_currentOrderId,orderItems);
+				await _billingService.UpdateOrderItemsAsync(_currentOrderId, orderItems);
 			}
 			// optional: clear bill after save
 			BillItems.Clear();
@@ -449,8 +458,23 @@ namespace SmartServePOS.ViewModels
 		}
 		public async void RefreshAsync()
 		{
-			await _catalogService.Refresh();
-			LoadCategories();
+			if (!NetworkHelper.IsInternetAvailable())
+			{
+				await _catalogService.Refresh();
+				return;
+			}
+			await _orderSyncService.SyncPendingOrdersAsync();
+			var clearResponse = await _masterService.CleanAsync();
+			if (clearResponse.MetaData.ResultCode == ResultCodes.Success)
+			{
+				await _masterService.SyncAsync();
+				await _catalogService.Refresh();
+				LoadCategories();
+			}
+			else if (clearResponse.MetaData.ResultCode == ResultCodes.ActiveOrderExists)
+				_notificationService.Error(ResultMessages.ActiveOrderExists);
+			else
+				_notificationService.Error(UIConstants.Error);
 		}
 		private void RecalculateTotals()
 		{

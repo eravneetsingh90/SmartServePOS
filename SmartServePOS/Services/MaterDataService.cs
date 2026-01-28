@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.Data.Sqlite;
+using SmartServe.Domain.Constants;
+using SmartServe.Domain.Models;
 using SmartServe.Domain.Services;
 using SmartServe.Domain.Stores;
 using SmartServePOS.Models;
@@ -37,6 +39,36 @@ namespace SmartServePOS.Services
 			await SyncProducts(connection);
 			await SyncProductVariants(connection);
 			tx.Commit();
+		}
+		public async Task<BaseResponse> CleanAsync()
+		{
+			var response = BaseResponse.New();
+			try
+			{
+				using var connection = _connectionFactory.CreateConnection();
+				if (await IsAnyActiveOrder(connection))
+				{
+					response.MetaData.ResultCode = ResultCodes.ActiveOrderExists;
+					response.MetaData.ResultMessage = ResultMessages.ActiveOrderExists;
+					return response;
+				}
+				using var tx = connection.BeginTransaction();
+				await CleanPayments(connection);
+				await CleanOrderItems(connection);
+				await CleanOrders(connection);
+				await CleanProductVariants(connection);
+				await CleanProducts(connection);
+				await CleanCategories(connection);
+				await CleanRestaurantTables(connection);
+				await CleanTableStatus(connection);
+				tx.Commit();
+			}
+			catch (Exception ex)
+			{
+				response.MetaData.ResultCode = ResultCodes.Error;
+				response.MetaData.ResultMessage = ResultMessages.Error;
+			}
+			return response;
 		}
 		public async Task<List<CategoryDto>> GetCategoriesAsync()
 		{
@@ -386,6 +418,67 @@ namespace SmartServePOS.Services
 				var hh = ex;
 			}
 		}
+		private async Task<bool> IsAnyActiveOrder(SqliteConnection connection)
+		{
+			using var cmd = connection.CreateCommand();
+			cmd.CommandText = @"
+				SELECT COUNT(1)
+				FROM orders
+				WHERE IsSynced = 0;
+			";
+
+			var count = Convert.ToInt32(await cmd.ExecuteScalarAsync());
+			return count > 0;
+		}
+		private async Task CleanPayments(SqliteConnection connection)
+		{
+			using var cmd = connection.CreateCommand();
+			cmd.CommandText = "DELETE FROM payments;";
+			await cmd.ExecuteNonQueryAsync();
+		}
+		private async Task CleanOrderItems(SqliteConnection connection)
+		{
+			using var cmd = connection.CreateCommand();
+			cmd.CommandText = "DELETE FROM order_items;";
+			await cmd.ExecuteNonQueryAsync();
+		}
+		private async Task CleanOrders(SqliteConnection connection)
+		{
+			using var cmd = connection.CreateCommand();
+			cmd.CommandText = "DELETE FROM orders;";
+			await cmd.ExecuteNonQueryAsync();
+		}
+		private async Task CleanRestaurantTables(SqliteConnection connection)
+		{
+			using var cmd = connection.CreateCommand();
+			cmd.CommandText = "DELETE FROM restaurant_tables;";
+			await cmd.ExecuteNonQueryAsync();
+		}
+		private async Task CleanTableStatus(SqliteConnection connection)
+		{
+			using var cmd = connection.CreateCommand();
+			cmd.CommandText = "DELETE FROM table_status;";
+			await cmd.ExecuteNonQueryAsync();
+		}
+		private async Task CleanCategories(SqliteConnection connection)
+		{
+			using var cmd = connection.CreateCommand();
+			cmd.CommandText = "DELETE FROM categories;";
+			await cmd.ExecuteNonQueryAsync();
+		}
+		private async Task CleanProducts(SqliteConnection connection)
+		{
+			using var cmd = connection.CreateCommand();
+			cmd.CommandText = "DELETE FROM products;";
+			await cmd.ExecuteNonQueryAsync();
+		}
+		private async Task CleanProductVariants(SqliteConnection connection)
+		{
+			using var cmd = connection.CreateCommand();
+			cmd.CommandText = "DELETE FROM product_variants;";
+			await cmd.ExecuteNonQueryAsync();
+		}
+
 		#endregion
 	}
 }
