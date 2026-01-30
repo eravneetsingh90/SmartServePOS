@@ -1,37 +1,43 @@
-﻿using SmartServe.Domain.Constants;
+﻿using AutoMapper;
+using SmartServe.Domain.Constants;
 using SmartServe.Domain.Models;
 using SmartServe.Domain.Services;
 using SmartServePOS.Command;
+using SmartServePOS.Helper;
 using SmartServePOS.Models;
 using System.Collections.ObjectModel;
-using System.Threading;
 using System.Windows.Input;
 
 namespace SmartServePOS.ViewModels
 {
 	public class LinkInventoryViewModel : BaseViewModel
 	{
-		#region Fields
-
-		private readonly IProductService _productService;
-		private readonly IStockService _stockService;
-
-		private readonly SemaphoreSlim _ingredientLock = new(1, 1);
-		private CancellationTokenSource _ingredientCts;
-
+		#region commands
+		public ICommand ToggleStockCommand { get; }
 		#endregion
-
-		#region Collections
+		#region Fields
+		private readonly IMapper _mapper;
+		private readonly IProductService _productService;
+		private readonly INotificationService _notificationService;
+		private readonly IStockService _stockService;
 
 		public ObservableCollection<Category> Categories { get; } = new();
 		public ObservableCollection<Product> Products { get; } = new();
-		public ObservableCollection<LinkInventoryModel> Variants { get; } = new();
-		public ObservableCollection<IngredientStockSetupModel> Ingredients { get; } = new();
+		public ObservableCollection<LinkInventoryDto> Variants { get; } = new();
 
-		#endregion
-
-		#region Properties
-
+		public List<Option> ItemTypes { get; } = new()
+		{
+			new Option { Value = null, Display = "-- Select --" },
+			new Option { Value = StockItemType.VARIANT, Display = StockItemType.VARIANT },
+			new Option { Value = StockItemType.INGREDIENT, Display = StockItemType.INGREDIENT }
+		};
+		public List<Option> UnitTypes { get; } = new()
+		{
+			new Option { Value = null, Display = "-- Select --" },
+			new Option { Value = UnitType.PCS, Display = UnitType.PCS},
+			new Option { Value = UnitType.ML, Display = UnitType.ML},
+			new Option { Value = UnitType.GM, Display = UnitType.GM}
+		};
 		private Category _selectedCategory;
 		public Category SelectedCategory
 		{
@@ -54,17 +60,6 @@ namespace SmartServePOS.ViewModels
 			}
 		}
 
-		private string _ingredientSearchText;
-		public string IngredientSearchText
-		{
-			get => _ingredientSearchText;
-			set
-			{
-				if (SetProperty(ref _ingredientSearchText, value))
-					DebounceIngredientLoad();
-			}
-		}
-
 		private bool _isLoading;
 		public bool IsLoading
 		{
@@ -72,46 +67,7 @@ namespace SmartServePOS.ViewModels
 			set => SetProperty(ref _isLoading, value);
 		}
 
-		private bool _isIngredientLoading;
-		public bool IsIngredientLoading
-		{
-			get => _isIngredientLoading;
-			set => SetProperty(ref _isIngredientLoading, value);
-		}
 
-		private int _selectedTabIndex;
-		public int SelectedTabIndex
-		{
-			get => _selectedTabIndex;
-			set
-			{
-				if (SetProperty(ref _selectedTabIndex, value))
-				{
-					if (value == 1) // Ingredients tab index
-					{
-						_ = LoadIngredientsOnceAsync();
-					}
-				}
-			}
-		}
-
-		private bool _ingredientsLoaded;
-
-		private async Task LoadIngredientsOnceAsync()
-		{
-			if (_ingredientsLoaded)
-				return;
-
-			_ingredientsLoaded = true;
-			await LoadIngredientsAsync();
-		}
-
-		#endregion
-
-		#region Commands
-
-		public ICommand ToggleStockCommand { get; }
-		public ICommand ToggleIngredientStockCommand { get; }
 
 		#endregion
 
@@ -119,16 +75,17 @@ namespace SmartServePOS.ViewModels
 
 		public LinkInventoryViewModel(
 			IProductService productService,
-			IStockService stockService)
+			IStockService stockService,
+			IMapper mapper,
+			INotificationService notificationService)
 		{
+			_mapper = mapper;
+			_notificationService = notificationService;
 			_productService = productService;
 			_stockService = stockService;
 
-			ToggleStockCommand = new RelayCommand<LinkInventoryModel>(
-				async v => await ToggleVariantStockAsync(v));
-
-			ToggleIngredientStockCommand = new RelayCommand<IngredientStockSetupModel>(
-				async i => await ToggleIngredientStockAsync(i));
+			ToggleStockCommand =
+				new RelayCommand<LinkInventoryDto>(ToggleVariantStockAsync);
 
 			_ = InitializeAsync();
 		}
@@ -140,15 +97,13 @@ namespace SmartServePOS.ViewModels
 		private async Task InitializeAsync()
 		{
 			IsLoading = true;
-
 			await LoadCategoriesAsync();
-			
 			IsLoading = false;
 		}
 
 		#endregion
 
-		#region Category / Product / Variant Loading
+		#region Loading Logic
 
 		private async Task LoadCategoriesAsync()
 		{
@@ -165,7 +120,7 @@ namespace SmartServePOS.ViewModels
 				});
 			}
 
-			SelectedCategory ??= Categories.FirstOrDefault();
+			SelectedCategory = Categories.FirstOrDefault();
 		}
 
 		private async Task LoadProductsAsync()
@@ -201,141 +156,68 @@ namespace SmartServePOS.ViewModels
 
 			var variants = await _productService.GetVariantByProductIdAsync(SelectedProduct.Id);
 
-			var stockItems = await _stockService.GetStockItemAsync(StockItem.VARIANT);
+			// Load ALL stock items (variant + ingredient)
+			var stockItems = await _stockService.GetStockAsync();
 			var stockLookup = stockItems.ToDictionary(x => x.VariantId);
 
 			foreach (var variant in variants)
 			{
-				Variants.Add(new LinkInventoryModel
+				var model = new LinkInventoryDto
 				{
 					VariantId = variant.Id,
 					VariantName = variant.VariantName,
 					Price = variant.Price,
 					ProductName = SelectedProduct.Name,
-					CategoryName = SelectedCategory?.Name,
-					IsStockTracked = stockLookup.ContainsKey(variant.Id)
-				});
-			}
+					CategoryName = SelectedCategory?.Name??string.Empty,
+					IsStockTracked = false,
+					IsActive = true,
+					CreatedAt = DateTime.UtcNow
+				};
 
-			IsLoading = false;
-		}
-
-		#endregion
-
-		#region Ingredient Loading (Serialized + Debounced)
-
-		private void DebounceIngredientLoad()
-		{
-			_ingredientCts?.Cancel();
-			_ingredientCts = new CancellationTokenSource();
-
-			_ = LoadIngredientsDebouncedAsync(_ingredientCts.Token);
-		}
-
-		private async Task LoadIngredientsDebouncedAsync(CancellationToken token)
-		{
-			try
-			{
-				await Task.Delay(300, token);
-				await LoadIngredientsAsync();
-			}
-			catch (TaskCanceledException) { }
-		}
-
-		private async Task LoadIngredientsAsync()
-		{
-			await _ingredientLock.WaitAsync();
-			try
-			{
-				IsIngredientLoading = true;
-				Ingredients.Clear();
-
-				var ingredients = await _stockService.GetIngredients();
-				var stockItems = await _stockService.GetStockItemAsync(StockItem.INGREDIENT);
-
-				var stockLookup = stockItems.ToDictionary(x => x.VariantId);
-
-				foreach (var ing in ingredients)
+				if (stockLookup.TryGetValue(variant.Id, out var stock))
 				{
-					if (!string.IsNullOrWhiteSpace(IngredientSearchText) &&
-						!ing.Name.Contains(IngredientSearchText,
-							StringComparison.OrdinalIgnoreCase))
-						continue;
-
-					Ingredients.Add(new IngredientStockSetupModel
-					{
-						IngredientId = ing.IngredientId,
-						IngredientName = ing.Name,
-						Unit = ing.Unit,
-						IsStockTracked = stockLookup.ContainsKey(ing.IngredientId)
-					});
+					model.Id = stock.Id;
+					model.ItemType = stock.ItemType;
+					model.Unit = stock.Unit;
+					model.MinStockLevel = stock.MinStockLevel??0;
+					model.IsStockTracked = true;
+					model.IsActive = !model.IsActive;
+					model.CreatedAt = stock.CreatedAt ?? DateTime.UtcNow;
 				}
-			}
-			finally
-			{
-				IsIngredientLoading = false;
-				_ingredientLock.Release();
-			}
-		}
-
-		#endregion
-
-		#region Toggle Stock
-
-		private async Task ToggleVariantStockAsync(LinkInventoryModel variant)
-		{
-			if (variant == null)
-				return;
-
-			IsLoading = true;
-
-			if (!variant.IsStockTracked)
-			{
-				await _stockService.ActivateStockItemAsync(
-					StockItem.VARIANT,
-					variant.VariantId);
-
-				variant.IsStockTracked = true;
-			}
-			else
-			{
-				await _stockService.DeactivateStockItemAsync(
-					StockItem.VARIANT,
-					variant.VariantId);
-
-				variant.IsStockTracked = false;
+				
+				Variants.Add(model);
 			}
 
 			IsLoading = false;
 		}
 
-		private async Task ToggleIngredientStockAsync(IngredientStockSetupModel ingredient)
+		#endregion
+
+		#region Stock Toggle
+
+		private async void ToggleVariantStockAsync(LinkInventoryDto model)
 		{
-			if (ingredient == null)
+			if (model == null)
 				return;
-
-			IsIngredientLoading = true;
-
-			if (!ingredient.IsStockTracked)
+			if(model.ItemType == null)
 			{
-				await _stockService.ActivateStockItemAsync(
-					StockItem.INGREDIENT,
-					ingredient.IngredientId);
-
-				ingredient.IsStockTracked = true;
+				_notificationService.Error("Please select Item Type before adding to stock.");
+				return;
 			}
-			else
+			if(model.Unit == null)
 			{
-				await _stockService.DeactivateStockItemAsync(
-					StockItem.INGREDIENT,
-					ingredient.IngredientId);
-
-				ingredient.IsStockTracked = false;
+				_notificationService.Error("Please select Unit before adding to stock.");
+				return;
 			}
+			IsLoading = true;
+			var stock = _mapper.Map<Stock>(model);
+			await _stockService.ActivateStockItemAsync(stock);
+			_ = LoadVariantsAsync();
 
-			IsIngredientLoading = false;
+			IsLoading = false;
 		}
 
 		#endregion
+
 	}
 }

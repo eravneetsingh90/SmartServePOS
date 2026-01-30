@@ -6,11 +6,6 @@
 		UPI,
 		Part
 	}
-	public enum StockItemType
-	{
-		VARIANT,
-		INGREDIENT
-	}
 	public enum DateRangeType
 	{
 		Today,

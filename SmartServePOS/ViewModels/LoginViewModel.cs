@@ -13,8 +13,8 @@ namespace SmartServePOS.ViewModels
 		private readonly IAuthService _authService;
 		private readonly INavigationService _navigationService;
 
-		private string _username = "user";
-		private string _pin = string.Empty;
+		private string _username = "admin";
+		private string _pin = "1234";
 		private string _errorMessage = string.Empty;
 		private bool _isBusy;
 

@@ -1,8 +1,8 @@
 ﻿namespace SmartServePOS.Models
 {
-	public class FoodTypeOption
+	public class Option
 	{
-		public string? Value { get; set; }   // null, VEG, NON_VEG
+		public string? Value { get; set; }  
 		public string Display { get; set; } = string.Empty;
 	}
 

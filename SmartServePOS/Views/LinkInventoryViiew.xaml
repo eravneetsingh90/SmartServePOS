@@ -19,202 +19,157 @@
 			FontWeight="SemiBold"
 			Text="Stock Item Setup" />
 
-		<!--  ================= TAB CONTROL =================  -->
-		<TabControl SelectedIndex="{Binding SelectedTabIndex}">
+		<DockPanel>
 
-			<!--  ================= VARIANTS TAB =================  -->
-			<TabItem Header="Variants">
+			<!--  FILTER BAR  -->
+			<Border
+				Margin="0,0,0,12"
+				Padding="12"
+				Background="White"
+				CornerRadius="6"
+				DockPanel.Dock="Top">
 
-				<DockPanel>
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="200" />
+						<ColumnDefinition Width="200" />
+						<ColumnDefinition />
+					</Grid.ColumnDefinitions>
 
-					<!--  FILTER BAR  -->
-					<Border
-						Margin="0,0,0,12"
-						Padding="12"
-						Background="White"
-						CornerRadius="6"
-						DockPanel.Dock="Top">
+					<StackPanel>
+						<TextBlock
+							FontSize="12"
+							Foreground="#666"
+							Text="Category" />
+						<ComboBox
+							Height="32"
+							DisplayMemberPath="Name"
+							ItemsSource="{Binding Categories}"
+							SelectedItem="{Binding SelectedCategory}" />
+					</StackPanel>
 
-						<Grid>
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="200" />
-								<ColumnDefinition Width="200" />
-								<ColumnDefinition />
-							</Grid.ColumnDefinitions>
+					<StackPanel Grid.Column="1">
+						<TextBlock
+							FontSize="12"
+							Foreground="#666"
+							Text="Product" />
+						<ComboBox
+							Height="32"
+							DisplayMemberPath="Name"
+							ItemsSource="{Binding Products}"
+							SelectedItem="{Binding SelectedProduct}" />
+					</StackPanel>
+				</Grid>
+			</Border>
 
-							<StackPanel>
-								<TextBlock
-									FontSize="12"
-									Foreground="#666"
-									Text="Category" />
-								<ComboBox
-									Height="32"
-									DisplayMemberPath="Name"
-									ItemsSource="{Binding Categories}"
-									SelectedItem="{Binding SelectedCategory}" />
-							</StackPanel>
+			<!--  VARIANT GRID  -->
+			<Border
+				Padding="8"
+				Background="White"
+				CornerRadius="6">
 
-							<StackPanel Grid.Column="1">
-								<TextBlock
-									FontSize="12"
-									Foreground="#666"
-									Text="Product" />
-								<ComboBox
-									Height="32"
-									DisplayMemberPath="Name"
-									ItemsSource="{Binding Products}"
-									SelectedItem="{Binding SelectedProduct}" />
-							</StackPanel>
-						</Grid>
-					</Border>
+				<DataGrid
+					AutoGenerateColumns="False"
+					CanUserAddRows="False"
+					GridLinesVisibility="None"
+					IsReadOnly="True"
+					ItemsSource="{Binding Variants}"
+					RowHeight="40">
 
-					<!--  VARIANT GRID  -->
-					<Border
-						Padding="8"
-						Background="White"
-						CornerRadius="6">
+					<DataGrid.Columns>
 
-						<DataGrid
-							AutoGenerateColumns="False"
-							CanUserAddRows="False"
-							GridLinesVisibility="None"
-							IsReadOnly="True"
-							ItemsSource="{Binding Variants}"
-							RowHeight="36">
+						<DataGridTextColumn
+							Width="*"
+							Binding="{Binding VariantName}"
+							Header="Variant" />
+						<DataGridTextColumn
+							Width="180"
+							Binding="{Binding ProductName}"
+							Header="Product" />
+						<DataGridTextColumn
+							Width="160"
+							Binding="{Binding CategoryName}"
+							Header="Category" />
+						<DataGridTextColumn
+							Width="100"
+							Binding="{Binding Price, StringFormat=₹ {0:N2}}"
+							Header="Price" />
 
-							<DataGrid.Columns>
+						<DataGridTemplateColumn Width="140" Header="Item Type">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<!--<ComboBox
+										Height="28"
+										ItemsSource="{Binding ItemTypes}"
+										SelectedItem="{Binding SelectedItemType}" />-->
 
-								<DataGridTextColumn
-									Width="*"
-									Binding="{Binding VariantName}"
-									Header="Variant" />
-								<DataGridTextColumn
-									Width="180"
-									Binding="{Binding ProductName}"
-									Header="Product" />
-								<DataGridTextColumn
-									Width="160"
-									Binding="{Binding CategoryName}"
-									Header="Category" />
-								<DataGridTextColumn
-									Width="100"
-									Binding="{Binding Price, StringFormat=₹ {0:N2}}"
-									Header="Price" />
+									<ComboBox
+										Width="90"
+										Cursor="Hand"
+										DisplayMemberPath="Display"
+										ItemsSource="{Binding DataContext.ItemTypes, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+										SelectedValue="{Binding ItemType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+										SelectedValuePath="Value" />
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
 
-								<DataGridTemplateColumn Width="140" Header="Stock">
-									<DataGridTemplateColumn.CellTemplate>
-										<DataTemplate>
-											<TextBlock
-												HorizontalAlignment="Center"
-												FontWeight="SemiBold"
-												Foreground="{Binding StockStatusColor}"
-												Text="{Binding StockStatus}" />
-										</DataTemplate>
-									</DataGridTemplateColumn.CellTemplate>
-								</DataGridTemplateColumn>
+						<DataGridTemplateColumn Width="120" Header="Unit">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<ComboBox
+										Width="90"
+										Cursor="Hand"
+										DisplayMemberPath="Display"
+										ItemsSource="{Binding DataContext.UnitTypes, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+										SelectedValue="{Binding Unit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+										SelectedValuePath="Value" />
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
 
-								<DataGridTemplateColumn Width="160" Header="Action">
-									<DataGridTemplateColumn.CellTemplate>
-										<DataTemplate>
-											<Button
-												Width="130"
-												Height="28"
-												Command="{Binding DataContext.ToggleStockCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-												CommandParameter="{Binding}"
-												Content="{Binding ActionText}" />
-										</DataTemplate>
-									</DataGridTemplateColumn.CellTemplate>
-								</DataGridTemplateColumn>
+						<DataGridTemplateColumn Width="120" Header="Min Level">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<TextBox
+										Height="26"
+										Padding="4,2"
+										HorizontalContentAlignment="Right"
+										Text="{Binding MinStockLevel, UpdateSourceTrigger=PropertyChanged}" />
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
 
-							</DataGrid.Columns>
-						</DataGrid>
+						<DataGridTemplateColumn Width="140" Header="Stock">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<TextBlock
+										HorizontalAlignment="Center"
+										FontWeight="SemiBold"
+										Foreground="{Binding StockStatusColor}"
+										Text="{Binding StockStatus}" />
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
 
-					</Border>
+						<DataGridTemplateColumn Width="160" Header="Action">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<Button
+										Width="130"
+										Height="28"
+										Command="{Binding DataContext.ToggleStockCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+										CommandParameter="{Binding}"
+										Content="{Binding ActionText}" />
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
 
-				</DockPanel>
-			</TabItem>
+					</DataGrid.Columns>
+				</DataGrid>
 
-			<!--  ================= INGREDIENTS TAB =================  -->
-			<TabItem Header="Ingredients">
+			</Border>
 
-				<DockPanel>
-
-					<!--  SEARCH BAR  -->
-					<Border
-						Margin="0,0,0,12"
-						Padding="12"
-						Background="White"
-						CornerRadius="6"
-						DockPanel.Dock="Top">
-
-						<StackPanel>
-							<TextBlock
-								FontSize="12"
-								Foreground="#666"
-								Text="Search Ingredient" />
-							<TextBox Height="32" Text="{Binding IngredientSearchText, UpdateSourceTrigger=PropertyChanged}" />
-						</StackPanel>
-					</Border>
-
-					<!--  INGREDIENT GRID  -->
-					<Border
-						Padding="8"
-						Background="White"
-						CornerRadius="6">
-
-						<DataGrid
-							AutoGenerateColumns="False"
-							CanUserAddRows="False"
-							GridLinesVisibility="None"
-							IsReadOnly="True"
-							ItemsSource="{Binding Ingredients}"
-							RowHeight="36">
-
-							<DataGrid.Columns>
-
-								<DataGridTextColumn
-									Width="*"
-									Binding="{Binding IngredientName}"
-									Header="Ingredient" />
-								<DataGridTextColumn
-									Width="100"
-									Binding="{Binding Unit}"
-									Header="Unit" />
-
-								<DataGridTemplateColumn Width="140" Header="Stock">
-									<DataGridTemplateColumn.CellTemplate>
-										<DataTemplate>
-											<TextBlock
-												HorizontalAlignment="Center"
-												FontWeight="SemiBold"
-												Foreground="{Binding StockStatusColor}"
-												Text="{Binding StockStatus}" />
-										</DataTemplate>
-									</DataGridTemplateColumn.CellTemplate>
-								</DataGridTemplateColumn>
-
-								<DataGridTemplateColumn Width="160" Header="Action">
-									<DataGridTemplateColumn.CellTemplate>
-										<DataTemplate>
-											<Button
-												Width="130"
-												Height="28"
-												Command="{Binding DataContext.ToggleIngredientStockCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-												CommandParameter="{Binding}"
-												Content="{Binding ActionText}" />
-										</DataTemplate>
-									</DataGridTemplateColumn.CellTemplate>
-								</DataGridTemplateColumn>
-
-							</DataGrid.Columns>
-						</DataGrid>
-
-					</Border>
-
-				</DockPanel>
-			</TabItem>
-
-		</TabControl>
-
+		</DockPanel>
 	</DockPanel>
 </Page>

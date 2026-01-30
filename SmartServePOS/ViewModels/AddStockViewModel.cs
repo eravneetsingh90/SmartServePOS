@@ -26,7 +26,6 @@ namespace SmartServePOS.ViewModels
 		public ObservableCollection<Category> Categories { get; } = new();
 		public ObservableCollection<Product> Products { get; }
 		public ObservableCollection<ProductVariant> Variants { get; } = new();
-		public ObservableCollection<Ingredient> Ingredients { get; } = new();
 		public ObservableCollection<AddStockModel> StockRows { get; } = new();
 		#endregion
 
@@ -171,18 +170,9 @@ namespace SmartServePOS.ViewModels
 		private async Task ReloadAsync()
 		{
 			Variants.Clear();
-			Ingredients.Clear();
 			StockRows.Clear();
 
 			await InitializeAsync();
-		}
-
-		private async Task LoadIngredientsAsync()
-		{
-			var ingredients = await _stockService.GetIngredients();
-
-			foreach (var ing in ingredients)
-				Ingredients.Add(ing);
 		}
 
 		private void AddVariant(ProductVariant variant)

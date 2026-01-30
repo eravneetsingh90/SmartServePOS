@@ -3,10 +3,13 @@ using System.Windows.Media;
 
 namespace SmartServePOS.Models
 {
-	public class LinkInventoryModel : BaseViewModel
+	public class LinkInventoryDto : BaseViewModel
 	{
+		public int Id { get; set; }
 		public int VariantId { get; set; }
-
+		public string ItemType { get; set; }
+		public string Unit { get; set; }
+		public decimal MinStockLevel { get; set; } = 0;
 		public string VariantName { get; set; }
 		public string ProductName { get; set; }
 		public string CategoryName { get; set; }
@@ -38,6 +41,9 @@ namespace SmartServePOS.Models
 
 		public string ActionText =>
 			IsStockTracked ? "Remove from Stock" : "Add to Stock";
+
+		public bool IsActive { get; set; }
+		public DateTime CreatedAt { get; set; }
 	}
 
 }

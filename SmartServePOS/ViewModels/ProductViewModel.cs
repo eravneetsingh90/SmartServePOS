@@ -41,11 +41,11 @@ namespace SmartServePOS.ViewModels
 		public ICommand SaveCommand { get; }
 		public ICommand DeleteProductCommand { get; }
 		public ICommand RefreshCommand { get; }
-		public List<FoodTypeOption> FoodTypeOptions { get; } = new()
+		public List<Option> FoodTypeOptions { get; } = new()
 		{
-			new FoodTypeOption { Value = null, Display = "-- Select --" },
-			new FoodTypeOption { Value = "VEG", Display = "Veg" },
-			new FoodTypeOption { Value = "NON_VEG", Display = "Non-Veg" }
+			new Option { Value = null, Display = "-- Select --" },
+			new Option { Value = "VEG", Display = "Veg" },
+			new Option { Value = "NON_VEG", Display = "Non-Veg" }
 		};
 
 		#endregion
