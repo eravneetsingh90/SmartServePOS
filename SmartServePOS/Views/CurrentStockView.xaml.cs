@@ -12,13 +12,13 @@ namespace SmartServePOS.Views
 		public CurrentStockView()
 		{
 			InitializeComponent();
-			if (DataContext == null)
-			{
-				if (App.Services is not null)
-				{
-					DataContext = App.Services.GetService<CurrentStockViewModel>();
-				}
-			}
+			//if (DataContext == null)
+			//{
+			//	if (App.Services is not null)
+			//	{
+			//		DataContext = App.Services.GetService<CurrentStockViewModel>();
+			//	}
+			//}
 		}
 	}
 }

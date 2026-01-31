@@ -1,84 +1,126 @@
 ﻿using SmartServe.Domain.Models;
 using SmartServe.Domain.Stores;
 using SmartServePOS.Command;
+using SmartServePOS.Models;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
 namespace SmartServePOS.ViewModels
 {
+
 	public class CurrentStockViewModel : BaseViewModel
 	{
-		private readonly IStockStore _stockStore;
-		public IEnumerable<CurrentStock> LowStockItems => _allStocks.Where(x => x.IsLowStock);
-
-		public ObservableCollection<CurrentStock> Stocks { get; private set; }
-
-		public ICommand RefreshCommand { get; }
-
-		private bool _isLoading;
-		public bool IsLoading
+		private int _totalItems;
+		public int TotalItems
 		{
-			get => _isLoading;
-			set => SetProperty(ref _isLoading, value);
+			get => _totalItems;
+			set { _totalItems = value; OnPropertyChanged(); }
 		}
+
+		private int _inStockCount;
+		public int InStockCount
+		{
+			get => _inStockCount;
+			set { _inStockCount = value; OnPropertyChanged(); }
+		}
+
+		private int _lowStockCount;
+		public int LowStockCount
+		{
+			get => _lowStockCount;
+			set { _lowStockCount = value; OnPropertyChanged(); }
+		}
+
+		private int _outOfStockCount;
+		public int OutOfStockCount
+		{
+			get => _outOfStockCount;
+			set { _outOfStockCount = value; OnPropertyChanged(); }
+		}
+
+		// ================= FILTERS =================
 
 		private string _searchText;
 		public string SearchText
 		{
 			get => _searchText;
-			set
-			{
-				SetProperty(ref _searchText, value);
-				ApplyFilter();
-			}
+			set { _searchText = value; OnPropertyChanged(); }
 		}
 
-		private List<CurrentStock> _allStocks;
-
-		public CurrentStockViewModel(IStockStore stockStore)
+		private string _selectedCategory;
+		public string SelectedCategory
 		{
-			_stockStore = stockStore;
-
-			Stocks = new ObservableCollection<CurrentStock>();
-			_allStocks = new List<CurrentStock>();
-
-			RefreshCommand = new RelayCommand(async _ => await LoadAsync());
-
-			_ = LoadAsync(); // auto-load on page open
+			get => _selectedCategory;
+			set { _selectedCategory = value; OnPropertyChanged(); }
 		}
 
-		private async Task LoadAsync()
+		private StockStatus? _selectedStatus;
+		public StockStatus? SelectedStatus
 		{
-			try
-			{
-				IsLoading = true;
-
-				var data = await _stockStore.GetCurrentStockAsync();
-
-				_allStocks = data
-					.OrderBy(x => x.ItemType)
-					.ThenBy(x => x.ItemName)
-					.ToList();
-
-				ApplyFilter();
-			}
-			finally
-			{
-				IsLoading = false;
-			}
+			get => _selectedStatus;
+			set { _selectedStatus = value; OnPropertyChanged(); }
 		}
 
-		private void ApplyFilter()
+		// ================= STOCK LIST =================
+
+		public ObservableCollection<CurrentStockDto> StockItems { get; set; }
+
+		// ================= CONSTRUCTOR =================
+
+		public CurrentStockViewModel()
 		{
-			Stocks.Clear();
+			StockItems = new ObservableCollection<CurrentStockDto>();
+		}
+		public async Task Load()
+		{
+			StockItems.Clear();
+			LoadMockData();
+			CalculateSummary();
+		}
+		// ================= DATA LOADING =================
 
-			var filtered = string.IsNullOrWhiteSpace(SearchText)
-				? _allStocks
-				: _allStocks.Where(x =>
-					x.ItemName.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+		private void LoadMockData()
+		{
+			StockItems.Add(new CurrentStockDto
+			{
+				ItemName = "Vanilla Ice Cream",
+				Category = "Ice Cream",
+				CurrentStock = 2.4m,
+				Unit = "kg",
+				Status = StockStatus.LowStock
+			});
 
-			foreach (var item in filtered)
-				Stocks.Add(item);
+			StockItems.Add(new CurrentStockDto
+			{
+				ItemName = "Chocolate Cone",
+				Category = "Cone",
+				CurrentStock = 0,
+				Unit = "pcs",
+				Status = StockStatus.OutOfStock
+			});
+
+			StockItems.Add(new CurrentStockDto
+			{
+				ItemName = "Strawberry Scoop",
+				Category = "Ice Cream",
+				CurrentStock = 5.6m,
+				Unit = "kg",
+				Status = StockStatus.InStock
+			});
+		}
+
+		// ================= SUMMARY CALC =================
+
+		private void CalculateSummary()
+		{
+			TotalItems = StockItems.Count;
+			InStockCount = StockItems.Count(x => x.Status == StockStatus.InStock);
+			LowStockCount = StockItems.Count(x => x.Status == StockStatus.LowStock);
+			OutOfStockCount = StockItems.Count(x => x.Status == StockStatus.OutOfStock);
 		}
 	}
+
 }

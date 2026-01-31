@@ -80,7 +80,7 @@
 					BorderThickness="1"
 					CornerRadius="8"
 					Cursor="Hand"
-					MouseLeftButtonUp="OpenIceCreamStock_Click">
+					MouseLeftButtonUp="OpenCurrentStock_Click">
 
 					<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
 

@@ -29,6 +29,26 @@ namespace SmartServePOS.Helper
 				mw.MainFrame.Navigate(view);
 			}
 		}
+		public async void NavigateToCurrentStockView()
+		{
+			CurrentStockViewModel viewModel = null;
+			if (App.Services is not null)
+			{
+				viewModel = App.Services.GetService<CurrentStockViewModel>();
+			}
+			else
+			{
+				throw new InvalidOperationException("CurrentStockViewModel dependencies must be provided via DI.");
+			}
+
+			var view = new CurrentStockView();
+			view.DataContext = viewModel;
+			if (Application.Current.MainWindow is MainWindow mw)
+			{
+				mw.MainFrame.Navigate(view);
+			}
+			await viewModel.Load();
+		}
 		public async void NavigateToAddStockView()
 		{
 			AddStockViewModel viewModel = null;
