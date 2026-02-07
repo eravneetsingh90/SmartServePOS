@@ -1,18 +1,20 @@
-﻿using SmartServe.Domain.Models;
-using SmartServe.Domain.Stores;
-using SmartServePOS.Command;
+﻿using AutoMapper;
+using SmartServe.Domain.Models;
+using SmartServe.Domain.Services;
 using SmartServePOS.Models;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Windows.Input;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SmartServePOS.ViewModels
 {
-
 	public class CurrentStockViewModel : BaseViewModel
 	{
+		private readonly IStockService _stockService;
+		private readonly IMapper _mapper;
+
+		// ================= SUMMARY =================
+
 		private int _totalItems;
 		public int TotalItems
 		{
@@ -64,52 +66,33 @@ namespace SmartServePOS.ViewModels
 			set { _selectedStatus = value; OnPropertyChanged(); }
 		}
 
-		// ================= STOCK LIST =================
+		// ================= DATA =================
 
-		public ObservableCollection<CurrentStockDto> StockItems { get; set; }
+		public ObservableCollection<CurrentStockDto> StockItems { get; }
 
 		// ================= CONSTRUCTOR =================
 
-		public CurrentStockViewModel()
+		public CurrentStockViewModel(IStockService stockService, IMapper mapper)
 		{
+			_stockService = stockService;
+			_mapper = mapper;
 			StockItems = new ObservableCollection<CurrentStockDto>();
 		}
-		public async Task Load()
+
+		// ================= LOAD =================
+
+		public async Task LoadAsync()
 		{
 			StockItems.Clear();
-			LoadMockData();
+
+			var items = await _stockService.GetCurrentStockAsync();
+
+			foreach (var item in items)
+			{
+				StockItems.Add(_mapper.Map<CurrentStockDto>(item));
+			}
+
 			CalculateSummary();
-		}
-		// ================= DATA LOADING =================
-
-		private void LoadMockData()
-		{
-			StockItems.Add(new CurrentStockDto
-			{
-				ItemName = "Vanilla Ice Cream",
-				Category = "Ice Cream",
-				CurrentStock = 2.4m,
-				Unit = "kg",
-				Status = StockStatus.LowStock
-			});
-
-			StockItems.Add(new CurrentStockDto
-			{
-				ItemName = "Chocolate Cone",
-				Category = "Cone",
-				CurrentStock = 0,
-				Unit = "pcs",
-				Status = StockStatus.OutOfStock
-			});
-
-			StockItems.Add(new CurrentStockDto
-			{
-				ItemName = "Strawberry Scoop",
-				Category = "Ice Cream",
-				CurrentStock = 5.6m,
-				Unit = "kg",
-				Status = StockStatus.InStock
-			});
 		}
 
 		// ================= SUMMARY CALC =================
@@ -122,5 +105,4 @@ namespace SmartServePOS.ViewModels
 			OutOfStockCount = StockItems.Count(x => x.Status == StockStatus.OutOfStock);
 		}
 	}
-
 }

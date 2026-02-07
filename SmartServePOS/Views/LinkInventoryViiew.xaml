@@ -79,11 +79,12 @@
 					<DataGrid.Columns>
 
 						<DataGridTextColumn
+							MinWidth="160"
 							Width="*"
 							Binding="{Binding VariantName}"
 							Header="Variant" />
 						<DataGridTextColumn
-							Width="180"
+							Width="160"
 							Binding="{Binding ProductName}"
 							Header="Product" />
 						<DataGridTextColumn
@@ -152,7 +153,7 @@
 							</DataGridTemplateColumn.CellTemplate>
 						</DataGridTemplateColumn>
 
-						<DataGridTemplateColumn Width="160" Header="Action">
+						<DataGridTemplateColumn Width="150" Header="Action">
 							<DataGridTemplateColumn.CellTemplate>
 								<DataTemplate>
 									<Button

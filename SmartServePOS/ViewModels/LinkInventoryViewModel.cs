@@ -180,8 +180,8 @@ namespace SmartServePOS.ViewModels
 					model.ItemType = stock.ItemType;
 					model.Unit = stock.Unit;
 					model.MinStockLevel = stock.MinStockLevel??0;
-					model.IsStockTracked = true;
-					model.IsActive = !model.IsActive;
+					model.IsStockTracked = Convert.ToBoolean(stock.IsActive);
+					model.IsActive = !Convert.ToBoolean(stock.IsActive);
 					model.CreatedAt = stock.CreatedAt ?? DateTime.UtcNow;
 				}
 				

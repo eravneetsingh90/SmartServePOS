@@ -47,7 +47,7 @@ namespace SmartServePOS.Helper
 			{
 				mw.MainFrame.Navigate(view);
 			}
-			await viewModel.Load();
+			await viewModel.LoadAsync();
 		}
 		public async void NavigateToAddStockView()
 		{

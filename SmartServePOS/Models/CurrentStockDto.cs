@@ -3,15 +3,19 @@
 	public class CurrentStockDto
 	{
 		public int Id { get; set; }
-		public string ItemName { get; set; }
-		public string Category { get; set; }
+		public string ItemType { get; set; }
+		public int ReferenceId { get; set; }
 
-		// Raw stock
-		public decimal CurrentStock { get; set; }
+		public string ItemName { get; set; }   // Filled via JOIN later
 		public string Unit { get; set; }
+		public string Category { get; set; }
+		public decimal CurrentQuantity { get; set; }
+		public decimal MinStockLevel { get; set; }
+		
+		public bool IsLowStock => CurrentQuantity <= MinStockLevel;
 
 		// Display-friendly
-		public string DisplayStock => $"{CurrentStock:0.##} {Unit}";
+		public string DisplayStock => $"{CurrentQuantity:0.##} {Unit}";
 
 		// Status
 		public StockStatus Status { get; set; }
