@@ -1,15 +1,18 @@
 ﻿using AutoMapper;
 using SmartServe.Domain.Models;
 using SmartServe.Domain.Services;
+using SmartServePOS.Helper;
 using SmartServePOS.Models;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace SmartServePOS.ViewModels
 {
 	public class CurrentStockViewModel : BaseViewModel
 	{
+		public ICommand SyncUntrackedOrdersCommand { get; }
 		private readonly IStockService _stockService;
 		private readonly IMapper _mapper;
 
@@ -77,6 +80,7 @@ namespace SmartServePOS.ViewModels
 			_stockService = stockService;
 			_mapper = mapper;
 			StockItems = new ObservableCollection<CurrentStockDto>();
+			SyncUntrackedOrdersCommand = new AsyncRelayCommand(SyncUntrackedOrdersAsync);
 		}
 
 		// ================= LOAD =================
@@ -95,6 +99,11 @@ namespace SmartServePOS.ViewModels
 			CalculateSummary();
 		}
 
+		private async Task SyncUntrackedOrdersAsync()
+		{
+			await _stockService.ProcessUntrackedOrdersAsync();
+			await LoadAsync();
+		}
 		// ================= SUMMARY CALC =================
 
 		private void CalculateSummary()

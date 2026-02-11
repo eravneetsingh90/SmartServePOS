@@ -19,7 +19,29 @@
 			FontWeight="SemiBold"
 			Foreground="#222"
 			Text="View Stock" />
+		<StackPanel
+			HorizontalAlignment="Right"
+			VerticalAlignment="Center"
+			Orientation="Horizontal">
 
+			<Button
+				Margin="12,0,0,0"
+				Padding="12,4"
+				Background="#C62828"
+				Command="{Binding SyncUntrackedOrdersCommand}"
+				Cursor="Hand"
+				Foreground="White">
+				<StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+					<TextBlock FontWeight="SemiBold" Text="Sync" />
+					<TextBlock
+						Margin="5,1.5,0,0"
+						FontFamily="Segoe MDL2 Assets"
+						FontSize="14"
+						Text="&#xE72C;" />
+
+				</StackPanel>
+			</Button>
+		</StackPanel>
 		<!--  ================= SUMMARY CARDS =================  -->
 		<UniformGrid
 			Grid.Row="1"
@@ -172,7 +194,7 @@
 				<!--  Quantity  -->
 				<DataGridTextColumn
 					Width="1*"
-					Binding="{Binding CurrentStock}"
+					Binding="{Binding CurrentQuantity}"
 					Header="Quantity" />
 
 				<!--  Unit  -->
