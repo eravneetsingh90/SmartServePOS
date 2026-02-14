@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SmartServe.Domain.Dependencies;
 using SmartServe.Domain.Services;
 using SmartServe.EFCore.Dependencies;
+using SmartServe.Resources.Dependencies;
 using SmartServePOS.Data;
 using SmartServePOS.Dependencies;
 using SmartServePOS.Helper;
@@ -55,7 +56,8 @@ namespace SmartServePOS
 			services.AddSingleton<ISqliteConnectionFactory>(new SqliteConnectionFactory(dbPath));
 			services.UseEFCore(Configuration);
 			services.UseDomain();
-			services.UseApp();
+            services.UseResource();
+            services.UseApp();
 			Services = services.BuildServiceProvider();
 
 			//data sync scheduler

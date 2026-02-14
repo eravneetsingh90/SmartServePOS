@@ -82,7 +82,7 @@ namespace SmartServePOS.ViewModels
 			{
 				IsBusy = true;
 
-				UserEntity? user = await _authService.LoginAsync(Username, Pin);
+				var user = await _authService.LoginAsync(Username, Pin,1,false);
 
 				if (user == null)
 				{
@@ -93,7 +93,7 @@ namespace SmartServePOS.ViewModels
 
 				// Success
 				_mainWindowVm.IsLoggedIn = true;
-				_mainWindowVm.IsAdmin = user.Role?.RoleName == "OWNER" ? true : false;
+				_mainWindowVm.IsAdmin = user.Role == "OWNER" ? true : false;
 				_navigationService.NavigateToTableView();
 			}
 			catch
