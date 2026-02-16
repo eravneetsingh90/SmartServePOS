@@ -6,7 +6,8 @@
 		public string ShopAddress { get; set; } = string.Empty;
 		public string TerminalId { get; set; } = string.Empty;
 		public bool PrintPreview { get; set; } = false;
-	}
+        public string TenantCode { get; set; } = string.Empty;
+    }
 	public class ThemeSettings
 	{
 		public string PrimaryColor { get; set; } = "#000000";

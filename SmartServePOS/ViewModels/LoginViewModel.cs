@@ -1,7 +1,9 @@
-﻿using SmartServe.Domain.Services;
+﻿using Microsoft.Extensions.Options;
+using SmartServe.Domain.Services;
 using SmartServe.EFCore.Models;
 using SmartServePOS.Command;
 using SmartServePOS.Helper;
+using SmartServePOS.Models;
 using System.Windows.Input;
 
 namespace SmartServePOS.ViewModels
@@ -9,8 +11,8 @@ namespace SmartServePOS.ViewModels
 	public class LoginViewModel : BaseViewModel
 	{
 		private readonly MainWindowViewModel _mainWindowVm;
-
-		private readonly IAuthService _authService;
+        private readonly POSSettings _settings;
+        private readonly IAuthService _authService;
 		private readonly INavigationService _navigationService;
 
 		private string _username = "admin";
@@ -21,9 +23,10 @@ namespace SmartServePOS.ViewModels
 		public event Action? LoginSucceeded;
 		public ICommand LoginCommand { get; }
 
-		public LoginViewModel(IAuthService authService, INavigationService navigationService, MainWindowViewModel mainWindowVm)
+		public LoginViewModel(IOptions<POSSettings> options, IAuthService authService, INavigationService navigationService, MainWindowViewModel mainWindowVm)
 		{
-			_mainWindowVm = mainWindowVm;
+            _settings = options.Value;
+            _mainWindowVm = mainWindowVm;
 			_authService = authService;
 			_navigationService = navigationService;
 			LoginCommand = new RelayCommand(async _ => await LoginAsync());
@@ -82,7 +85,7 @@ namespace SmartServePOS.ViewModels
 			{
 				IsBusy = true;
 
-				var user = await _authService.LoginAsync(Username, Pin,1,false);
+				var user = await _authService.LoginAsync(Username, Pin,_settings.TenantCode);
 
 				if (user == null)
 				{

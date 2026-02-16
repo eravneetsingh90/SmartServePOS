@@ -56,7 +56,7 @@ namespace SmartServePOS
 			services.AddSingleton<ISqliteConnectionFactory>(new SqliteConnectionFactory(dbPath));
 			services.UseEFCore(Configuration);
 			services.UseDomain();
-            services.UseResource();
+            //services.UseResource();
             services.UseApp();
 			Services = services.BuildServiceProvider();
 
