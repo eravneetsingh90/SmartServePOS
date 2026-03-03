@@ -1,4 +1,5 @@
-﻿using SmartServe.Domain.Services;
+﻿using SmartServe.Domain.Constants;
+using SmartServe.Domain.Services;
 using SmartServe.EFCore.Models;
 using SmartServePOS.Command;
 using SmartServePOS.Helper;
@@ -82,9 +83,9 @@ namespace SmartServePOS.ViewModels
 			{
 				IsBusy = true;
 
-				UserEntity? user = await _authService.LoginAsync(Username, Pin);
+				var user = await _authService.LoginAsync(Username, Pin);
 
-				if (user == null)
+				if (user.MetaData.ResultCode != ResultCodes.Success)
 				{
 					ErrorMessage = "Invalid username or PIN";
 					Pin = string.Empty;
@@ -93,7 +94,7 @@ namespace SmartServePOS.ViewModels
 
 				// Success
 				_mainWindowVm.IsLoggedIn = true;
-				_mainWindowVm.IsAdmin = user.Role?.RoleName == "OWNER" ? true : false;
+				_mainWindowVm.IsAdmin = user.Data.Role == "OWNER" ? true : false;
 				_navigationService.NavigateToTableView();
 			}
 			catch

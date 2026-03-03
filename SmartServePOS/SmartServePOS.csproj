@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\SmartServeCommon\SmartServe.Common\SmartServe.Common.csproj" />
     <ProjectReference Include="..\..\SmartServeCommon\SmartServe.Domain\SmartServe.Domain.csproj" />
     <ProjectReference Include="..\..\SmartServeCommon\SmartServe.EFCore\SmartServe.EFCore.csproj" />
   </ItemGroup>

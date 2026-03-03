@@ -1,4 +1,4 @@
-﻿using SmartServe.Domain.Models;
+﻿using SmartServe.Common.Models;
 using SmartServePOS.Models;
 
 namespace SmartServePOS.Services

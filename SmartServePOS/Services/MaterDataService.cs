@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.Data.Sqlite;
+using SmartServe.Common.Models;
 using SmartServe.Domain.Constants;
 using SmartServe.Domain.Models;
 using SmartServe.Domain.Services;
