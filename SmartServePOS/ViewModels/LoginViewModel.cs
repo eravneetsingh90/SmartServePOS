@@ -1,5 +1,5 @@
 ﻿using SmartServe.Domain.Constants;
-using SmartServe.Domain.Services;
+using SmartServePOS.Services;
 using SmartServe.EFCore.Models;
 using SmartServePOS.Command;
 using SmartServePOS.Helper;
@@ -94,7 +94,7 @@ namespace SmartServePOS.ViewModels
 
 				// Success
 				_mainWindowVm.IsLoggedIn = true;
-				_mainWindowVm.IsAdmin = user.Data.Role == "OWNER" ? true : false;
+				_mainWindowVm.IsAdmin = user.Data.Role == "Admin" ? true : false;
 				_navigationService.NavigateToTableView();
 			}
 			catch

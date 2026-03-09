@@ -1,6 +1,11 @@
 ﻿namespace SmartServePOS.Models
 {
-	public class POSSettings
+    public class ApiSettings
+    {
+        public string BaseUrl { get; set; } = string.Empty;
+        public string TenantCode { get; set; } = string.Empty;
+    }
+    public class POSSettings
 	{
 		public string ShopName { get; set; } = string.Empty;
 		public string ShopAddress { get; set; } = string.Empty;

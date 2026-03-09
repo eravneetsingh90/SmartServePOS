@@ -49,7 +49,8 @@ namespace SmartServePOS
 			// 3️⃣ Setup DI (ONLY ONCE)
 			// -------------------------------
 			var services = new ServiceCollection();
-			services.Configure<POSSettings>(Configuration.GetSection("POS"));
+            services.Configure<ApiSettings>(Configuration.GetSection("ApiSettings"));
+            services.Configure<POSSettings>(Configuration.GetSection("POS"));
 			services.Configure<ThemeSettings>(Configuration.GetSection("Theme"));
 			services.AddSingleton(Configuration);
 			services.AddSingleton<ISqliteConnectionFactory>(new SqliteConnectionFactory(dbPath));
