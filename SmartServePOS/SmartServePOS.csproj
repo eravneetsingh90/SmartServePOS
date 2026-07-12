@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>Assets\Icons\smartserve.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -43,7 +44,7 @@
 
   <ItemGroup>
     <Resource Include="Assets\Icons\smartserve.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
 

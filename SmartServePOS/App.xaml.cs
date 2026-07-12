@@ -18,12 +18,26 @@ namespace SmartServePOS
 {
 	public partial class App : Application
 	{
-		public static IServiceProvider Services { get; private set; } = null!;
+        private static Mutex? _mutex;
+        public static IServiceProvider Services { get; private set; } = null!;
 		public static IConfiguration Configuration { get; private set; } = null!;
 
 		protected override async void OnStartup(StartupEventArgs e)
 		{
-			ConfigHelper.Instance.SetLang("en");
+            const string mutexName = @"Local\SmartServePOS";
+
+            bool createdNew;
+
+            _mutex = new Mutex(true, mutexName, out createdNew);
+
+            if (!createdNew)
+            {
+                SingleInstanceService.NotifyExistingInstance();
+                Shutdown();
+                return;
+            }
+
+            ConfigHelper.Instance.SetLang("en");
 			base.OnStartup(e);
 
 			// -------------------------------
@@ -68,7 +82,10 @@ namespace SmartServePOS
 			var mainWindow = Services.GetRequiredService<MainWindow>();
 			mainWindow.Show();
 
-			var loginView = Services.GetRequiredService<LoginView>();
+            var singleInstance = Services.GetRequiredService<SingleInstanceService>();
+            singleInstance.StartListening();
+
+            var loginView = Services.GetRequiredService<LoginView>();
 			mainWindow.Navigate(loginView);
 
 			// -------------------------------
@@ -102,5 +119,15 @@ namespace SmartServePOS
 				}
 			});
 		}
-	}
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            Services.GetRequiredService<SingleInstanceService>().Stop();
+
+            _mutex?.ReleaseMutex();
+            _mutex?.Dispose();
+
+            base.OnExit(e);
+        }
+    }
 }

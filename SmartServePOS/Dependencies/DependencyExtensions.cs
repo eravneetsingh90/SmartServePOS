@@ -55,8 +55,9 @@ namespace SmartServePOS.Dependencies
 			services.AddTransient<IPOSBillingService, POSBillingService>();
 			services.AddSingleton<IPOSCatalogService, POSCatalogService>();
 			services.AddSingleton<IOrderSyncService, OrderSyncService>();
-			
-			return services;
+
+            services.AddSingleton<SingleInstanceService>();
+            return services;
 		}
 	}
 }
