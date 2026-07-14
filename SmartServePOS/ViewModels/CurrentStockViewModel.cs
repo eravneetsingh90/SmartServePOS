@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
+using SmartServe.Domain.Interfaces;
 using SmartServe.Domain.Models;
-using SmartServe.Domain.Services;
 using SmartServePOS.Helper;
 using SmartServePOS.Models;
 using System.Collections.ObjectModel;

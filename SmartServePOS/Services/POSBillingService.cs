@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.Data.Sqlite;
 using SmartServe.Domain.Constants;
+using SmartServe.Domain.Interfaces;
 using SmartServe.Domain.Models;
-using SmartServe.Domain.Services;
 using SmartServe.Domain.Stores;
 using SmartServePOS.Models;
 using System.Data;

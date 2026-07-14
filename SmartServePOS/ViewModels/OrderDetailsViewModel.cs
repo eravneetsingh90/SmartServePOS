@@ -1,4 +1,4 @@
-﻿using SmartServe.Domain.Services;
+﻿using SmartServe.Domain.Interfaces;
 using SmartServePOS.Models;
 using System.Collections.ObjectModel;
 

@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using SmartServe.Domain.Constants;
+using SmartServe.Domain.Interfaces;
 using SmartServe.Domain.Models;
-using SmartServe.Domain.Services;
 using SmartServePOS.Command;
 using SmartServePOS.Helper;
 using SmartServePOS.Models;

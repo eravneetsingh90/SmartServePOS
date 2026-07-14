@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using SmartServe.Domain.Constants;
+using SmartServe.Domain.Interfaces;
 using SmartServe.Domain.Models;
-using SmartServe.Domain.Services;
 using SmartServe.Domain.Stores;
 using SmartServe.EFCore.Models;
 using SmartServePOS.Command;
